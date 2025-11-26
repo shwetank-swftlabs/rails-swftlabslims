@@ -64,3 +64,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem 'omniauth'
+gem 'omniauth-rails_csrf_protection'
+gem 'omniauth-google-oauth2'
