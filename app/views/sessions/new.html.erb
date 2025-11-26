@@ -1,6 +1,15 @@
-<h1>Login</h1>
+<div class="d-flex justify-content-center align-items-center" style="height: 80vh;">
+  <div class="card shadow-md p-4 rounded-4" style="width: 360px;">
+    <div class="card-body text-center">
+      <h3 class="card-title mb-5">Welcome to SwiftlabsLims</h3>
 
-<%= button_to "Sign in with Google",
-              "/auth/google_oauth2",
-              method: :post, 
-              data: { turbo: false } %>
+      <p class="text-muted mb-4">Please sign in to continue</p>
+
+      <%= button_to "Sign in with Google",
+          "/auth/google_oauth2",
+          method: :post,
+          data: { turbo: false },
+          class: "btn btn-primary w-100" %>
+    </div>
+  </div>
+</div>

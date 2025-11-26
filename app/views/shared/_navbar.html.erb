@@ -1,0 +1,60 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+  <div class="container">
+
+    <!-- App Name / Logo -->
+    <%= link_to experiments_path, class: "navbar-brand fw-bold" do %>
+      SWFTLab LIMS
+    <% end %>
+
+    <!-- Toggler for mobile -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Nav Links -->
+    <div class="collapse navbar-collapse" id="mainNavbar">
+      <ul class="navbar-nav me-auto">
+        <!-- left side empty for now -->
+      </ul>
+
+      <!-- Right Side (Experiments / Inventory / User Menu) -->
+      <ul class="navbar-nav ms-auto">
+        <!-- Experiments -->
+        <li class="nav-item">
+          <%= link_to "Experiments",
+                      experiments_path,
+                      class: "nav-link #{'active' if request.path.start_with?('/experiments')}" %>
+        </li>
+
+        <!-- Inventory -->
+        <li class="nav-item">
+          <%= link_to "Inventory",
+                      '/inventory',
+                      class: "nav-link #{'active' if request.path.start_with?('/inventory')}" %>
+        </li>
+
+        <li class="nav-item dropdown ms-2">
+          <a class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false">
+            Logged in as <i><%= current_user.first_name.capitalize %></i>
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <%= link_to "Logout",
+                          logout_path,
+                          class: "dropdown-item text-danger",
+                          data: {
+                            turbo_method: :delete,
+                            turbo_confirm: "Are you sure you want to log out?"
+                          } %>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
