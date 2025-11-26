@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+echo "🐘 Starting PostgreSQL docker container..."
+docker compose up -d db
+
+echo "⏳ Waiting for PostgreSQL to be ready..."
+sleep 2
+
+echo "🔌 Connecting with psql..."
+psql postgres://rails:rails@localhost:5432/rails_swftlablims_dev
