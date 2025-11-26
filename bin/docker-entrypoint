@@ -1,8 +1,10 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+# If we’re starting the Rails server via thruster, prepare the DB first
+if [ "$2" = "./bin/rails" ] && [ "$3" = "server" ]; then
+  echo "Running db:prepare before starting server..."
   ./bin/rails db:prepare
 fi
 
-exec "${@}"
+# Hand off to whatever command Docker/DO passed in
+exec "$@"
