@@ -1,10 +1,6 @@
 class Equipment < ApplicationRecord
   self.table_name = "equipments"
-
-  enum :location, {
-    lihti: "lihti",
-    other_location: "other_location"
-  }.freeze
+  include LocationEnum
 
   enum :equipment_type, {
     'reactor': 'reactor',

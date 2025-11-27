@@ -1,8 +1,10 @@
-# module LocationEnum
-#   extend ActiveSupport::Concern
+module LocationEnum
+  extend ActiveSupport::Concern
 
-#   LOCATIONS = %i[lihti other].freeze
-#   included do
-#     enum location: LocationEnum::LOCATIONS
-#   end
-# end
+  included do
+    enum :location, {
+      lihti: "lihti",
+      other_location: "other_location"
+    }.freeze
+  end
+end
