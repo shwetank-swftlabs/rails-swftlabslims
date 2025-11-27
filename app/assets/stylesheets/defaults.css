@@ -1,0 +1,88 @@
+/* ============================================================
+   SWFTLab LIMS — Brightened Scientific Theme
+   Cleaner, research-grade Bootstrap overrides
+   ============================================================ */
+
+/* Global Bootstrap Color Overrides */
+:root {
+  --bs-primary: #607d8b; /* modern blue-gray */
+  --bs-secondary: #90a4ae; /* soft cool-gray */
+  --bs-success: #6fae94; /* pleasant scientific green */
+  --bs-danger: #b97b7b; /* muted rose-red */
+  --bs-warning: #cfb06a; /* desaturated lab-gold */
+  --bs-info: #5c7ea5; /* analytical steel blue */
+  --bs-light: #eceff1; /* light gray */
+  --bs-dark: #37474f; /* deep blue-gray */
+
+  --bs-primary-hover: #546e7a;
+  --bs-secondary-hover: #78909c;
+
+  /* Soft, analytic UI background */
+  --bs-body-color: #2c2c2c;
+  --bs-body-bg: #fafbfc;
+}
+
+/* Base button softness */
+.btn {
+  border-radius: 6px;
+}
+
+/* Softer focus ring */
+:root {
+  --bs-focus-ring-color: rgba(96, 125, 139, 0.35);
+}
+
+/* Muted link colors */
+a {
+  color: var(--bs-info);
+}
+
+a:hover {
+  color: var(--bs-primary);
+}
+
+/* Softer card UI */
+.card {
+  border-radius: 10px;
+  box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================================
+   BUTTON OVERRIDES
+   ============================================================ */
+
+.btn-primary {
+  background-color: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+  color: #fff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--bs-primary-hover) !important;
+  border-color: var(--bs-primary-hover) !important;
+}
+
+.btn-outline-primary {
+  color: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--bs-primary) !important;
+  color: #fff !important;
+}
+
+/* ============================================================
+   NAVBAR ACTIVE LINK (remove bright blue underline)
+   ============================================================ */
+
+.nav-link.active {
+  color: var(--bs-primary) !important;
+  font-weight: 600;
+  border-bottom: 3px solid var(--bs-primary) !important;
+}
+
+.nav-link:hover {
+  color: var(--bs-primary-hover) !important;
+}

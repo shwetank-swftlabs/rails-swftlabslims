@@ -1,0 +1,37 @@
+<!-- PAGE HEADER -->
+<% content_for :page_title, render("shared/page_title", title: "Inventory",
+subtitle: "Manage equipment, chemicals, and feedstock from one place.") %>
+<% content_for :title, "Inventory" %>
+
+<!-- MAIN CONTENT -->
+<div class="row g-5">
+
+  <%= render "shared/feature_card",
+      icon: "bi-tools",
+      title: "Equipments",
+      subtitle: "Physical instruments and devices",
+      view_label: "View all equipments",
+      view_path: equipments_path,
+      add_label: "Add equipment",
+      add_path: new_equipment_path %>
+
+  <%= render "shared/feature_card",
+      icon: "bi-droplet-half",
+      title: "Chemicals",
+      subtitle: "Reagents, solvents, and consumables",
+      view_label: "View all chemicals",
+      view_path: "#",
+      add_label: "Add chemical",
+      add_path: "#" %>
+
+  <%= render "shared/feature_card",
+      icon: "bi-box-seam",
+      title: "Feedstock",
+      subtitle: "Raw materials and inputs",
+      view_label: "View all feedstock",
+      view_path: "#",
+      add_label: "Add feedstock",
+      add_path: "#" %>
+
+</div>
+

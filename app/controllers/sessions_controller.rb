@@ -8,12 +8,15 @@ class SessionsController < ApplicationController
   def create
     auth = request.env["omniauth.auth"]
     
-    user = User.find_or_create_by(email: auth['info']['email']) do |user|
-      user.name = auth['info']['name']
+    user = User.find_or_create_by(email: auth.info.email)
+    user.name = auth.info.name
+  
+    if user.save!
+      session[:user_id] = user.id
+      redirect_to session[:return_to] || experiments_path, notice: "Welcome, #{user.first_name}! You are now logged in."
+    else
+      redirect_to login_path, alert: "Failed to log in. Please try again or contact support."
     end
-
-    session[:user_id] = user.id
-    redirect_to session[:return_to] || experiments_path, notice: "Welcome, #{user.first_name}! You are now logged in."
   end
 
   def destroy

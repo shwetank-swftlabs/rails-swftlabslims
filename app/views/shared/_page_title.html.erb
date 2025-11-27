@@ -1,0 +1,15 @@
+<div class="row mb-4 align-items-center">
+  <div class="col">
+    <h1 class="h3 mb-1"><%= title %></h1>
+
+    <% if subtitle.present? %>
+      <p class="text-muted mb-0"><%= subtitle %></p>
+    <% end %>
+  </div>
+
+  <% if defined?(actions) && actions.present? %>
+    <div class="col-auto d-flex gap-2">
+      <%= actions %>
+    </div>
+  <% end %>
+</div>

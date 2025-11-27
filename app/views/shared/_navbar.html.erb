@@ -3,7 +3,7 @@
 
     <!-- App Name / Logo -->
     <%= link_to experiments_path, class: "navbar-brand fw-bold" do %>
-      SWFTLab LIMS
+      SWFTLabsLIMS
     <% end %>
 
     <!-- Toggler for mobile -->
@@ -31,6 +31,13 @@
           <%= link_to "Inventory",
                       '/inventory',
                       class: "nav-link #{'active' if request.path.start_with?('/inventory')}" %>
+        </li>
+
+        <!-- Products -->
+        <li class="nav-item">
+          <%= link_to "Products",
+                      products_path,
+                      class: "nav-link #{'active' if request.path.start_with?('/products')}" %>
         </li>
 
         <li class="nav-item dropdown ms-2">
