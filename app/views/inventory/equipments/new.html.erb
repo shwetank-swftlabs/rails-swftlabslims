@@ -1,2 +1,63 @@
 <% content_for :title, "Add Equipment" %>
 <% content_for :page_title, render("shared/page_title", title: "Add New Equipment", subtitle: "Add a new equipment to the inventory.") %>
+
+<%= form_with(model: @equipment, local: false, url: inventory_equipments_path, html: { class: "equipment-form" }) do |f| %>
+
+  <div class="mb-3">
+    <%= f.label "Equipment Name (unique)", class: "form-label fw-bold mb-1" %>
+    <%= f.text_field :name, class: "form-control", placeholder: "Please enter a unique equipment name", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label "Equipment Short Name (unique)", class: "form-label fw-bold mb-1" %>
+    <%= f.text_field :short_name, class: "form-control", placeholder: "Please enter a unique equipment short name", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :equipment_type, class: "form-label fw-bold mb-1" %>
+    <%= f.select :equipment_type,
+        Equipment.equipment_types.keys.map { |k| [k.titleize, k] },
+        {prompt: "Please select an equipment type"},
+        class: "form-control",
+        required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :equipment_supplier, class: "form-label fw-bold mb-1" %>
+    <%= f.text_field :equipment_supplier, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :location, class: "form-label fw-bold mb-1" %>
+    <%= f.select :location,
+        Equipment.locations.keys.map { |k| [k.titleize, k] },
+        {prompt: "Please select a location"},
+        class: "form-control" %>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :created_by, class: "form-label fw-bold mb-1" %>
+      <%= f.text_field :created_by,
+            class: "form-control",
+            value: @equipment.created_by || current_user.email %>
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <%= f.label :created_at, "Date Added", class: "form-label fw-bold mb-1" %>
+      <%= f.date_field :created_at,
+            class: "form-control",
+            value: @equipment.created_at || Date.today %>
+    </div>
+  </div>
+
+  <!-- Larger space before buttons -->
+
+    <!-- CONFIRM SUBMIT -->
+    <%= f.submit "Save Equipment", 
+          class: "btn btn-primary px-4 mt-5",
+          data: { turbo_confirm: "Are you sure you want to save this equipment?" } %>
+
+  </div>
+
+<% end %>

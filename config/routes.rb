@@ -14,13 +14,11 @@ Rails.application.routes.draw do
   get "/products", to: "products#index", as: :products
 
   # Experiments routes
-  # NOP Processes routes
   get "/experiments/nop-processes", to: "experiments/nop_processes#index", as: :nop_processes
   get "/experiments/nop-processes/:id", to: "experiments/nop_processes#show", as: :nop_process
 
-  # Inventory routes
-  # Equipments routes
-  get "/inventory/equipments", to: "inventory/equipments#index", as: :equipments
-  get "/inventory/equipments/new", to: "inventory/equipments#new", as: :new_equipment
-  post "/inventory/equipments", to: "inventory/equipments#create"
+  # Inventory routes (proper namespace)
+  namespace :inventory do
+    resources :equipments, only: [:index, :new, :create]
+  end
 end

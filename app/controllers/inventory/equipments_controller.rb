@@ -15,7 +15,8 @@ module Inventory
     end
 
     def new
-      add_breadcrumb "New", new_equipment_path
+      add_breadcrumb "New", new_inventory_equipment_path
+      @equipment = ::Equipment.new
     end
 
     def create
@@ -23,7 +24,7 @@ module Inventory
 
     private
     def set_equipments_breadcrumbs_root
-      add_breadcrumb "Equipments", equipments_path
+      add_breadcrumb "Equipments", inventory_equipments_path
     end
   end
 end

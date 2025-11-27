@@ -1,6 +1,6 @@
 <%# expects @breadcrumbs = [{ name: "...", path: "..."}] %>
 <% if @breadcrumbs.present? %>
-  <nav aria-label="breadcrumb" class="mb-3">
+  <nav aria-label="breadcrumb">
     <ol class="breadcrumb small">
       <% @breadcrumbs.each_with_index do |crumb, index| %>
         <% last = index == @breadcrumbs.length - 1 %>
