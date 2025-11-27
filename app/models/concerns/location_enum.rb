@@ -1,10 +1,14 @@
 module LocationEnum
   extend ActiveSupport::Concern
 
-  included do
-    enum :location, {
-      lihti: "lihti",
-      other_location: "other_location"
-    }.freeze
+  GLOBAL_LOCATION_VALUES = {
+    lihti: "lihti",
+    other_location: "other_location"
+  }.freeze
+
+  class_methods do
+    def uses_location_enum_for(attribute_name)
+      enum attribute_name, GLOBAL_LOCATION_VALUES
+    end
   end
 end

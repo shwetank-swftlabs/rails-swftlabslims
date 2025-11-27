@@ -1,55 +1,51 @@
 <% content_for :title, "Add Equipment" %>
 <% content_for :page_title, render("shared/page_title", title: "Add New Equipment", subtitle: "Add a new equipment to the inventory.") %>
 
+<%= render "shared/form_errors", object: @equipment %>
+
 <%= form_with(model: @equipment, local: false, url: inventory_equipments_path, html: { class: "equipment-form" }) do |f| %>
 
-  <div class="mb-3">
-    <%= f.label "Equipment Name (unique)", class: "form-label fw-bold mb-1" %>
-    <%= f.text_field :name, class: "form-control", placeholder: "Please enter a unique equipment name", required: true %>
-  </div>
+  <%= default_form_field(f, :name, label_text: "Equipment Name (unique)", required: true) do |req| %>
+    <%= f.text_field :name,
+                    { class: "form-control",
+                      placeholder: "Please enter a unique equipment name" }.merge(req) %>
+  <% end %>
 
-  <div class="mb-3">
-    <%= f.label "Equipment Short Name (unique)", class: "form-label fw-bold mb-1" %>
-    <%= f.text_field :short_name, class: "form-control", placeholder: "Please enter a unique equipment short name", required: true %>
-  </div>
+  <%= default_form_field(f, :code, label_text: "Equipment Code (unique, example: 5LR for 5L Reactor)", required: true) do |req| %>
+    <%= f.text_field :code,
+                    { class: "form-control text-uppercase"}.merge(req) %>
+  <% end %>
 
-  <div class="mb-3">
-    <%= f.label :equipment_type, class: "form-label fw-bold mb-1" %>
+
+  <%= default_form_field(f, :equipment_type, label_text: "Equipment Type", required: true) do |req| %>
     <%= f.select :equipment_type,
-        Equipment.equipment_types.keys.map { |k| [k.titleize, k] },
-        {prompt: "Please select an equipment type"},
-        class: "form-control",
-        required: true %>
-  </div>
+                Equipment.equipment_types.keys.map { |k| [k.titleize, k] },
+                { prompt: "Please select an equipment type" },
+                { class: "form-control" }.merge(req) %>
+  <% end %>
 
-  <div class="mb-3">
-    <%= f.label :equipment_supplier, class: "form-label fw-bold mb-1" %>
-    <%= f.text_field :equipment_supplier, class: "form-control" %>
-  </div>
+  <%= default_form_field(f, :equipment_supplier, label_text: "Equipment Supplier", required: true) do |req| %>
+    <%= f.select :equipment_supplier,
+                Equipment.equipment_suppliers.keys.map { |k| [k.titleize, k] },
+                { prompt: "Please select an equipment supplier" },
+                { class: "form-control" }.merge(req) %>
+  <% end %>
 
-  <div class="mb-3">
-    <%= f.label :location, class: "form-label fw-bold mb-1" %>
-    <%= f.select :location,
-        Equipment.locations.keys.map { |k| [k.titleize, k] },
-        {prompt: "Please select a location"},
-        class: "form-control" %>
-  </div>
+  <%= default_form_field(f, :equipment_location, label_text: "Equipment Location", required: true) do |req| %>
+    <%= f.select :equipment_location,
+                Equipment.equipment_locations.keys.map { |k| [k.titleize, k] },
+                { prompt: "Please select a location" },
+                { class: "form-control" }.merge(req) %>
+  <% end %>
 
-  <div class="row">
-    <div class="col-md-6 mb-3">
-      <%= f.label :created_by, class: "form-label fw-bold mb-1" %>
-      <%= f.text_field :created_by,
-            class: "form-control",
-            value: @equipment.created_by || current_user.email %>
-    </div>
 
-    <div class="col-md-6 mb-3">
-      <%= f.label :created_at, "Date Added", class: "form-label fw-bold mb-1" %>
-      <%= f.date_field :created_at,
-            class: "form-control",
-            value: @equipment.created_at || Date.today %>
-    </div>
-  </div>
+  <%= default_form_field(f, :location_details, label_text: "Location Details", required: false) do |req| %>
+    <%= f.text_field :location_details,
+                    { class: "form-control",
+                      placeholder: "Optional" }.merge(req) %>
+  <% end %>
+
+  <%= render "shared/forms/creator_fields", f: f %>
 
   <!-- Larger space before buttons -->
 

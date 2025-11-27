@@ -1,0 +1,12 @@
+<div class="mb-3">
+  <%= f.label field, class: "form-label fw-bold mb-1" do %>
+    <%= label_text %>
+    <% if required %>
+      <span class="text-danger">*</span>
+    <% end %>
+  <% end %>
+
+  <% required_attr = required ? { required: true } : {} %>
+  
+  <%= yield(required_attr) %>
+</div>
