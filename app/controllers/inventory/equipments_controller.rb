@@ -11,7 +11,7 @@ module Inventory
 
   class EquipmentsController < BaseController
     before_action :set_equipments_breadcrumbs_root
-    before_action :set_equipment, only: [:show]
+    before_action :set_equipment, only: [:show, :new]
 
     def index
       scope = ::Equipment.all
