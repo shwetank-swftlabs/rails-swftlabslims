@@ -69,3 +69,5 @@ gem 'omniauth'
 gem 'omniauth-rails_csrf_protection'
 gem 'omniauth-google-oauth2'
 gem 'pagy', '~> 43.1'
+gem "googleauth"
+gem "google-apis-drive_v3"

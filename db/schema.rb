@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_27_215759) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_28_154117) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -21,9 +21,22 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_27_215759) do
     t.string "equipment_location", default: "other", null: false
     t.string "equipment_supplier", default: "other", null: false
     t.string "equipment_type", default: "other", null: false
+    t.boolean "is_active", default: true
     t.string "location_details"
     t.string "name", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "images", force: :cascade do |t|
+    t.bigint "attachable_id", null: false
+    t.string "attachable_type", null: false
+    t.datetime "created_at", null: false
+    t.string "drive_file_id", null: false
+    t.string "drive_file_url"
+    t.string "mime_type"
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["attachable_type", "attachable_id"], name: "index_images_on_attachable"
   end
 
   create_table "users", force: :cascade do |t|

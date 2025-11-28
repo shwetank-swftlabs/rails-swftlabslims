@@ -1,1 +1,18 @@
 <h1>Equipment Images</h1>
+
+<h3>Add Image</h3>
+
+<%= form_with(
+      url: inventory_equipment_images_path(@equipment),
+      local: true,
+      html: { multipart: true, class: "image-upload-form" }
+    ) do |f| %>
+
+  <div class="form-field">
+    <%= f.label :file, "Choose Image" %><br>
+    <%= f.file_field :file, accept: "image/*" %>
+  </div>
+
+  <%= f.submit "Upload", class: "btn btn-primary" %>
+
+<% end %>

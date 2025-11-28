@@ -14,7 +14,7 @@ module Inventory
     before_action :set_equipment, only: [:show]
 
     def index
-      scope = ::Equipment.all
+      scope = Inventory::Equipment.all
     
       # Search by name
       scope = scope.where("name ILIKE ?", "%#{params[:q]}%") if params[:q].present?
@@ -27,15 +27,15 @@ module Inventory
 
     def new
       add_breadcrumb "Add New Equipment", new_inventory_equipment_path
-      @equipment = ::Equipment.new
+      @equipment = Inventory::Equipment.new
     end
 
     def show
-      add_breadcrumb "#{@equipment.name} Details", inventory_equipment_path(@equipment)
+      add_breadcrumb @equipment.name, inventory_equipment_path(@equipment)
     end
 
     def create
-      @equipment = ::Equipment.new(equipment_params)
+      @equipment = Inventory::Equipment.new(equipment_params)
       @equipment.code.upcase!
 
       if @equipment.save
@@ -56,7 +56,7 @@ module Inventory
     end
 
     def set_equipment
-      @equipment = ::Equipment.find(params[:id])
+      @equipment = Inventory::Equipment.find(params[:id])
     end
   end
 end

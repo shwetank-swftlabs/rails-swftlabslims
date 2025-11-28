@@ -12,7 +12,7 @@
   <!-- Type Filter -->
   <div class="col-md-3">
     <%= f.select :equipment_type,
-        Equipment.equipment_types.keys.map { |k| [k.titleize, k] },
+        Inventory::Equipment.equipment_types.keys.map { |k| [k.titleize, k] },
         {
           include_blank: "Filter by Type",
           selected: params[:equipment_type]

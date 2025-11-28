@@ -19,21 +19,21 @@
 
   <%= default_form_field(f, :equipment_type, label_text: "Equipment Type", required: true) do |req| %>
     <%= f.select :equipment_type,
-                Equipment.equipment_types.keys.map { |k| [k.titleize, k] },
+                Inventory::Equipment.equipment_types.keys.map { |k| [k.titleize, k] },
                 { prompt: "Please select an equipment type" },
                 { class: "form-control" }.merge(req) %>
   <% end %>
 
   <%= default_form_field(f, :equipment_supplier, label_text: "Equipment Supplier", required: true) do |req| %>
     <%= f.select :equipment_supplier,
-                Equipment.equipment_suppliers.keys.map { |k| [k.titleize, k] },
+                Inventory::Equipment.equipment_suppliers.keys.map { |k| [k.titleize, k] },
                 { prompt: "Please select an equipment supplier" },
                 { class: "form-control" }.merge(req) %>
   <% end %>
 
   <%= default_form_field(f, :equipment_location, label_text: "Equipment Location", required: true) do |req| %>
     <%= f.select :equipment_location,
-                Equipment.equipment_locations.keys.map { |k| [k.titleize, k] },
+                Inventory::Equipment.equipment_locations.keys.map { |k| [k.titleize, k] },
                 { prompt: "Please select a location" },
                 { class: "form-control" }.merge(req) %>
   <% end %>
