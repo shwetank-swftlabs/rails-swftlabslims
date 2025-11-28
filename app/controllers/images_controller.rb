@@ -35,6 +35,7 @@ class ImagesController < ApplicationController
         drive_file_id: upload_result.id,
         drive_file_url: upload_result.web_view_link,
         mime_type: upload_result.mime_type,
+        created_by: current_user.email,
         label: label
       )
 
@@ -96,9 +97,5 @@ class ImagesController < ApplicationController
 
   def redirect_to_attachable(flash_hash = {})
     redirect_to polymorphic_url(@attachable, { tab: :images }), flash: flash_hash
-  end
-
-  def direct_download_url(id)
-    "https://drive.google.com/uc?export=view&id=#{id}"
   end
 end

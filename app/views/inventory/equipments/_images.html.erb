@@ -1,101 +1,15 @@
-<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-  <h3 class="fw-semibold mb-0">Images</h3>
-
-  <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#addImageModal">
-    Add Image
-  </button>
-</div>
+<%= render "shared/sidebar_layout/images_header",
+      url: inventory_equipment_images_path(@equipment)
+%>
 
 <!-- =========================== -->
 <!-- IMAGE CAROUSEL (MAIN VIEW) -->
 <!-- =========================== -->
 
-<% if @equipment.images.any? %>
-  <div id="equipmentImagesCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+<%= render partial: "shared/sidebar_layout/image_carousel",
+           locals: {
+             images: @equipment.images,
+             carousel_id: "equipmentImagesCarousel"
+           }
+%>
 
-    <div class="carousel-inner">
-      <% @equipment.images.each_with_index do |img, index| %>
-        <div class="carousel-item <%= "active" if index == 0 %>">
-
-          <!-- Use Rails-served image -->
-          <%= image_tag img.served_url,
-                class: "d-block w-100 rounded",
-                style: "max-height: 420px; object-fit: contain;" %>
-
-          <% if img.label.present? %>
-            <div class="carousel-caption d-none d-md-block">
-              <h5><%= img.label %></h5>
-            </div>
-          <% end %>
-
-        </div>
-      <% end %>
-    </div>
-
-    <button class="carousel-control-prev" type="button"
-            data-bs-target="#equipmentImagesCarousel" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon"></span>
-    </button>
-
-    <button class="carousel-control-next" type="button"
-            data-bs-target="#equipmentImagesCarousel" data-bs-slide="next">
-      <span class="carousel-control-next-icon"></span>
-    </button>
-
-  </div>
-<% else %>
-  <p class="text-muted fst-italic">No images uploaded yet.</p>
-<% end %>
-
-
-<!-- =========================== -->
-<!-- ADD IMAGE MODAL -->
-<!-- =========================== -->
-
-<div class="modal fade" id="addImageModal" tabindex="-1"
-     aria-labelledby="addImageModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <h5 class="modal-title" id="addImageModalLabel">Add Image</h5>
-        <button type="button" class="btn-close"
-                data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-
-      <div class="modal-body">
-
-        <%= form_with(
-              url: inventory_equipment_images_path(@equipment),
-              html: { multipart: true, class: "image-upload-form needs-image" }
-            ) do |f| %>
-
-          <div class="mb-3">
-            <%= f.label :file, class: "form-label fw-semibold" do %>
-              Choose Image <span class="text-danger">*</span>
-            <% end %>
-
-            <%= f.file_field :file,
-                  accept: "image/*",
-                  class: "form-control",
-                  required: true %>
-          </div>
-
-          <div class="mb-3">
-            <%= f.label :label, "Image Label", class: "form-label fw-semibold" %>
-            <%= f.text_field :label, class: "form-control" %>
-          </div>
-
-          <div class="d-flex justify-content-end">
-            <%= f.submit "Upload",
-                class: "btn btn-primary submit-btn",
-                data: { turbo_submits_with: "Uploading..." } %>
-          </div>
-
-        <% end %>
-
-      </div>
-
-    </div>
-  </div>
-</div>

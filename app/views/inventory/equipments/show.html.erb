@@ -1,16 +1,22 @@
-<% content_for :page_title, render("shared/page_title") %>
-
+<% content_for :page_title,
+   render("shared/page_title",
+     subtitle: "View and manage equipment details and images."
+   )
+%>
 
 <%= render "shared/sidebar_layout/layout",
-  tabs: {
-    "Details" => "details",
-    "Images"  => "images",
-    "Comments"=> "comments"
-  },
-  bottom_action: button_to("Mark Inactive",
-                           "#",
-                           method: :patch,
-                           class: "btn btn-outline-danger w-100") do %>
+    tabs: {
+      "Details"  => "details",
+      "Images"   => "images",
+      "Comments" => "comments"
+    },
+    bottom_action: tag.button(
+      "Mark Inactive",
+      type: "button",
+      class: "btn btn-outline-danger w-100",
+      onclick: "alert('Marking inactive is Work in Progress.')"
+    ) do %>
 
-  <%= render (params[:tab] || "details"), equipment: @equipment %>
+  <%= render partial: "#{params[:tab] || 'details'}", locals: { equipment: @equipment } %>
+
 <% end %>
