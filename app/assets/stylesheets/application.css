@@ -18,3 +18,14 @@
   text-transform: none !important;
 }
 
+/* Disable upload button until file input is valid */
+.image-upload-form:has(input[type='file']:invalid) .submit-btn {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Enable once file is selected */
+.image-upload-form:has(input[type='file']:valid) .submit-btn {
+  opacity: 1;
+  pointer-events: auto;
+}

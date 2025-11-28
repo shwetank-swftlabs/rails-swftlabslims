@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_28_154117) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_28_171650) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -33,6 +33,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_28_154117) do
     t.datetime "created_at", null: false
     t.string "drive_file_id", null: false
     t.string "drive_file_url"
+    t.string "label"
     t.string "mime_type"
     t.string "name", null: false
     t.datetime "updated_at", null: false

@@ -30,6 +30,12 @@ class GoogleDriveService
     )
   end
 
+  def download(file_id)
+    io = StringIO.new
+    @drive.get_file(file_id, download_dest: io)  # authenticated fetch
+    io.string  # return raw binary
+  end
+
   private
 
   def root_folder_id
