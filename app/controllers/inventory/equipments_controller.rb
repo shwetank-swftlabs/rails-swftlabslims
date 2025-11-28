@@ -11,7 +11,7 @@ module Inventory
 
   class EquipmentsController < BaseController
     before_action :set_equipments_breadcrumbs_root
-    before_action :set_equipment, only: [:show, :new]
+    before_action :set_equipment, only: [:show]
 
     def index
       scope = ::Equipment.all
@@ -27,6 +27,7 @@ module Inventory
 
     def new
       add_breadcrumb "Add New Equipment", new_inventory_equipment_path
+      @equipment = ::Equipment.new
     end
 
     def show
