@@ -1,4 +1,4 @@
-<% if object.errors.any? %>
+<% if object.present? && object.errors.any? %>
   <div class="alert alert-danger">
     <h5 class="alert-heading">There were some errors:</h5>
     <ul class="mb-0">

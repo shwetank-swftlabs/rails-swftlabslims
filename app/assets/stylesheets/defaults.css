@@ -88,27 +88,6 @@ a:hover {
 }
 
 /* ============================================================
-   SIDEBAR ACTIVE TABS (match main nav styling)
-   ============================================================ */
-
-.list-group-item.active {
-  color: var(--bs-primary) !important;
-  font-weight: 600;
-  border-bottom: 3px solid var(--bs-primary) !important;
-  background-color: rgba(
-    96,
-    125,
-    139,
-    0.08
-  ) !important; /* subtle blue-gray tint */
-}
-
-.list-group-item:not(.active) {
-  color: var(--bs-dark) !important;
-  background-color: transparent !important;
-}
-
-/* ============================================================
    SWFTLab LIMS — Ultra-Soft Table Styling
    ============================================================ */
 

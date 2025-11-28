@@ -20,8 +20,12 @@
           "border-bottom",
           "rounded-1",
   
-          (active_tab ? "active" : "")
-        ].join(" ")
+          (active_tab ?
+            "active text-dark fw-semibold border-bottom border-dark-subtle bg-body-secondary" :
+            "text-dark"
+          )
+        ].join(" "),
+        style: (active_tab ? "border-bottom-width: 3px !important;" : nil)
       %>
     <% end %>
   
