@@ -1,10 +1,13 @@
 module Inventory
   class Equipment < ApplicationRecord
     self.table_name = "equipments"
-    has_many :images, as: :attachable, dependent: :destroy
+    include DefaultDescOrder
+    default_desc :created_at
 
     include LocationEnum
     include EquipmentEnums
+
+    has_many :images, as: :attachable, dependent: :destroy
 
     uses_location_enum_for :equipment_location
 

@@ -1,4 +1,6 @@
 class Image < ApplicationRecord
+  include DefaultDescOrder
+  default_desc :created_at
   include Rails.application.routes.url_helpers
 
   belongs_to :attachable, polymorphic: true
