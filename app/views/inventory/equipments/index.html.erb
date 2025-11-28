@@ -1,2 +1,43 @@
 <% content_for :title, "Equipments" %>
-<% content_for :page_title, render("shared/page_title", title: "Equipments", subtitle: "Manage equipment and their data.", actions: link_to("Add New Equipment", new_inventory_equipment_path, class: "btn btn-primary")) %>
+<% content_for :page_title, render("shared/page_title",
+  title: "Equipments",
+  subtitle: "Manage equipment and their data.",
+  actions: link_to("Add New Equipment", new_inventory_equipment_path, class: "btn btn-primary")
+) %>
+
+<!-- UNIFIED FILTER BAR -->
+<%= render "shared/tables/default_filter_bar",
+      url: inventory_equipments_path,
+      search_placeholder: "Search by name…",
+      filter_fields: ->(f) do %>
+
+  <!-- Type Filter -->
+  <div class="col-md-3">
+    <%= f.select :equipment_type,
+        Equipment.equipment_types.keys.map { |k| [k.titleize, k] },
+        {
+          include_blank: "Filter by Type",
+          selected: params[:equipment_type]
+        },
+        class: "form-select",
+        onchange: "this.form.submit();" %>
+  </div>
+
+<% end %>
+
+<!-- EQUIPMENT TABLE -->
+<%= render "shared/tables/default_table",
+      collection: @equipments,
+      pagy: @pagy,
+      headers: ->(_) do %>
+        <th>Name</th>
+        <th>Code</th>
+        <th>Type</th>
+        <th>Location</th>
+      <% end,
+      row: ->(equipment) do %>
+        <td><%= link_to equipment.name, inventory_equipment_path(equipment), class: "text-decoration-underline fw-semibold" %></td>
+        <td><%= equipment.code %></td>
+        <td><%= equipment.equipment_type.titleize %></td>
+        <td><%= equipment.equipment_location.titleize %></td>
+      <% end %>

@@ -1,3 +1,4 @@
+
 module Inventory
   class BaseController < ApplicationController
     before_action :set_inventory_breadcrumbs_root
@@ -12,11 +13,24 @@ module Inventory
     before_action :set_equipments_breadcrumbs_root
 
     def index
+      scope = ::Equipment.all
+    
+      # Search by name
+      scope = scope.where("name ILIKE ?", "%#{params[:q]}%") if params[:q].present?
+    
+      # Filter by type
+      scope = scope.where(equipment_type: params[:equipment_type]) if params[:equipment_type].present?
+    
+      @pagy, @equipments = pagy(scope.order(:name), items: 15)
     end
 
     def new
       add_breadcrumb "Add New Equipment", new_inventory_equipment_path
       @equipment = ::Equipment.new
+    end
+
+    def show
+      @equipment = ::Equipment.find(params[:id])
     end
 
     def create

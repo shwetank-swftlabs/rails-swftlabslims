@@ -86,3 +86,80 @@ a:hover {
 .nav-link:hover {
   color: var(--bs-primary-hover) !important;
 }
+
+/* ============================================================
+   SWFTLab LIMS — Ultra-Soft Table Styling
+   ============================================================ */
+
+/* Softer header border + lighter header */
+.table thead {
+  background-color: var(--bs-light) !important;
+  border-bottom: 0.5px solid rgba(96, 125, 139, 0.08) !important;
+}
+
+/* STRIPES: ultra-soft gray-blues */
+.table-striped > tbody > tr:nth-of-type(odd) {
+  --bs-table-bg: #fbfcfd; /* almost white */
+  background-color: #fbfcfd !important;
+}
+
+.table-striped > tbody > tr:nth-of-type(even) {
+  --bs-table-bg: #f7f9fa; /* soft neutral */
+  background-color: #f7f9fa !important;
+}
+
+/* HOVER — subtle blue-gray tint that works on both stripes */
+.table-hover tbody tr:hover {
+  background-color: rgba(96, 125, 139, 0.06) !important;
+}
+
+/* Comfortable but compact spacing */
+.table-compact tbody tr td,
+.table-compact thead tr th {
+  padding-top: 0.55rem !important;
+  padding-bottom: 0.55rem !important;
+}
+
+/* Optional: super-light row separators */
+.table-compact tbody tr {
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.03);
+}
+
+/* ================================
+   SWFTLabs LIMS Pagination Styling
+   For Pagy v43 Bootstrap nav
+   ================================ */
+
+.pagy-bootstrap .pagination {
+  margin-top: 1rem;
+  gap: 4px; /* spacing between page items */
+}
+
+.pagy-bootstrap .page-item .page-link {
+  border-radius: 6px;
+  color: var(--bs-info); /* neutral scientific blue */
+  border: 1px solid transparent;
+  padding: 4px 10px;
+  background-color: transparent;
+}
+
+/* Active Page */
+.pagy-bootstrap .page-item.active .page-link {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+  color: white !important;
+}
+
+/* Hover */
+.pagy-bootstrap .page-item:not(.active) .page-link:hover {
+  background-color: rgba(96, 125, 139, 0.15); /* scientific cool hover */
+  border-color: rgba(96, 125, 139, 0.25);
+  color: var(--bs-primary);
+}
+
+/* Disabled arrows (Previous/Next) */
+.pagy-bootstrap .page-item.disabled .page-link {
+  color: #b0b7bb; /* muted */
+  background-color: transparent;
+  opacity: 0.5;
+}

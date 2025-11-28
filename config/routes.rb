@@ -19,6 +19,6 @@ Rails.application.routes.draw do
 
   # Inventory routes (proper namespace)
   namespace :inventory do
-    resources :equipments, only: [:index, :new, :create]
+    resources :equipments, only: [:index, :new, :create, :show]
   end
 end

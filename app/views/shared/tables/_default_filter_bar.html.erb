@@ -1,0 +1,19 @@
+<%= form_with url: url, method: :get, local: true, class: "row g-3 mb-3" do |f| %>
+
+  <!-- SEARCH (optional) -->
+  <% if search_placeholder.present? %>
+    <div class="col-md-4">
+      <div class="input-group">
+        <%= f.text_field :q,
+              value: params[:q],
+              placeholder: search_placeholder,
+              class: "form-control" %>
+        <%= f.submit "Search", class: "btn btn-secondary" %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- CUSTOM FILTERS (dynamic!) -->
+  <%= capture(f, &filter_fields) if filter_fields.present? %>
+
+<% end %>

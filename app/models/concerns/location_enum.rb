@@ -3,6 +3,7 @@ module LocationEnum
 
   GLOBAL_LOCATION_VALUES = {
     lihti: "lihti",
+    nfc: "nfc",
     other_location: "other_location"
   }.freeze
 

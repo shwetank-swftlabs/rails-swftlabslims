@@ -1,0 +1,27 @@
+<table class="table table-striped table-hover align-middle table-compact">
+  <thead class="table-light border-bottom">
+    <tr>
+      <%= capture(:col_headers, &headers) if headers.present? %>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% collection.each do |item| %>
+      <tr>
+        <%= capture(item, &row) if row.present? %>
+      </tr>
+    <% end %>
+
+    <% if collection.empty? %>
+      <tr>
+        <td colspan="20" class="text-muted text-center py-3">No records found.</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<% if pagy.present? %>
+  <div class="mt-3">
+    <%== pagy.series_nav(:bootstrap) %>
+  </div>
+<% end %>
