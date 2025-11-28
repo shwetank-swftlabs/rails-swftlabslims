@@ -11,6 +11,7 @@ module Inventory
 
   class EquipmentsController < BaseController
     before_action :set_equipments_breadcrumbs_root
+    before_action :set_equipment, only: [:show]
 
     def index
       scope = ::Equipment.all
@@ -26,11 +27,10 @@ module Inventory
 
     def new
       add_breadcrumb "Add New Equipment", new_inventory_equipment_path
-      @equipment = ::Equipment.new
     end
 
     def show
-      @equipment = ::Equipment.find(params[:id])
+      add_breadcrumb "#{@equipment.name} Details", inventory_equipment_path(@equipment)
     end
 
     def create
@@ -52,6 +52,10 @@ module Inventory
 
     def equipment_params
       params.require(:equipment).permit(:name, :code, :equipment_type, :equipment_supplier, :equipment_location, :location_details, :created_by, :created_at)
+    end
+
+    def set_equipment
+      @equipment = ::Equipment.find(params[:id])
     end
   end
 end

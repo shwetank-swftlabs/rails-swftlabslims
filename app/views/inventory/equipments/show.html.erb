@@ -1,1 +1,16 @@
-<h1>Equipment Details</h1>
+<% content_for :page_title, render("shared/page_title") %>
+
+
+<%= render "shared/sidebar_layout/layout",
+  tabs: {
+    "Details" => "details",
+    "Images"  => "images",
+    "Comments"=> "comments"
+  },
+  bottom_action: button_to("Mark Inactive",
+                           "#",
+                           method: :patch,
+                           class: "btn btn-outline-danger w-100") do %>
+
+  <%= render (params[:tab] || "details"), equipment: @equipment %>
+<% end %>

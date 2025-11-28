@@ -1,0 +1,47 @@
+<div class="d-flex mt-3" style="min-height: 75vh;">
+
+  <!-- Sidebar -->
+  <aside class="d-flex flex-column bg-light border-end p-3 rounded" style="width: 260px;">
+
+    <!-- Tabs -->
+    <div class="list-group mb-4">
+
+    <% tabs.each do |label, tab_name| %>
+      <% active_tab = (params[:tab].blank? && tab_name == "details") || params[:tab] == tab_name %>
+  
+      <%= link_to label,
+        inventory_equipment_path(@equipment, tab: tab_name),
+        class: [
+          "list-group-item",
+          "list-group-item-action",
+          "py-3",
+          "fs-6",
+          "border-0",
+          "border-bottom",
+          "rounded-1",
+  
+          (active_tab ? "active" : "")
+        ].join(" ")
+      %>
+    <% end %>
+  
+    </div>
+  
+
+    <!-- Bottom Action -->
+    <% if bottom_action.present? %>
+      <div class="mt-auto pt-3 border-top">
+        <div class="d-grid">
+          <%= bottom_action %>
+        </div>
+      </div>
+    <% end %>
+
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-grow-1 p-4">
+    <%= yield %>
+  </main>
+
+</div>
