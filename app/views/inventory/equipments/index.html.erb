@@ -32,10 +32,15 @@
         <th>Code</th>
         <th>Type</th>
         <th>Location</th>
+        <th>Print QR</th>
       <% end,
       row: ->(equipment) do %>
         <td><%= link_to equipment.name, inventory_equipment_path(equipment), class: "text-decoration-underline fw-semibold" %></td>
         <td><%= equipment.code %></td>
         <td><%= equipment.equipment_type.titleize %></td>
         <td><%= equipment.equipment_location.titleize %></td>
+        <td><%= render "shared/print_qr_button", 
+                        qr_code_path: qr_code_inventory_equipment_path(equipment),
+                        label: "Print QR" %>
+        </td>
       <% end %>
