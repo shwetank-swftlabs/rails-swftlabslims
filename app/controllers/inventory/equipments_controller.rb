@@ -11,7 +11,7 @@ module Inventory
 
   class EquipmentsController < BaseController
     before_action :set_equipments_breadcrumbs_root
-    before_action :set_equipment, only: [:show]
+    before_action :set_equipment, only: [:show, :qr_code]
 
     def index
       scope = Inventory::Equipment.all
@@ -44,6 +44,15 @@ module Inventory
         flash.now[:alert] = "Failed to create equipment. Please check the form and try again."
         render :new, status: :unprocessable_entity
       end
+    end
+
+    def qr_code
+      pdf = @equipment.qr_label_pdf(url: inventory_equipment_url(@equipment))
+
+      send_data pdf,
+        filename: "#{@equipment.name}_qr_code.pdf",
+        type: "application/pdf",
+        disposition: "inline"
     end
 
     private

@@ -6,6 +6,7 @@ module Inventory
 
     include LocationEnum
     include EquipmentEnums
+    include QrLabelable
 
     has_many :images, as: :attachable, dependent: :destroy
     has_many :comments, as: :commentable, dependent: :destroy
@@ -20,5 +21,9 @@ module Inventory
               presence: true,
               inclusion: { in: Equipment.equipment_locations.keys }
     validates :created_by, presence: true
+    
+    def default_label_title
+      name.upcase
+    end
   end
 end

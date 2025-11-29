@@ -71,3 +71,10 @@ gem 'omniauth-google-oauth2'
 gem 'pagy', '~> 43.1'
 gem "googleauth"
 gem "google-apis-drive_v3"
+
+# For generating the PDF in pure Ruby
+gem "prawn"
+
+# For turning QR data into PNG
+gem "rqrcode"
+gem "rqrcode_png"
