@@ -8,6 +8,7 @@ module Inventory
     include EquipmentEnums
 
     has_many :images, as: :attachable, dependent: :destroy
+    has_many :comments, as: :commentable, dependent: :destroy
 
     uses_location_enum_for :equipment_location
 

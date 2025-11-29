@@ -135,3 +135,7 @@
     height: 350px;
   }
 }
+
+.details-list dd {
+  margin-left: 1rem !important; /* adjust to taste */
+}

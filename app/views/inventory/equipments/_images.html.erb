@@ -1,15 +1,4 @@
-<%= render "shared/sidebar_layout/images_header",
-      url: inventory_equipment_images_path(@equipment)
+<%= render "shared/sidebar_layout/images_main_area",
+      url: inventory_equipment_images_path(@equipment),
+      images: @equipment.images
 %>
-
-<!-- =========================== -->
-<!-- IMAGE CAROUSEL (MAIN VIEW) -->
-<!-- =========================== -->
-
-<%= render partial: "shared/sidebar_layout/image_carousel",
-           locals: {
-             images: @equipment.images,
-             carousel_id: "equipmentImagesCarousel"
-           }
-%>
-

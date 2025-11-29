@@ -1,0 +1,33 @@
+<% if details.present? %>
+  <dl class="details-list mb-0">
+    <% if details.is_a?(Hash) %>
+      <% details.each do |key, value| %>
+        <dt class="text-muted small fw-semibold text-uppercase mt-3" style="letter-spacing: 0.5px;">
+          <%= key.to_s.humanize %>
+        </dt>
+        <dd class="text-dark fs-6 border-bottom pb-3 mb-3">
+          <%= value.presence || content_tag(:span, "—", class: "text-muted fst-italic") %>
+        </dd>
+      <% end %>
+    <% elsif details.is_a?(Array) %>
+      <% details.each do |item| %>
+        <% label = item.is_a?(Hash) ? (item[:label] || item["label"]) : nil %>
+        <% value = item.is_a?(Hash) ? (item[:value] || item["value"]) : item %>
+
+        <% if label.present? %>
+          <dt class="text-muted small fw-semibold text-uppercase mt-3" style="letter-spacing: 0.5px;">
+            <%= label.to_s.humanize %>
+          </dt>
+        <% end %>
+
+        <dd class="text-dark fs-6 border-bottom pb-3 mb-3">
+          <%= value.presence || content_tag(:span, "—", class: "text-muted fst-italic") %>
+        </dd>
+      <% end %>
+    <% end %>
+  </dl>
+<% else %>
+  <div class="text-muted text-center py-4">
+    <p class="mb-0">No details available.</p>
+  </div>
+<% end %>

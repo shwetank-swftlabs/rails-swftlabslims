@@ -31,3 +31,6 @@ document.addEventListener('turbo:load', () => {
     updateCarouselInfo();
   });
 });
+
+import 'trix';
+import '@rails/actiontext';

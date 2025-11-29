@@ -1,15 +1,13 @@
 <% content_for :page_title,
    render("shared/page_title",
-     subtitle: "View and manage equipment details and images."
+     subtitle: "View and manage equipment information."
    )
 %>
 
 <%= render "shared/sidebar_layout/layout",
-    tabs: {
-      "Details"  => "details",
-      "Images"   => "images",
-      "Comments" => "comments"
-    },
+    tabs: ["details", "maintenance_records", "safety_checks", "images", "comments"],
+    tab_path: :inventory_equipment_path,
+    path_args: [@equipment],
     bottom_action: tag.button(
       "Mark Inactive",
       type: "button",
@@ -17,6 +15,6 @@
       onclick: "alert('Marking inactive is Work in Progress.')"
     ) do %>
 
-  <%= render partial: "#{params[:tab] || 'details'}", locals: { equipment: @equipment } %>
+  <%= render (params[:tab] || "details"), equipment: @equipment %>
 
 <% end %>

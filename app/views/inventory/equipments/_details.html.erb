@@ -1,1 +1,10 @@
-<h1>Equipment Details</h1>
+<%= render "shared/sidebar_layout/details_list_main_area", details: {
+  "Name" => @equipment.name,
+  "Code" => @equipment.code,
+  "Type" => @equipment.equipment_type.titleize,
+  "Supplier" => @equipment.equipment_supplier.titleize,
+  "Location" => "#{@equipment.equipment_location.titleize} - #{@equipment.location_details}",
+  "Created By" => @equipment.created_by,
+  "Created At" => @equipment.created_at.strftime("%B %d, %Y %I:%M %p")
+}
+%>

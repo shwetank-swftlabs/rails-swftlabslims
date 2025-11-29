@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   namespace :inventory do
     resources :equipments, only: [:index, :new, :create, :show] do
       resources :images, only: [:create, :show], controller: "/images"
+      resources :comments, only: [:create], controller: "/comments"
     end
   end
 end

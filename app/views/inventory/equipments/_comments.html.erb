@@ -1,1 +1,4 @@
-<h1>Equipment Comments</h1>
+<%= render "shared/sidebar_layout/comments_main_area",
+      url: inventory_equipment_comments_path(@equipment),
+      comments: @equipment.comments
+%>
