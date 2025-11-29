@@ -40,8 +40,7 @@ class QrLabelService
   def generate_qr_png
     qr = RQRCode::QRCode.new(
       @url,
-      level: :h,
-      size: 6
+      level: :h
     )
 
     qr.as_png(
