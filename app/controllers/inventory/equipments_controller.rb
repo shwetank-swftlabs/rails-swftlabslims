@@ -51,7 +51,7 @@ module Inventory
     end
 
     def equipment_params
-      params.require(:equipment).permit(:name, :code, :equipment_type, :equipment_supplier, :equipment_location, :location_details, :created_by, :created_at)
+      params.require(:inventory_equipment).permit(:name, :code, :equipment_type, :equipment_supplier, :equipment_location, :location_details, :created_by, :created_at)
     end
 
     def set_equipment

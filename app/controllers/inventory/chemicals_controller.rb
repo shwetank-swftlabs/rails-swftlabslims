@@ -27,7 +27,7 @@ module Inventory
     def create
       @chemical = Inventory::Chemical.new(chemical_params)
       if @chemical.save
-        redirect_to inventory_chemical_path(@chemical), notice: "Chemical created successfully"
+        redirect_to inventory_chemicals_path, notice: "Chemical created successfully"
       else
         render :new
       end
