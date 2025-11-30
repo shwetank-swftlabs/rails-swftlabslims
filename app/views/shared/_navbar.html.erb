@@ -6,30 +6,36 @@
       SWFTLabsLIMS
     <% end %>
 
-    <!-- Toggler for mobile -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+    <!-- Mobile Toggler -->
+    <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mainNavbar"
+            aria-controls="mainNavbar"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Nav Links -->
+    <!-- Collapsible Content -->
     <div class="collapse navbar-collapse" id="mainNavbar">
       <ul class="navbar-nav me-auto">
-        <!-- left side empty for now -->
+        <!-- Left side empty -->
       </ul>
 
-      <!-- Right Side (Experiments / Inventory / User Menu) -->
       <ul class="navbar-nav ms-auto">
+
         <!-- Experiments -->
         <li class="nav-item">
           <%= link_to "Experiments",
                       experiments_path,
-                      class: "nav-link #{'active' if request.path.start_with?('/experiments')}" %>
+                      class: "nav-link #{'active' if current_page?(root_path) || request.path.start_with?('/experiments')}" %>
         </li>
 
         <!-- Inventory -->
         <li class="nav-item">
           <%= link_to "Inventory",
-                      '/inventory',
+                      inventory_path,
                       class: "nav-link #{'active' if request.path.start_with?('/inventory')}" %>
         </li>
 
@@ -40,12 +46,13 @@
                       class: "nav-link #{'active' if request.path.start_with?('/products')}" %>
         </li>
 
+        <!-- User Menu -->
         <li class="nav-item dropdown ms-2">
           <a class="nav-link dropdown-toggle"
-              href="#"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false">
+             href="#"
+             role="button"
+             data-bs-toggle="dropdown"
+             aria-expanded="false">
             Logged in as <i><%= current_user.first_name.capitalize %></i>
           </a>
 
@@ -61,6 +68,7 @@
             </li>
           </ul>
         </li>
+
       </ul>
     </div>
   </div>

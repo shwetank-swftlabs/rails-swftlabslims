@@ -13,17 +13,24 @@
   </button>
 </div>
 
-<% comments.order(created_at: :desc).each do |comment| %>
-  <div class="border rounded p-3 mb-3 bg-light">
-    <div class="mb-2 text-muted" style="font-size: 0.85rem;">
-      <span><%= comment.created_by %></span>
-      &nbsp;•&nbsp;
-      <%= comment.created_at.strftime("%Y-%m-%d %H:%M") %>
-    </div>
+<% if comments.present? %>
+  <% comments.order(created_at: :desc).each do |comment| %>
+    <div class="border rounded p-3 mb-3 bg-light">
+      <div class="mb-2 text-muted" style="font-size: 0.85rem;">
+        <span><%= comment.created_by %></span>
+        &nbsp;•&nbsp;
+        <%= comment.created_at.strftime("%Y-%m-%d %H:%M") %>
+      </div>
 
-    <div class="comment-body">
-      <%= comment.body %>
+      <div class="comment-body">
+        <%= comment.body %>
+      </div>
     </div>
+  <% end %>
+<% else %>
+  <div class="text-center py-5">
+    <i class="bi bi-chat-square-text text-muted" style="font-size: 3rem;"></i>
+    <p class="text-muted fst-italic mt-3 mb-0">No comments added yet.</p>
   </div>
 <% end %>
 
