@@ -3,6 +3,11 @@
    Cleaner, research-grade Bootstrap overrides
    ============================================================ */
 
+/* Global font size adjustment - scale down to match 80% zoom appearance */
+html {
+  font-size: 80%;
+}
+
 /* Global Bootstrap Color Overrides */
 :root {
   --bs-primary: #607d8b; /* modern blue-gray */
