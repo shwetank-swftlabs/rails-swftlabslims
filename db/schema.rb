@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_30_141435) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_30_191108) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -101,6 +101,17 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_30_141435) do
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["attachable_type", "attachable_id"], name: "index_images_on_attachable"
+  end
+
+  create_table "usages", force: :cascade do |t|
+    t.decimal "amount", null: false
+    t.datetime "created_at", null: false
+    t.string "created_by", default: "system", null: false
+    t.string "purpose", null: false
+    t.bigint "resource_id", null: false
+    t.string "resource_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["resource_type", "resource_id"], name: "index_usages_on_resource"
   end
 
   create_table "users", force: :cascade do |t|

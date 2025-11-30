@@ -1,0 +1,8 @@
+<%= render "shared/sidebar_layout/use_records_main_area",
+      url: inventory_chemical_usages_path(@chemical),
+      usages: @chemical.usages,
+      usage_unit: @chemical.unit,
+      usage_purposes: Inventory::Chemical::USAGE_PURPOSES,
+      resource: @chemical
+%>
+

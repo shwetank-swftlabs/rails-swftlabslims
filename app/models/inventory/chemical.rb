@@ -1,11 +1,13 @@
 module Inventory
   class Chemical < ApplicationRecord
     include QrLabelable
+    include Usageable
     has_many :comments, as: :commentable, dependent: :destroy
 
     LOCATIONS = %w[lihti nfc other].freeze
     SUPPLIERS = %w[other].freeze
     TYPES = %w[nitric_acid other].freeze
+    USAGE_PURPOSES = %w[nop_reaction other].freeze
 
     AMOUNT_UNITS = {
       "ml" => "mL (Milliliters)",

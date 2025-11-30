@@ -1,7 +1,7 @@
 <%= render "shared/sidebar_layout/details_list_main_area", details: {
   "Name" => chemical.name,
   "Type" => chemical.chemical_type.humanize,
-  "Quantity Added" => "#{chemical.quantity} #{chemical.unit.humanize}",
+  "Quantity Added" => "#{chemical.quantity} #{chemical.unit.upcase}",
   "Expiry Date" => format_date(chemical.expiry_date),
   "Location" => "#{chemical.location.humanize} - #{chemical.location_details}",
   "Supplier" => chemical.supplier.humanize,

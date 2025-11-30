@@ -1,7 +1,10 @@
-<% content_for :page_title, render("shared/page_title", subtitle: "View chemical details.") %>
+<% content_for :page_title, render("shared/page_title", 
+  subtitle: "View chemical details.",
+  actions: content_tag(:span, "Amount Remaining: #{number_with_precision(@chemical.remaining_amount, precision: 2, strip_insignificant_zeros: true)} #{@chemical.unit.upcase}", class: "fw-bold text-muted", style: "font-size: 2rem;")
+) %>
 
 <%= render "shared/sidebar_layout/layout",
-    tabs: ["details", "comments"],
+    tabs: ["details", "use_records", "comments"],
     tab_path: :inventory_chemical_path,
     path_args: [@chemical],
     bottom_action: tag.button(

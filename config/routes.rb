@@ -34,6 +34,7 @@ Rails.application.routes.draw do
       end
 
       resources :comments, only: [:create], controller: "/comments"
+      resources :usages, only: [:create], controller: "/usages"
     end
   end
 end
