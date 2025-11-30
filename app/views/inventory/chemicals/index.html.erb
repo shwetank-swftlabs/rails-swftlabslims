@@ -33,6 +33,7 @@
         <th>Quantity</th>
         <th>Expiry Date</th>
         <th>Location</th>
+        <th>Print QR</th>
       <% end,
       row: ->(chemical) do %>
         <td><%= link_to chemical.name, inventory_chemical_path(chemical), class: "text-decoration-underline fw-semibold" %></td>
@@ -40,4 +41,8 @@
         <td><%= "#{chemical.quantity} #{chemical.unit.humanize}" %></td>
         <td><%= format_date(chemical.expiry_date) %></td>
         <td><%= "#{chemical.location.humanize} #{chemical.location_details.present? ? " - #{chemical.location_details}" : ""}" %></td>
+        <td><%= render "shared/print_qr_button", 
+                        qr_code_path: qr_code_inventory_chemical_path(chemical),
+                        label: "Print QR" %>
+        </td>
       <% end %>

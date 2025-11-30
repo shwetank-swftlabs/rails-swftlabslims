@@ -23,11 +23,16 @@ Rails.application.routes.draw do
       member do
         get :qr_code
       end 
+
       resources :images, only: [:create, :show], controller: "/images"
       resources :comments, only: [:create], controller: "/comments"
     end
 
     resources :chemicals, only: [:index, :new, :create, :show] do
+      member do
+        get :qr_code
+      end
+
       resources :comments, only: [:create], controller: "/comments"
     end
   end

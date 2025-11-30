@@ -1,5 +1,6 @@
 module Inventory
   class Chemical < ApplicationRecord
+    include QrLabelable
     has_many :comments, as: :commentable, dependent: :destroy
 
     LOCATIONS = %w[lihti nfc other].freeze
@@ -24,5 +25,15 @@ module Inventory
     validates :location, presence: true, inclusion: { in: LOCATIONS }
     validates :created_by, presence: true
     validates :is_active, inclusion: { in: [true, false] }
+
+    def default_label_title
+      "#{chemical_type.humanize}"
+    end
+
+    def default_label_text
+      [
+        "Name: #{name}",
+      ]
+    end
   end
 end

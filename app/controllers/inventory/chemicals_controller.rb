@@ -1,6 +1,7 @@
 module Inventory
   class ChemicalsController < BaseController
     before_action :set_chemicals_breadcrumbs_root
+    before_action :set_chemical, only: [:show, :qr_code]
 
     def index
       scope = Inventory::Chemical.all
@@ -20,7 +21,6 @@ module Inventory
     end
 
     def show
-      @chemical = Inventory::Chemical.find(params[:id])
       add_breadcrumb "#{@chemical.chemical_type.titleize} #{@chemical.name} Details", inventory_chemical_path(@chemical)
     end 
 
@@ -33,9 +33,22 @@ module Inventory
       end
     end
 
+    def qr_code
+      pdf = @chemical.qr_label_pdf(url: inventory_chemical_url(@chemical))
+
+      send_data pdf,
+        filename: "#{@chemical.name}_qr_code.pdf",
+        type: "application/pdf",
+        disposition: "inline"
+    end
+
     private
     def set_chemicals_breadcrumbs_root
       add_breadcrumb "Chemicals", inventory_chemicals_path
+    end
+
+    def set_chemical
+      @chemical = Inventory::Chemical.find(params[:id])
     end
 
     def chemical_params
