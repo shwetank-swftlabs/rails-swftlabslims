@@ -36,11 +36,11 @@
 
   <body>
     <%= logged_in? ? render("shared/navbar") : nil %>
-    <%= render "shared/notice" %>
 
     <div class="container mt-3">
       <%= render "shared/breadcrumb" %>
       <%= yield :page_title %>
+      <%= render "shared/notice" if flash.present? %>
       <%= yield %>
     </div>
 

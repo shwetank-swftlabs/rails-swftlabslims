@@ -175,3 +175,19 @@ a:hover {
   color: var(--bs-primary) !important;
   cursor: pointer;
 }
+
+/* ============================================================
+   REMOVE SPINNER ARROWS FROM NUMBER INPUTS
+   ============================================================ */
+
+/* Hide spinner arrows in WebKit browsers (Chrome, Safari, Edge) */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide spinner arrows in Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+}

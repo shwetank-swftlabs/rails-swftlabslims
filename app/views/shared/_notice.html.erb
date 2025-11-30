@@ -1,14 +1,16 @@
-<% flash.each do |key, message| %>
-  <% bootstrap_class =
-      case key.to_sym
-      when :notice then "alert-primary"
-      when :alert  then "alert-danger"
-      else "alert-secondary"
-      end
-  %>
+<div style="margin-top: -2rem; margin-bottom: 1rem;">
+  <% flash.each do |key, message| %>
+    <% bootstrap_class =
+        case key.to_sym
+        when :notice then "alert-primary"
+        when :alert  then "alert-danger"
+        else "alert-secondary"
+        end
+    %>
 
-  <div class="alert <%= bootstrap_class %> container alert-dismissible fade show mx-auto mt-3" role="alert">
-    <%= message %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-<% end %>
+    <div class="alert <%= bootstrap_class %> container alert-dismissible fade show mx-auto mt-3" role="alert">
+      <%= message %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% end %>
+</div

@@ -1,0 +1,43 @@
+<% content_for :page_title, render("shared/page_title",
+  subtitle: "Manage chemicals and their data.",
+  actions: link_to("Add New Chemical", new_inventory_chemical_path, class: "btn btn-primary")
+) %>
+
+<!-- UNIFIED FILTER BAR -->
+<%= render "shared/tables/default_filter_bar",
+      url: inventory_chemicals_path,
+      search_placeholder: "Search by name…",
+      filter_fields: ->(f) do %>
+
+  <!-- Type Filter -->
+  <div class="col-md-3">
+    <%= f.select :chemical_type,
+        Inventory::Chemical::TYPES.map { |k| [k.titleize, k] },
+        {
+          include_blank: "Filter by Type",
+          selected: params[:chemical_type]
+        },
+        class: "form-select",
+        onchange: "this.form.submit();" %>
+  </div>
+
+<% end %>
+
+<!-- EQUIPMENT TABLE -->
+<%= render "shared/tables/default_table",
+      collection: @chemicals,
+      pagy: @pagy,
+      headers: ->(_) do %>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Quantity</th>
+        <th>Expiry Date</th>
+        <th>Location</th>
+      <% end,
+      row: ->(chemical) do %>
+        <td><%= link_to chemical.name, inventory_chemical_path(chemical), class: "text-decoration-underline fw-semibold" %></td>
+        <td><%= chemical.chemical_type.humanize %></td>
+        <td><%= "#{chemical.quantity} #{chemical.unit.humanize}" %></td>
+        <td><%= format_date(chemical.expiry_date) %></td>
+        <td><%= "#{chemical.location.humanize} #{chemical.location_details.present? ? " - #{chemical.location_details}" : ""}" %></td>
+      <% end %>

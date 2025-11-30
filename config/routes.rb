@@ -26,5 +26,9 @@ Rails.application.routes.draw do
       resources :images, only: [:create, :show], controller: "/images"
       resources :comments, only: [:create], controller: "/comments"
     end
+
+    resources :chemicals, only: [:index, :new, :create, :show] do
+      resources :comments, only: [:create], controller: "/comments"
+    end
   end
 end

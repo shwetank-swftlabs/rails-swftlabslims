@@ -18,10 +18,15 @@ class CommentsController < ApplicationController
     params.each do |key, value|
       next unless key.to_s =~ /(.+)_id$/
   
-      basename = $1.classify  # e.g. "Equipment", "Inventory::Equipment"
+      basename = $1.classify  # e.g. "Equipment", "Chemical"
       klass = basename.safe_constantize
   
-      # Fallback: search for namespaced constants like Inventory::Equipment
+      # Try Inventory namespace since routes are nested under inventory
+      if klass.nil?
+        klass = "Inventory::#{basename}".safe_constantize
+      end
+  
+      # Fallback: search for namespaced constants in other namespaces
       if klass.nil?
         klass = ObjectSpace.each_object(Class).find do |c|
           c.name&.end_with?("::#{basename}")

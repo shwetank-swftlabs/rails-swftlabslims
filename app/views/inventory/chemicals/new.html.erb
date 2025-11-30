@@ -1,0 +1,59 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Add a new chemical to the inventory.") %>
+
+<%= render "shared/form_errors", object: @chemical %>
+
+<%= form_with(model: @chemical, local: false, url: inventory_chemicals_path, html: { class: "chemical-form" }) do |f| %>
+  
+  <%= default_form_field(f, :chemical_type, label_text: "Chemical Type", required: true) do |req| %>
+    <%= f.select :chemical_type,
+                Inventory::Chemical::TYPES.map { |k| [k.titleize, k] },
+                { prompt: "Please select a chemical type" },
+                { class: "form-control" }.merge(req) %>
+  <% end %>
+
+
+  <%= default_form_field(f, :name, label_text: "Chemical Name (unique)", required: true) do |req| %>
+    <%= f.text_field :name,
+                    { class: "form-control",
+                      placeholder: "Please enter a unique chemical name" }.merge(req) %>
+  <% end %>
+
+  <%= inline_quantity_field(f, :quantity, "Quantity", unit_field: :unit, required: true) %>
+
+  <%= default_form_field(f, :supplier, label_text: "Chemical Supplier", required: true) do |req| %>
+    <%= f.select :supplier,
+                Inventory::Chemical::SUPPLIERS.map { |k| [k.titleize, k] },
+                { prompt: "Please select a supplier" },
+                { class: "form-control" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :location, label_text: "Location", required: true) do |req| %>
+    <%= f.select :location,
+                Inventory::Chemical::LOCATIONS.map { |k| [k.titleize, k] },
+                { prompt: "Please select a location" },
+                { class: "form-control" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :location_details, label_text: "Location Details", required: false) do |req| %>
+    <%= f.text_field :location_details,
+                    { class: "form-control",
+                      placeholder: "Optional" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :expiry_date, label_text: "Expiry Date", required: false) do |req| %>
+    <%= f.date_field :expiry_date,
+                    { class: "form-control" }.merge(req) %>
+  <% end %>
+
+  <%= render "shared/forms/creator_fields", f: f %>
+
+  <!-- Larger space before buttons -->
+
+    <!-- CONFIRM SUBMIT -->
+    <%= f.submit "Save Chemical", 
+          class: "btn btn-primary px-4 mt-5",
+          data: { turbo_confirm: "Are you sure you want to save this chemical?" } %>
+
+  </div>
+
+<% end %>

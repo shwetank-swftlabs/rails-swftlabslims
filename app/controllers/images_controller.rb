@@ -53,35 +53,18 @@ class ImagesController < ApplicationController
     params.each do |key, value|
       next unless key.to_s =~ /(.+)_id$/
   
-      basename = $1.classify  # "Equipment"
+      basename = $1.classify  # e.g. "Equipment"
   
       # Try top-level first (User, Product, etc.)
       klass = basename.safe_constantize
   
-      # Try namespaced versions (e.g., Inventory::Equipment)
+      # Try Inventory namespace since routes are nested under inventory
       if klass.nil?
-        # Search loaded constants for matches ending in ::Equipment
-        klass = ObjectSpace.each_object(Class).find do |c|
-          c.name&.end_with?("::#{basename}")
-        end
+        klass = "Inventory::#{basename}".safe_constantize
       end
   
-      # If we found it, load the record
-      return klass.find(value) if klass
-    end
-  
-    rdef find_attachable
-    params.each do |key, value|
-      next unless key.to_s =~ /(.+)_id$/
-  
-      basename = $1.classify  # "Equipment"
-  
-      # Try top-level first (User, Product, etc.)
-      klass = basename.safe_constantize
-  
-      # Try namespaced versions (e.g., Inventory::Equipment)
+      # Fallback: search for namespaced constants in other namespaces
       if klass.nil?
-        # Search loaded constants for matches ending in ::Equipment
         klass = ObjectSpace.each_object(Class).find do |c|
           c.name&.end_with?("::#{basename}")
         end

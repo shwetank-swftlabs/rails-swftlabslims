@@ -1,0 +1,16 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "View chemical details.") %>
+
+<%= render "shared/sidebar_layout/layout",
+    tabs: ["details", "comments"],
+    tab_path: :inventory_chemical_path,
+    path_args: [@chemical],
+    bottom_action: tag.button(
+      "Mark Inactive",
+      type: "button",
+      class: "btn btn-outline-danger w-100",
+      onclick: "alert('Marking inactive is Work in Progress.')"
+    ) do %>
+
+  <%= render (params[:tab] || "details"), chemical: @chemical %>
+
+<% end %>

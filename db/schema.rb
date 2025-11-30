@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_28_220829) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_30_141435) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,21 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_28_220829) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "chemicals", force: :cascade do |t|
+    t.string "chemical_type", null: false
+    t.datetime "created_at", null: false
+    t.string "created_by", default: "system", null: false
+    t.date "expiry_date"
+    t.boolean "is_active", default: true, null: false
+    t.string "location"
+    t.string "location_details"
+    t.string "name", null: false
+    t.decimal "quantity", null: false
+    t.string "supplier"
+    t.string "unit", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "comments", force: :cascade do |t|
