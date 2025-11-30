@@ -35,7 +35,7 @@
         <tr>
           <td><%= usage.created_by %></td>
           <td><%= format_date(usage.created_at) %></td>
-          <td><%= usage.amount %></td>
+          <td><%= usage.amount %> <%= usage_unit.upcase %></td>
           <td><%= usage.purpose %></td>
         </tr>
       <% end %>
@@ -65,6 +65,12 @@
         local: true
       ) do |form| %>
         <div class="modal-body p-2">
+
+          <% if resource.present? && resource.respond_to?(:remaining_amount) %>
+            <div class="alert alert-info mb-3" style="font-size: 0.9rem;">
+              <strong>Amount Remaining:</strong> <%= number_with_precision(resource.remaining_amount, precision: 2, strip_insignificant_zeros: true) %> <%= usage_unit.upcase %>
+            </div>
+          <% end %>
 
           <%= inline_quantity_field(form, :amount, "Amount Used", required: true, unit_field: nil, default_units: usage_unit.upcase) %>
 

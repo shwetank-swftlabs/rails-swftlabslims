@@ -36,5 +36,15 @@ Rails.application.routes.draw do
       resources :comments, only: [:create], controller: "/comments"
       resources :usages, only: [:create], controller: "/usages"
     end
+
+    resources :feedstocks, only: [:index, :new, :create, :show] do
+      member do
+        get :qr_code
+      end
+
+      resources :images, only: [:create, :show], controller: "/images"
+      resources :comments, only: [:create], controller: "/comments"
+      resources :usages, only: [:create], controller: "/usages"
+    end
   end
 end

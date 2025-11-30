@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_30_191108) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_30_212306) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -86,6 +86,19 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_30_191108) do
     t.boolean "is_active", default: true
     t.string "location_details"
     t.string "name", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "feedstocks", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "created_by", default: "system", null: false
+    t.string "feedstock_type", null: false
+    t.boolean "is_active", default: true, null: false
+    t.string "location"
+    t.string "name", null: false
+    t.decimal "quantity", null: false
+    t.string "supplier", null: false
+    t.string "unit", null: false
     t.datetime "updated_at", null: false
   end
 

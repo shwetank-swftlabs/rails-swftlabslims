@@ -1,0 +1,8 @@
+<%= render "shared/sidebar_layout/use_records_main_area",
+      url: inventory_feedstock_usages_path(@feedstock),
+      usages: @feedstock.usages,
+      usage_unit: @feedstock.unit,
+      usage_purposes: Inventory::Feedstock::USAGE_PURPOSES,
+      resource: @feedstock
+%>
+

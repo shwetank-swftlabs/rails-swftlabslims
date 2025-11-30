@@ -1,0 +1,47 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Add a new feedstock to the inventory.") %>
+
+<%= render "shared/form_errors", object: @feedstock %>
+
+<%= form_with(model: @feedstock, local: false, url: inventory_feedstocks_path, html: { class: "feedstock-form" }) do |f| %>
+  
+  <%= default_form_field(f, :feedstock_type, label_text: "Feedstock Type", required: true) do |req| %>
+    <%= f.select :feedstock_type,
+                Inventory::Feedstock::FEEDSTOCK_TYPES.map { |k| [k.titleize, k] },
+                { prompt: "Please select a feedstock type" },
+                { class: "form-control" }.merge(req) %>
+  <% end %>
+
+
+  <%= default_form_field(f, :name, label_text: "Feedstock Name (unique)", required: true) do |req| %>
+    <%= f.text_field :name,
+                    { class: "form-control",
+                      placeholder: "Please enter a unique feedstock name" }.merge(req) %>
+  <% end %>
+
+  <%= inline_quantity_field(f, :quantity, "Quantity", unit_field: :unit, unit_options: Inventory::Feedstock::FEEDSTOCK_UNITS, required: true) %>
+
+  <%= default_form_field(f, :supplier, label_text: "Feedstock Supplier", required: false) do |req| %>
+    <%= f.text_field :supplier,
+                    { class: "form-control",
+                      placeholder: "Optional" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :location, label_text: "Location", required: false) do |req| %>
+    <%= f.text_field :location,
+                    { class: "form-control",
+                      placeholder: "Optional" }.merge(req) %>
+  <% end %>
+
+  <%= render "shared/forms/creator_fields", f: f %>
+
+  <!-- Larger space before buttons -->
+
+    <!-- CONFIRM SUBMIT -->
+    <%= f.submit "Save Feedstock", 
+          class: "btn btn-primary px-4 mt-5",
+          data: { turbo_confirm: "Are you sure you want to save this feedstock?" } %>
+
+  </div>
+
+<% end %>
+

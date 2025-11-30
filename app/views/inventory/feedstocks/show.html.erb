@@ -1,0 +1,20 @@
+<% content_for :page_title, render("shared/page_title", 
+  subtitle: "View feedstock details.",
+  actions: content_tag(:span, "Amount Remaining: #{number_with_precision(@feedstock.remaining_amount, precision: 2, strip_insignificant_zeros: true)} #{@feedstock.unit.upcase}", class: "fw-bold text-muted", style: "font-size: 2rem;")
+) %>
+
+<%= render "shared/sidebar_layout/layout",
+    tabs: ["details", "images", "comments", "use_records"],
+    tab_path: :inventory_feedstock_path,
+    path_args: [@feedstock],
+    bottom_action: tag.button(
+      "Mark Inactive",
+      type: "button",
+      class: "btn btn-outline-danger w-100",
+      onclick: "alert('Marking inactive is Work in Progress.')"
+    ) do %>
+
+  <%= render (params[:tab] || "details"), feedstock: @feedstock %>
+
+<% end %>
+

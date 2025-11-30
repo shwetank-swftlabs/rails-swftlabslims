@@ -1,0 +1,47 @@
+<% content_for :page_title, render("shared/page_title",
+  subtitle: "Manage feedstocks and their data.",
+  actions: link_to("Add New Feedstock", new_inventory_feedstock_path, class: "btn btn-primary")
+) %>
+
+<!-- UNIFIED FILTER BAR -->
+<%= render "shared/tables/default_filter_bar",
+      url: inventory_feedstocks_path,
+      search_placeholder: "Search by name…",
+      filter_fields: ->(f) do %>
+
+  <!-- Type Filter -->
+  <div class="col-md-3">
+    <%= f.select :feedstock_type,
+        Inventory::Feedstock::FEEDSTOCK_TYPES.map { |k| [k.titleize, k] },
+        {
+          include_blank: "Filter by Type",
+          selected: params[:feedstock_type]
+        },
+        class: "form-select",
+        onchange: "this.form.submit();" %>
+  </div>
+
+<% end %>
+
+<!-- FEEDSTOCK TABLE -->
+<%= render "shared/tables/default_table",
+      collection: @feedstocks,
+      pagy: @pagy,
+      headers: ->(_) do %>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Quantity</th>
+        <th>Location</th>
+        <th>Print QR</th>
+      <% end,
+      row: ->(feedstock) do %>
+        <td><%= link_to feedstock.name, inventory_feedstock_path(feedstock), class: "text-decoration-underline fw-semibold" %></td>
+        <td><%= feedstock.feedstock_type.humanize %></td>
+        <td><%= "#{feedstock.quantity} #{feedstock.unit.humanize}" %></td>
+        <td><%= feedstock.location.present? ? feedstock.location : "N/A" %></td>
+        <td><%= render "shared/print_qr_button", 
+                        qr_code_path: qr_code_inventory_feedstock_path(feedstock),
+                        label: "Print QR" %>
+        </td>
+      <% end %>
+
