@@ -13,7 +13,6 @@
   </button>
 </div>
 
-
 <% comments.order(created_at: :desc).each do |comment| %>
   <div class="border rounded p-3 mb-3 bg-light">
     <div class="mb-2 text-muted" style="font-size: 0.85rem;">
@@ -28,7 +27,6 @@
   </div>
 <% end %>
 
-
 <!-- Modal -->
 <div class="modal fade" id="addCommentModal" tabindex="-1" aria-labelledby="addCommentModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -39,19 +37,22 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <div class="modal-body p-2">
-        <%= form_with(url: url) do |form| %>
-
+      <%= form_with(
+        url: url,
+        scope: :comment,
+        local: true
+      ) do |form| %>
+        <div class="modal-body p-2">
           <div class="mb-3">
             <%= form.rich_text_area :body, class: "form-control", style: "min-height: 200px;" %>
           </div>
-      </div>
+        </div>
 
-      <div class="modal-footer p-4">
+        <div class="modal-footer p-4">
           <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
           <%= form.submit "Add Comment", class: "btn btn-secondary" %>
-        <% end %>
-      </div>
+        </div>
+      <% end %>
 
     </div>
   </div>
