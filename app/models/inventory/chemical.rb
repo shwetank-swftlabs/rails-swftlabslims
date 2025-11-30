@@ -1,8 +1,11 @@
 module Inventory
   class Chemical < ApplicationRecord
+    include DefaultDescOrder
     include QrLabelable
     include Usageable
+
     has_many :comments, as: :commentable, dependent: :destroy
+    default_desc :updated_at
 
     LOCATIONS = %w[lihti nfc other].freeze
     SUPPLIERS = %w[other].freeze

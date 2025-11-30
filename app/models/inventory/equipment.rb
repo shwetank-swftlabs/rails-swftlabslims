@@ -2,7 +2,7 @@ module Inventory
   class Equipment < ApplicationRecord
     self.table_name = "equipments"
     include DefaultDescOrder
-    default_desc :created_at
+    default_desc :updated_at
 
     include LocationEnum
     include EquipmentEnums
