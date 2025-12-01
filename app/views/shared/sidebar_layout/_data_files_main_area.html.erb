@@ -1,0 +1,129 @@
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+  <h3 class="fw-semibold mb-0">Data Files</h3>
+
+  <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#genericAddDataFileModal">
+    <i class="bi bi-upload me-2"></i> Upload Data File
+  </button>
+</div>
+
+<!-- Upload Data File Modal -->
+<div class="modal fade" id="genericAddDataFileModal" tabindex="-1" aria-labelledby="genericAddDataFileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="genericAddDataFileModalLabel">Upload Data File</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <%= form_with url: url, local: true, multipart: true do |f| %>
+
+          <div class="mb-3">
+            <%= f.label :file, class: "form-label fw-bold mb-1" do %>
+              Choose a file
+              <span class="text-danger">*</span>
+            <% end %>
+            <%= f.file_field :file, 
+                class: "form-control", 
+                required: true,
+                accept: ".csv,.xls,.xlsx,.xlsm,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12" %>
+            <small class="form-text text-muted">Only CSV and Excel files (.csv, .xls, .xlsx, .xlsm) are allowed.</small>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :data_type, class: "form-label fw-bold mb-1" do %>
+              Data Type
+              <span class="text-danger">*</span>
+            <% end %>
+            <select id="dataTypeSelect" class="form-select mb-2" onchange="handleDataTypeSelect(this)">
+              <option value="">Select a data type...</option>
+              <% data_types.each do |data_type| %>
+                <option value="<%= data_type %>"><%= data_type.titleize %></option>
+              <% end %>
+            </select>
+            <%= f.text_field :data_type, 
+                id: "dataTypeInput",
+                class: "form-control", 
+                required: true,
+                placeholder: "Enter data type" %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :label, "Label (optional)", class: "form-label" %>
+            <%= f.text_field :label, class: "form-control" %>
+          </div>
+
+          <div class="text-end">
+            <%= f.submit "Upload", class: "btn btn-primary" %>
+          </div>
+
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Data Files List -->
+<% if data_files.present? %>
+  <table class="table table-sm table-bordered align-middle" style="font-size: 0.85rem;">
+    <thead class="table-light">
+      <tr>
+        <th class="py-2 ps-3">File Name</th>
+        <th class="py-2 ps-3">Label</th>
+        <th class="py-2 ps-3">Data Type</th>
+        <th class="py-2 ps-3">Uploaded By</th>
+        <th class="py-2 ps-3">Date</th>
+        <th class="py-2 ps-3">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% data_files.each do |data_file| %>
+        <tr>
+          <td class="py-2 ps-3">
+            <a href="<%= data_file.drive_file_url %>" target="_blank" class="text-decoration-none fw-semibold">
+              <%= data_file.file_name %>
+            </a>
+          </td>
+          <td class="py-2 ps-3"><%= data_file.label.presence || "—" %></td>
+          <td class="py-2 ps-3"><%= data_file.data_type.humanize %></td>
+          <td class="py-2 ps-3"><%= data_file.created_by %></td>
+          <td class="py-2 ps-3"><%= format_date(data_file.created_at) %></td>
+          <td class="py-2 ps-3">
+            <a href="<%= data_file.drive_file_url %>" target="_blank" class="text-decoration-none">
+              <i class="bi bi-box-arrow-up-right"></i>
+              Open File
+            </a>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <div class="text-center py-4">
+    <i class="bi bi-file-earmark text-muted" style="font-size: 2.5rem;"></i>
+    <p class="text-muted fst-italic mt-2 mb-0">No data files uploaded yet.</p>
+  </div>
+<% end %>
+
+<script>
+  function handleDataTypeSelect(select) {
+    const dataTypeInput = document.getElementById('dataTypeInput');
+    const selectedOption = select.options[select.selectedIndex];
+    const selectedValue = select.value;
+    
+    if (selectedValue && selectedValue !== 'other') {
+      // Auto-fill the input with the selected value
+      dataTypeInput.value = selectedValue;
+    } else if (selectedValue === 'other') {
+      // Clear the input when 'other' is selected so user can type custom value
+      dataTypeInput.value = '';
+      dataTypeInput.focus();
+    } else {
+      // Clear when no selection
+      dataTypeInput.value = '';
+    }
+  }
+</script>
+

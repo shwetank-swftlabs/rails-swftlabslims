@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_30_212306) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_30_221715) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -74,6 +74,22 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_30_212306) do
     t.string "created_by", default: "system", null: false
     t.datetime "updated_at", null: false
     t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
+  end
+
+  create_table "data_files", force: :cascade do |t|
+    t.bigint "attachable_id", null: false
+    t.string "attachable_type", null: false
+    t.datetime "created_at", null: false
+    t.string "created_by", default: "system", null: false
+    t.string "data_type", null: false
+    t.string "drive_file_id", null: false
+    t.string "drive_file_url", null: false
+    t.string "file_name", null: false
+    t.string "label"
+    t.string "mime_type", null: false
+    t.jsonb "parsed_data"
+    t.datetime "updated_at", null: false
+    t.index ["attachable_type", "attachable_id"], name: "index_data_files_on_attachable"
   end
 
   create_table "equipments", force: :cascade do |t|

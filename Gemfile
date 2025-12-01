@@ -78,3 +78,7 @@ gem "prawn"
 # For turning QR data into PNG
 gem "rqrcode"
 gem "rqrcode_png"
+
+# For parsing data files
+gem "roo"
+gem "roo-xls"  # Required for legacy .xls Excel files

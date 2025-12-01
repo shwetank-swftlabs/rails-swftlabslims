@@ -36,6 +36,14 @@ class GoogleDriveService
     io.string  # return raw binary
   end
 
+  def download_to_tempfile(file_id, extension = ".bin")
+    tempfile = Tempfile.new(["gdrive", extension])
+    tempfile.binmode  # Ensure binary mode for Excel files (prevents encoding errors)
+    @drive.get_file(file_id, download_dest: tempfile)
+    tempfile.rewind
+    tempfile
+  end
+
   private
 
   def root_folder_id

@@ -1,0 +1,6 @@
+<%= render "shared/sidebar_layout/data_files_main_area",
+      url: inventory_feedstock_data_files_path(@feedstock),
+      data_files: @feedstock.data_files,
+      data_types: Inventory::Feedstock::FILE_DATA_TYPES
+%>
+

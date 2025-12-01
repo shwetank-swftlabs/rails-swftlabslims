@@ -45,6 +45,7 @@ Rails.application.routes.draw do
       resources :images, only: [:create, :show], controller: "/images"
       resources :comments, only: [:create], controller: "/comments"
       resources :usages, only: [:create], controller: "/usages"
+      resources :data_files, only: [:create, :show], controller: "/data_files"
     end
   end
 end
