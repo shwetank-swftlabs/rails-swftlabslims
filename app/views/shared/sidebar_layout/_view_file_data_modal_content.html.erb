@@ -1,0 +1,22 @@
+<% 
+  data_file = local_assigns[:data_file] || @data_file
+  parsed_data = data_file.parsed_data || {}
+  is_csv = data_file.file_name.downcase.end_with?('.csv')
+  is_excel = ['.xls', '.xlsx', '.xlsm'].any? { |ext| data_file.file_name.downcase.end_with?(ext) }
+%>
+
+<% if parsed_data.blank? %>
+  <div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    No parsed data available for this file.
+  </div>
+<% elsif is_csv %>
+  <%= render partial: "shared/sidebar_layout/parsed_csv_data_modal_content", locals: { data_file: data_file } %>
+<% elsif is_excel %>
+  <%= render partial: "shared/sidebar_layout/parsed_excel_data_modal_content", locals: { data_file: data_file } %>
+<% else %>
+  <div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    Unknown file type. Unable to display data.
+  </div>
+<% end %>

@@ -75,7 +75,8 @@
         <th class="py-2 ps-3">Data Type</th>
         <th class="py-2 ps-3">Uploaded By</th>
         <th class="py-2 ps-3">Date</th>
-        <th class="py-2 ps-3">Action</th>
+        <th class="py-2 ps-3">View Data</th>
+        <th class="py-2 ps-3">Open File</th>
       </tr>
     </thead>
     <tbody>
@@ -90,6 +91,18 @@
           <td class="py-2 ps-3"><%= data_file.data_type.humanize %></td>
           <td class="py-2 ps-3"><%= data_file.created_by %></td>
           <td class="py-2 ps-3"><%= format_date(data_file.created_at) %></td>
+          <td class="py-2 ps-3">
+            <button 
+              class="btn btn-sm btn-outline-primary" 
+              data-bs-toggle="modal" 
+              data-bs-target="#viewFileDataModal"
+              data-data-file-id="<%= data_file.id %>"
+              data-data-file-url="<%= polymorphic_path([data_file.attachable, data_file]) %>"
+              data-data-file-name="<%= data_file.file_name %>"
+              onclick="loadFileData(this)">
+              <i class="bi bi-eye me-1"></i> View Data
+            </button>
+          </td>
           <td class="py-2 ps-3">
             <a href="<%= data_file.drive_file_url %>" target="_blank" class="text-decoration-none">
               <i class="bi bi-box-arrow-up-right"></i>
@@ -106,6 +119,25 @@
     <p class="text-muted fst-italic mt-2 mb-0">No data files uploaded yet.</p>
   </div>
 <% end %>
+
+<!-- View File Data Modal -->
+<div class="modal fade" id="viewFileDataModal" tabindex="-1" aria-labelledby="viewFileDataModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewFileDataModalLabel">View File Data</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="viewFileDataModalBody">
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
   function handleDataTypeSelect(select) {
@@ -125,5 +157,42 @@
       dataTypeInput.value = '';
     }
   }
+
+  function loadFileData(button) {
+    const dataFileUrl = button.getAttribute('data-data-file-url');
+    const dataFileName = button.getAttribute('data-data-file-name');
+    const modalBody = document.getElementById('viewFileDataModalBody');
+    const modalTitle = document.getElementById('viewFileDataModalLabel');
+    
+    // Update modal title with file name
+    if (dataFileName) {
+      modalTitle.textContent = 'View File Data: ' + dataFileName;
+    }
+    
+    // Show loading state
+    modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+    
+    // Fetch the data
+    fetch(dataFileUrl, {
+      headers: {
+        'Accept': 'text/html',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => response.text())
+    .then(html => {
+      modalBody.innerHTML = html;
+    })
+    .catch(error => {
+      console.error('Error loading file data:', error);
+      modalBody.innerHTML = '<div class="alert alert-danger">Error loading file data. Please try again.</div>';
+    });
+  }
+
+  // Clear modal content when it's closed
+  document.getElementById('viewFileDataModal').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('viewFileDataModalBody').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+    document.getElementById('viewFileDataModalLabel').textContent = 'View File Data';
+  });
 </script>
 

@@ -43,6 +43,16 @@ class DataFilesController < ApplicationController
     end
   end
 
+  def show
+    @attachable = find_attachable
+    @data_file = @attachable.data_files.find(params[:id])
+    
+    respond_to do |format|
+      format.html { render partial: "shared/sidebar_layout/view_file_data_modal_content", locals: { data_file: @data_file }, layout: false }
+      format.json { render json: { parsed_data: @data_file.parsed_data } }
+    end
+  end
+
   private
 
   def parse_and_store_data(data_file)

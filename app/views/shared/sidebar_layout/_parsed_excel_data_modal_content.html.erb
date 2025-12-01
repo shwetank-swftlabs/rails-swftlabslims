@@ -1,0 +1,139 @@
+<% 
+  data_file = local_assigns[:data_file] || @data_file
+  parsed_data = data_file.parsed_data || {}
+%>
+
+<div class="mb-3">
+  <h6 class="fw-bold mb-2">
+    <i class="bi bi-file-earmark-spreadsheet me-2"></i>
+    <%= data_file.file_name %>
+  </h6>
+  <p class="text-muted small mb-3">
+    <span class="badge bg-success me-2">Excel</span>
+    <%= pluralize(parsed_data.keys.length, 'sheet') %> found
+  </p>
+</div>
+
+<% if parsed_data.keys.length > 1 %>
+  <!-- Multiple sheets - use tabs -->
+  <ul class="nav nav-tabs mb-3" id="excelSheetTabs" role="tablist">
+    <% parsed_data.keys.each_with_index do |sheet_name, index| %>
+      <li class="nav-item" role="presentation">
+        <button 
+          class="nav-link <%= 'active' if index == 0 %>" 
+          id="sheet-<%= index %>-tab" 
+          data-bs-toggle="tab" 
+          data-bs-target="#sheet-<%= index %>" 
+          type="button" 
+          role="tab"
+          aria-controls="sheet-<%= index %>"
+          aria-selected="<%= index == 0 ? 'true' : 'false' %>">
+          <%= sheet_name %>
+        </button>
+      </li>
+    <% end %>
+  </ul>
+
+  <div class="tab-content" id="excelSheetTabContent">
+    <% parsed_data.each_with_index do |(sheet_name, sheet_data), index| %>
+      <div 
+        class="tab-pane fade <%= 'show active' if index == 0 %>" 
+        id="sheet-<%= index %>" 
+        role="tabpanel" 
+        aria-labelledby="sheet-<%= index %>-tab">
+        
+        <% if sheet_data.present? && sheet_data['headers'].present? %>
+          <div class="mb-2">
+            <span class="badge bg-secondary">
+              <%= pluralize(sheet_data['rows']&.length || 0, 'row') %>
+            </span>
+          </div>
+          
+          <div class="table-responsive" style="max-height: 50vh; overflow-y: auto;">
+            <table class="table table-sm table-bordered table-striped table-hover">
+              <thead class="table-light sticky-top">
+                <tr>
+                  <% sheet_data['headers'].each do |header| %>
+                    <th class="px-3 py-2"><%= header.humanize %></th>
+                  <% end %>
+                </tr>
+              </thead>
+              <tbody>
+                <% if sheet_data['rows'].present? %>
+                  <% sheet_data['rows'].each do |row| %>
+                    <tr>
+                      <% sheet_data['headers'].each do |header| %>
+                        <td class="px-3 py-2">
+                          <%= row[header].present? ? row[header] : '<span class="text-muted">—</span>'.html_safe %>
+                        </td>
+                      <% end %>
+                    </tr>
+                  <% end %>
+                <% else %>
+                  <tr>
+                    <td colspan="<%= sheet_data['headers'].length %>" class="text-center text-muted py-4">
+                      No data rows found
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            No data found in sheet "<%= sheet_name %>".
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <!-- Single sheet - no tabs needed -->
+  <% sheet_name = parsed_data.keys.first %>
+  <% sheet_data = parsed_data[sheet_name] %>
+  <% if sheet_data.present? && sheet_data['headers'].present? %>
+    <div class="mb-2">
+      <span class="badge bg-secondary">
+        <%= pluralize(sheet_data['rows']&.length || 0, 'row') %>
+      </span>
+    </div>
+    
+    <div class="table-responsive" style="max-height: 60vh; overflow-y: auto;">
+      <table class="table table-sm table-bordered table-striped table-hover">
+        <thead class="table-light sticky-top">
+          <tr>
+            <% sheet_data['headers'].each do |header| %>
+              <th class="px-3 py-2"><%= header.humanize %></th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% if sheet_data['rows'].present? %>
+            <% sheet_data['rows'].each do |row| %>
+              <tr>
+                <% sheet_data['headers'].each do |header| %>
+                  <td class="px-3 py-2">
+                    <%= row[header].present? ? row[header] : '<span class="text-muted">—</span>'.html_safe %>
+                  </td>
+                <% end %>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="<%= sheet_data['headers'].length %>" class="text-center text-muted py-4">
+                No data rows found
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle me-2"></i>
+      No data found in this Excel file.
+    </div>
+  <% end %>
+<% end %>
+
