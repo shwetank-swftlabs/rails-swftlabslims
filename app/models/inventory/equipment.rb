@@ -11,6 +11,11 @@ module Inventory
     has_many :images, as: :attachable, dependent: :destroy
     has_many :comments, as: :commentable, dependent: :destroy
 
+    has_many :nop_processes, class_name: "Experiment::NopProcess", foreign_key: "reactor_id", dependent: :destroy
+    has_one :last_nop_process, -> { order(created_at: :desc) },
+    class_name: "Experiment::NopProcess",
+    foreign_key: :reactor_id
+
     uses_location_enum_for :equipment_location
 
     validates :name, presence: true, uniqueness: true
@@ -24,6 +29,10 @@ module Inventory
     
     def default_label_title
       name.upcase
+    end
+
+    def self.reactor
+      where(equipment_type: "reactor")
     end
   end
 end

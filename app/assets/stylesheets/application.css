@@ -139,3 +139,29 @@
 .details-list dd {
   margin-left: 1rem !important; /* adjust to taste */
 }
+
+.var-symbol {
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: normal;
+  font-size: 1.25rem;
+  line-height: 1;
+  display: inline-block;
+}
+
+.var-symbol sub,
+.var-symbol sup {
+  font-size: 0.75em;
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: normal;
+}
+
+.sop-unit {
+  padding: 0.25rem 0.5rem; /* match form-control-sm */
+  font-size: 0.875rem; /* same as small input */
+  line-height: 1.2; /* removes excess height */
+  height: auto; /* prevent Bootstrap forcing height */
+  display: flex;
+  align-items: center; /* vertical centering */
+}

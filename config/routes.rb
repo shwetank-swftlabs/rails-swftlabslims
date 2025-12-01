@@ -14,8 +14,15 @@ Rails.application.routes.draw do
   get "/products", to: "products#index", as: :products
 
   # Experiments routes
-  get "/experiments/nop-processes", to: "experiments/nop_processes#index", as: :nop_processes
-  get "/experiments/nop-processes/:id", to: "experiments/nop_processes#show", as: :nop_process
+  namespace :experiments do
+    resources :nop_processes, only: [:index, :show, :new, :create] do
+      collection do
+        get :batch_number
+      end
+      resources :images, only: [:create, :show], controller: "/images"
+      resources :comments, only: [:create], controller: "/comments"
+    end
+  end
 
   # Inventory routes (proper namespace)
   namespace :inventory do

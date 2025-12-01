@@ -1,0 +1,50 @@
+<%
+  input_type = local_assigns[:input_type] || :number_field
+  value = local_assigns[:value]
+  unit = local_assigns[:unit]
+  unit_field = local_assigns[:unit_field] || :unit
+  unit_options = local_assigns[:unit_options]
+  selected_unit = local_assigns[:selected_unit]
+%>
+
+<div class="d-flex align-items-center mb-2 mt-3 input-row ps-4">
+  <!-- Label -->
+  <label for="<%= form.object_name %>_<%= field %>"
+         class="sop-label var-symbol me-4" style="width: 25px;">
+    <%= label_html.html_safe %>
+  </label>
+
+  <!-- Model-backed input -->
+  <div class="me-2">
+    <%= form.public_send(
+          input_type,
+          field,
+          class: "form-control form-control-sm w-auto",
+          style: "min-width: 80px;",
+          value: value
+        ) %>
+  </div>
+
+  <!-- Fixed Unit -->
+  <% if unit.present? && unit_options.blank? %>
+    <span class="input-group-text sop-unit"><%= unit %></span>
+  <% end %>
+  
+
+  <!-- Selectable Unit -->
+  <% if unit_options.present? %>
+    <%
+      # Convert hash to array format [display_text, value] if it's a hash
+      # This ensures proper display: "kg (Kilograms)" shown, "kg" submitted
+      options = if unit_options.is_a?(Hash)
+        unit_options.map { |key, value| [value, key] }
+      else
+        unit_options
+      end
+    %>
+    <%= form.select unit_field,
+        options,
+        { selected: selected_unit },
+        class: "form-select form-select-sm w-auto" %>
+  <% end %>
+</div>

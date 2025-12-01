@@ -1,15 +1,26 @@
+<%
+  stimulus_controller = local_assigns[:stimulus_controller]
+  created_by_data = stimulus_controller ? { "#{stimulus_controller}-target": "createdByInput" } : {}
+  created_at_data = stimulus_controller ? { "#{stimulus_controller}-target": "createdAtInput" } : {}
+%>
 <div class="row">
   <div class="col-md-6 mb-3">
     <%= f.label :created_by, class: "form-label fw-bold mb-1" %>
     <%= f.text_field :created_by,
           class: "form-control",
-          value: current_user.email %>
+          value: current_user.email,
+          data: created_by_data %>
   </div>
 
   <div class="col-md-6 mb-3">
     <%= f.label :created_at, "Date Added", class: "form-label fw-bold mb-1" %>
     <%= f.date_field :created_at,
           class: "form-control",
-          value: Date.today %>
+          value: Date.today,
+          data: created_at_data.merge(
+            stimulus_controller ? { 
+              action: "focus->#{stimulus_controller}#storeCreatedAtValue change->#{stimulus_controller}#handleCreatedAtChange"
+            } : {}
+          ) %>
   </div>
 </div>

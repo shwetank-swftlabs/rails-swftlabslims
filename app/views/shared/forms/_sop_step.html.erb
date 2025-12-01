@@ -1,0 +1,10 @@
+<div class="mb-3 sop-step">
+  <div class="fw-bold mb-1 d-flex align-items-start">
+    <span class="fw-bold me-2" style="min-width: 30px; flex-shrink: 0;"><%= number.to_s %>.</span>
+    <span class="flex-grow-1"><%= text.html_safe %></span>
+  </div>
+
+  <div>
+    <%= yield %>
+  </div>
+</div>

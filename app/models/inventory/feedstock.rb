@@ -12,9 +12,7 @@ module Inventory
     FEEDSTOCK_UNITS = {
       "kg" => "kg (Kilograms)",
       "g" => "g (Grams)",
-      "mg" => "mg (Milligrams)",
-      "lb" => "lb (Pounds)",
-      "other" => "Other"
+      "lb" => "lb (Pounds)"
     }.freeze
     FEEDSTOCK_TYPES = %w[jute cow_manure other].freeze
     USAGE_PURPOSES = %w[nop_reaction other].freeze

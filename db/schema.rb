@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_30_221715) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_01_215407) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -132,6 +132,26 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_30_221715) do
     t.index ["attachable_type", "attachable_id"], name: "index_images_on_attachable"
   end
 
+  create_table "nop_processes", force: :cascade do |t|
+    t.decimal "additional_nitric_acid_amount"
+    t.decimal "additional_nitric_acid_molarity"
+    t.string "batch_number", null: false
+    t.datetime "created_at", null: false
+    t.string "created_by", default: "system", null: false
+    t.decimal "feedstock_amount", null: false
+    t.string "feedstock_moisture_percentage", null: false
+    t.string "feedstock_type", null: false
+    t.string "feedstock_unit", null: false
+    t.decimal "final_nitric_acid_amount", null: false
+    t.decimal "final_nitric_acid_molarity", null: false
+    t.string "nitric_acid_units", null: false
+    t.date "nop_reaction_date", null: false
+    t.bigint "reactor_id", null: false
+    t.decimal "rotation_rate", null: false
+    t.datetime "updated_at", null: false
+    t.index ["reactor_id"], name: "index_nop_processes_on_reactor_id"
+  end
+
   create_table "usages", force: :cascade do |t|
     t.decimal "amount", null: false
     t.datetime "created_at", null: false
@@ -153,4 +173,5 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_30_221715) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "nop_processes", "equipments", column: "reactor_id"
 end

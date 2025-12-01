@@ -1,0 +1,9 @@
+<%
+  icon_class = local_assigns[:icon] || "bi bi-info-circle"
+  is_first = local_assigns[:is_first] || false
+  top_margin_class = is_first ? "mt-4" : "mt-5"
+%>
+<div class="d-flex align-items-center <%= top_margin_class %> mb-3 pb-1 border-bottom">
+  <i class="<%= icon_class %> me-2" style="color: #0d9488;"></i>
+  <h4 class="fw-semibold m-0" style="color: #0d9488;"><%= title %></h4>
+</div>

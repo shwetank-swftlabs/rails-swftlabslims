@@ -1,2 +1,34 @@
 <% content_for :title, "Experiments" %>
 <% content_for :page_title, render("shared/page_title", title: "Experiments (Work in Progress)", subtitle: "Manage experiments and their data.") %>
+
+<!-- MAIN CONTENT -->
+<div class="row g-5">
+
+  <%= render "shared/feature_card",
+      icon: "bi-flask",
+      title: "NOP Processes",
+      subtitle: "Nitric Acid Oxidation Processes",
+      view_label: "View all NOP Processes",
+      view_path: experiments_nop_processes_path,
+      add_label: "Add NOP Process",
+      add_path: new_experiments_nop_process_path %>
+
+  <%= render "shared/feature_card",
+      icon: "bi-leaf",
+      title: "Grow Trials",
+      subtitle: "Work in Progress",
+      view_label: "View all grow trials",
+      view_path: "#",
+      add_label: "Add grow trial",
+      add_path: "#" %>
+
+  <%= render "shared/feature_card",
+      icon: "bi-box-seam",
+      title: "Sample Characterizations",
+      subtitle: "Work in Progress",
+      view_label: "View all sample characterizations",
+      view_path: "#",
+      add_label: "Add sample characterization",
+      add_path: "#" %>
+
+</div>
