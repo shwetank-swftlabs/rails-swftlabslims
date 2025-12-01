@@ -1,17 +1,27 @@
 <%
   input_type = local_assigns[:input_type] || :number_field
   value = local_assigns[:value]
+  required = local_assigns.fetch(:required, true)
   unit = local_assigns[:unit]
   unit_field = local_assigns[:unit_field] || :unit
   unit_options = local_assigns[:unit_options]
   selected_unit = local_assigns[:selected_unit]
+  
+  # Build input options
+  input_options = {
+    class: "form-control form-control-sm w-auto",
+    style: "min-width: 80px;"
+  }
+  input_options[:required] = true if required
+  # Only set value if explicitly provided (don't override model binding)
+  input_options[:value] = value if value.present?
 %>
 
 <div class="d-flex align-items-center mb-2 mt-3 input-row ps-4">
   <!-- Label -->
   <label for="<%= form.object_name %>_<%= field %>"
-         class="sop-label var-symbol me-4" style="width: 25px;">
-    <%= label_html.html_safe %>
+         class="sop-label var-symbol me-4" style="width: 25px; white-space: nowrap;">
+    <%= label_html.html_safe %><% if required %><span class="text-danger">*</span><% end %>
   </label>
 
   <!-- Model-backed input -->
@@ -19,9 +29,7 @@
     <%= form.public_send(
           input_type,
           field,
-          class: "form-control form-control-sm w-auto",
-          style: "min-width: 80px;",
-          value: value
+          input_options
         ) %>
   </div>
 
@@ -41,10 +49,25 @@
       else
         unit_options
       end
+      
+      # Get the current value from the model, or use selected_unit, or default to first option
+      current_value = form.object.send(unit_field) if form.object.respond_to?(unit_field)
+      default_selected = current_value || selected_unit
+      
+      # If no value is set, default to the first option's value
+      if default_selected.blank? && options.present?
+        # Get the value from the first option (could be [display, value] array or just value)
+        first_option = options.first
+        default_selected = first_option.is_a?(Array) ? first_option.last : first_option
+      end
+      
+      # Build select options
+      select_options = { selected: default_selected }
+      select_options[:required] = true if required
     %>
     <%= form.select unit_field,
         options,
-        { selected: selected_unit },
+        select_options,
         class: "form-select form-select-sm w-auto" %>
   <% end %>
 </div>

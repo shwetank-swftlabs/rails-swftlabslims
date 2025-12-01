@@ -31,6 +31,10 @@ export default class extends Controller {
     this.feedstockTypeSelectTarget.value = '';
   }
 
+  resetBatchNumber() {
+    this.batchNumberInputTarget.value = '';
+  }
+
   reactorSelectionChanged(event) {
     const reactorId = parseInt(event.target.value, 10);
     this.resetSelectFeedstockType();
@@ -91,9 +95,15 @@ export default class extends Controller {
   }
 
   feedstockTypeChanged(event) {
+    this.resetBatchNumber();
+
     if (!this.selectedReactor) {
       alert('Please select a reactor first.');
       this.resetSelectFeedstockType();
+      return;
+    }
+
+    if (!this.feedstockTypeSelectTarget.value) {
       return;
     }
 

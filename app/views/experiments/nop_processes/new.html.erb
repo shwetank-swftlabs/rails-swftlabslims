@@ -123,6 +123,7 @@
                 field: :final_nitric_acid_amount,
                 label_html: var("V","H"),
                 unit_field: :nitric_acid_units,
+                selected_unit: "litres",
                 unit_options: Experiment::NopProcess::NITRIC_ACID_UNITS
               %>
                 
@@ -152,7 +153,7 @@
       <%= render "shared/forms/sop_section_header", title: "General Info", icon: "bi bi-file-text" %>
 
       <div class="mb-4">
-        <%= default_form_field(f, :batch_number, label_text: "Batch Number", required: true) do |req| %>
+        <%= default_form_field(f, :batch_number, label_text: "Batch Number (Auto-generated when you select feedstock type or reaction date)", required: true) do |req| %>
           <%= f.text_field :batch_number,
               { class: "form-control",
                 placeholder: "Auto-generated batch number. Please modify if needed.",
