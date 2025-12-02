@@ -1,0 +1,36 @@
+      <div id="reusing-effluent-fields" 
+           data-nop-process-form-target="reusingEffluentFields"
+           style="display: none;">
+        <%= render "shared/forms/sop_step",
+            number: "2B",
+            text: "Add and record the proper amount(#{field_symbol("V_H_prime")}) and molarity(#{field_symbol("c_H_prime")}) of 70 wt% HNO<sub>3</sub>: Record the volume (#{field_symbol("V_H_double_prime")}) and concentration (#{field_symbol("c_H_double_prime")}) of the effluent reused. " do %>
+            <%= render "shared/forms/sop_input_row",
+                form: f,
+                field: :additional_nitric_acid_amount,
+                label_html: field_symbol("V_H_prime"),
+                unit: "litres"
+              %>
+                
+            <%= render "shared/forms/sop_input_row",
+                form: f,
+                field: :additional_nitric_acid_molarity,
+                label_html: field_symbol("c_H_prime"),
+                unit: "mol/L" %>
+              
+            <%= render "shared/forms/sop_input_row",
+                form: f,
+                field: :final_nitric_acid_amount,
+                label_html: field_symbol("V_H_double_prime"),
+                unit_field: :nitric_acid_units,
+                selected_unit: "litres",
+                unit_options: Experiment::NopProcess::NITRIC_ACID_UNITS
+              %>
+
+            <%= render "shared/forms/sop_input_row",
+                form: f,
+                field: :final_nitric_acid_molarity,
+                label_html: field_symbol("c_H_double_prime"),
+                unit: "mol/L" %>
+
+        <% end %>
+      </div>

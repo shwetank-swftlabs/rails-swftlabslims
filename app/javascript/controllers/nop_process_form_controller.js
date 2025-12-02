@@ -6,15 +6,19 @@ export default class extends Controller {
   };
 
   static targets = [
-    'effluentYesRadio',
-    'effluentNoRadio',
+    'newStandaloneBatchYesRadio',
+    'newStandaloneBatchNoRadio',
     'feedstockTypeSelect',
     'batchNumberInput',
     'nopReactionDateInput',
+    'reactorSelect',
   ];
 
   connect() {
-    this.selectedReactor = null;
+    const reactors = this.reactorsValue;
+    this.selectedReactor = this.reactorSelectTarget.value
+      ? reactors.find((r) => r.reactor_id === +this.reactorSelectTarget.value)
+      : null;
     this.initialNopReactionDateValue = this.nopReactionDateInputTarget.value;
   }
 
@@ -23,8 +27,12 @@ export default class extends Controller {
     this.previousNopReactionDateValue = event.target.value;
   }
 
+  resetNewStandaloneBatch() {
+    this.newStandaloneBatchYesRadioTarget.checked = true;
+  }
+
   selectNoEffluentReuse() {
-    this.effluentNoRadioTarget.checked = true;
+    this.newStandaloneBatchYesRadioTarget.checked = true;
   }
 
   resetSelectFeedstockType() {
@@ -36,9 +44,9 @@ export default class extends Controller {
   }
 
   reactorSelectionChanged(event) {
-    const reactorId = parseInt(event.target.value, 10);
+    const reactorId = parseInt(this.reactorSelectTarget.value, 10);
     this.resetSelectFeedstockType();
-    this.selectNoEffluentReuse();
+    this.resetNewStandaloneBatch();
     this.batchNumberInputTarget.value = '';
 
     if (!reactorId) {
@@ -62,25 +70,11 @@ export default class extends Controller {
     console.log('Selected reactor:', this.selectedReactor);
   }
 
-  effluentReuseChanged(event) {
-    const value = event.target.value;
-    this.resetSelectFeedstockType();
-    this.batchNumberInputTarget.value = '';
+  newStandaloneBatchChanged(event) {
+    alert('Setting up batches with reuse of effluents is work in progress.');
+    this.newStandaloneBatchYesRadioTarget.checked = true;
 
-    if (value === 'yes') {
-      if (!this.selectedReactor) {
-        alert('Please select a reactor first.');
-        this.selectNoEffluentReuse();
-        return;
-      }
-      if (!this.selectedReactor.last_batch_info) {
-        alert(
-          'The selected reactor has no last batch info. You can start a standalone batch. Please contact support if you think this is incorrect.'
-        );
-        this.selectNoEffluentReuse();
-        return;
-      }
-    }
+    return;
   }
 
   handleNopReactionDateChange(event) {
@@ -111,9 +105,14 @@ export default class extends Controller {
   }
 
   async setBatchNumber() {
+    if (!this.selectedReactor) {
+      console.warn('Cannot set batch number: reactor not selected');
+      return;
+    }
+
     const feedstockType = this.feedstockTypeSelectTarget.value;
     const reactorId = this.selectedReactor.reactor_id;
-    const isReusingEffluent = this.effluentYesRadioTarget.checked;
+    const isReusingEffluent = this.newStandaloneBatchNoRadioTarget.checked;
 
     const url =
       `/experiments/nop_processes/batch_number?` +

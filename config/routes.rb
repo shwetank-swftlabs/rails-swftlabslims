@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       end
       resources :images, only: [:create, :show], controller: "/images"
       resources :comments, only: [:create], controller: "/comments"
+      resources :data_files, only: [:create, :show], controller: "/data_files"
     end
   end
 

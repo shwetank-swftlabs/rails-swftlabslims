@@ -51,7 +51,7 @@ module Experiments
     def batch_number
       feedstock_type         = params[:feedstock_type]
       reactor_id             = params[:reactor_id]
-      is_reusing_effluent    = params[:is_reusing_effluent]
+      is_reusing_effluent    = params[:is_reusing_effluent] == "true"
       nop_reaction_date      = params[:nop_reaction_date].present? ? Date.parse(params[:nop_reaction_date]) : Date.today
 
       batch_number = Experiment::NopProcess.next_batch_number(
@@ -112,7 +112,8 @@ module Experiments
         :reactor_id,
         :batch_number,
         :created_by,
-        :nop_reaction_date
+        :nop_reaction_date,
+        :reaction_type
       )
     end
 

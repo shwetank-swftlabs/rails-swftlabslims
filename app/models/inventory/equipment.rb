@@ -34,5 +34,9 @@ module Inventory
     def self.reactor
       where(equipment_type: "reactor")
     end
+
+    def self.last_nop_process(reactor_id)
+      find_by(id: reactor_id)&.last_nop_process
+    end
   end
 end

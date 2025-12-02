@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_01_230327) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_02_161408) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -163,11 +163,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_01_230327) do
     t.decimal "final_nitric_acid_molarity", null: false
     t.string "nitric_acid_units", null: false
     t.date "nop_reaction_date", null: false
+    t.bigint "previous_process_id"
     t.decimal "quenching_water_volume"
+    t.string "reaction_type"
     t.bigint "reactor_id", null: false
     t.decimal "rotation_rate", null: false
     t.decimal "total_reaction_time"
     t.datetime "updated_at", null: false
+    t.index ["previous_process_id"], name: "index_nop_processes_on_previous_process_id"
     t.index ["reactor_id"], name: "index_nop_processes_on_reactor_id"
   end
 
@@ -194,4 +197,5 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_01_230327) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cakes", "nop_processes"
   add_foreign_key "nop_processes", "equipments", column: "reactor_id"
+  add_foreign_key "nop_processes", "nop_processes", column: "previous_process_id"
 end
