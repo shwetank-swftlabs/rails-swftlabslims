@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_01_215407) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_01_230327) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,19 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_01_215407) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "cakes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "created_by", default: "system", null: false
+    t.decimal "moisture_percentage", null: false
+    t.string "name", null: false
+    t.bigint "nop_process_id"
+    t.decimal "ph", null: false
+    t.decimal "quantity", null: false
+    t.string "unit", null: false
+    t.datetime "updated_at", null: false
+    t.index ["nop_process_id"], name: "index_cakes_on_nop_process_id"
   end
 
   create_table "chemicals", force: :cascade do |t|
@@ -136,8 +149,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_01_215407) do
     t.decimal "additional_nitric_acid_amount"
     t.decimal "additional_nitric_acid_molarity"
     t.string "batch_number", null: false
+    t.decimal "concentrated_effluent_generated_amount"
+    t.decimal "concentrated_effluent_generated_ph"
     t.datetime "created_at", null: false
     t.string "created_by", default: "system", null: false
+    t.decimal "diluted_effluent_generated_amount"
+    t.decimal "diluted_effluent_generated_ph"
     t.decimal "feedstock_amount", null: false
     t.string "feedstock_moisture_percentage", null: false
     t.string "feedstock_type", null: false
@@ -146,8 +163,10 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_01_215407) do
     t.decimal "final_nitric_acid_molarity", null: false
     t.string "nitric_acid_units", null: false
     t.date "nop_reaction_date", null: false
+    t.decimal "quenching_water_volume"
     t.bigint "reactor_id", null: false
     t.decimal "rotation_rate", null: false
+    t.decimal "total_reaction_time"
     t.datetime "updated_at", null: false
     t.index ["reactor_id"], name: "index_nop_processes_on_reactor_id"
   end
@@ -173,5 +192,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_01_215407) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "cakes", "nop_processes"
   add_foreign_key "nop_processes", "equipments", column: "reactor_id"
 end

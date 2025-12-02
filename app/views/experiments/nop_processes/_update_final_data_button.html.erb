@@ -1,0 +1,7 @@
+<% if nop_process.completion_data_present? %>
+  <span class="text-success">
+    <i class="bi bi-check-circle-fill me-2"></i>Final Data Added
+  </span>
+<% else %>
+  <%= link_to "Add Final Data", edit_experiments_nop_process_path(nop_process), class: "btn btn-primary mt-3" %>
+<% end %>

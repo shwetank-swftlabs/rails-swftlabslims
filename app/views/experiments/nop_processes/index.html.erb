@@ -1,1 +1,57 @@
-<h1>experiments/nop_processes/index</h1>
+<% content_for :page_title, render("shared/page_title",
+  subtitle: "Manage NOP processes and their data.",
+  actions: link_to("Add New NOP Process", new_experiments_nop_process_path, class: "btn btn-primary")
+) %>
+
+<!-- UNIFIED FILTER BAR -->
+<%= render "shared/tables/default_filter_bar",
+      url: experiments_nop_processes_path,
+      search_placeholder: "Search by batch number…",
+      filter_fields: ->(f) do %>
+
+  <!-- Reactor Filter -->
+  <div class="col-md-3">
+    <%= f.select :reactor_id,
+        Inventory::Equipment.reactor.map { |r| [r.name, r.id] },
+        {
+          include_blank: "Filter by Reactor",
+          selected: params[:reactor_id]
+        },
+        class: "form-select",
+        onchange: "this.form.submit();" %>
+  </div>
+
+  <!-- Feedstock Type Filter -->
+  <div class="col-md-3">
+    <%= f.select :feedstock_type,
+        Experiment::NopProcess::FEEDSTOCK_TYPES.map { |k| [k.titleize, k] },
+        {
+          include_blank: "Filter by Feedstock Type",
+          selected: params[:feedstock_type]
+        },
+        class: "form-select",
+        onchange: "this.form.submit();" %>
+  </div>
+
+<% end %>
+
+<!-- NOP PROCESSES TABLE -->
+<%= render "shared/tables/default_table",
+      collection: @nop_processes,
+      pagy: @pagy,
+      headers: ->(_) do %>
+        <th>Batch Number</th>
+        <th>Reactor</th>
+        <th>Feedstock Type</th>
+        <th>Reaction Date</th>
+        <th>Add Post-Reaction Data</th>
+      <% end,
+      row: ->(nop_process) do %>
+        <td><%= link_to nop_process.batch_number, experiments_nop_process_path(nop_process), class: "text-decoration-underline fw-semibold" %></td>
+        <td><%= nop_process.reactor.name %></td>
+        <td><%= nop_process.feedstock_type.titleize %></td>
+        <td><%= format_date(nop_process.nop_reaction_date) %></td>
+        <td>
+          <%= render("experiments/nop_processes/update_final_data_button", nop_process: nop_process) %>
+        </td>
+      <% end %>

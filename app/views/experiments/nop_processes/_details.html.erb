@@ -1,0 +1,18 @@
+<%= render "shared/sidebar_layout/details_list_main_area", details: {
+  "Batch Number" => nop_process.batch_number,
+  "Reactor" => nop_process.reactor.name,
+  "Feedstock Type" => nop_process.feedstock_type.titleize,
+  "Feedstock Amount" => "#{nop_process.feedstock_amount} #{nop_process.feedstock_unit.upcase}",
+  "Feedstock Moisture Percentage" => "#{nop_process.feedstock_moisture_percentage}%",
+  "Nitric Acid Units" => nop_process.nitric_acid_units.titleize,
+  "Final Nitric Acid Amount" => nop_process.final_nitric_acid_amount,
+  "Final Nitric Acid Molarity" => nop_process.final_nitric_acid_molarity,
+  "Additional Nitric Acid Amount" => nop_process.additional_nitric_acid_amount.present? ? nop_process.additional_nitric_acid_amount : "N/A",
+  "Additional Nitric Acid Molarity" => nop_process.additional_nitric_acid_molarity.present? ? nop_process.additional_nitric_acid_molarity : "N/A",
+  "Rotation Rate" => "#{nop_process.rotation_rate} rpm",
+  "Reaction Date" => format_date(nop_process.nop_reaction_date),
+  "Created By" => nop_process.created_by,
+  "Created At" => nop_process.created_at.strftime("%B %d, %Y %I:%M %p")
+}
+%>
+

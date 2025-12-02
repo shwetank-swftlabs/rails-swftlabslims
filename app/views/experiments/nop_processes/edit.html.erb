@@ -1,0 +1,119 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Add post-reaction data for NOP process.") %>
+<% nitric_acid_units = @nop_process.nitric_acid_units.humanize %>
+
+<div class="row" style="height: 100vh; overflow: hidden;">
+
+  <!-- LEFT SIDE: SOP IMAGE -->
+  <div class="col-md-6 border-end p-4" style="height: 100vh; overflow-y: auto;">
+    <h2 class="text-center mb-3">SOP for Reaction</h2>
+
+    <div class="d-flex justify-content-center">
+      <img 
+        src="<%= asset_path('nop_process_sop.jpeg') %>"
+        alt="SOP Image"
+        class="img-fluid"
+        style="max-height: 100%; object-fit: contain;"
+      />
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE: FORM -->
+  <div class="col-md-6 p-4"
+       style="height: 100vh; overflow-y: auto;">
+
+    <!-- FORM ERRORS -->
+    <%= render "shared/form_errors", object: @nop_process %>
+
+    <%= form_with(model: @nop_process,
+                  local: true,
+                  url: experiments_nop_process_path(@nop_process),
+                  html: { class: "nop-process-form" }) do |f| %>
+
+      <%= render "shared/forms/sop_section_header", title: "Standard Operating Procedure", icon: "bi bi-clipboard-check", is_first: true %>
+
+      <%= render "shared/forms/sop_step",
+          number: "5",
+          text: "Record the total reaction time, #{var('t', 'R')}." do %>
+        <%= render "shared/forms/sop_input_row",
+            form: f,
+            field: :total_reaction_time,
+            label_html: var("t","R"),
+            unit: "hours" %>
+      <% end %>
+
+      <%= render "shared/forms/sop_step",
+          number: "6",
+          text: "Quench the system; Record the quenching water volume, #{var('V', 'Q')}." do %>
+        <%= render "shared/forms/sop_input_row",
+            form: f,
+            field: :quenching_water_volume,
+            label_html: var("V","Q"),
+            unit: "#{nitric_acid_units}" %>
+      <% end %>
+
+      <%= render "shared/forms/sop_step",
+          number: "7",
+          text: "Dump the concentrated effluent; filter the solid; Record the concentrated effluent generated amount, #{var('V', 'cE')}; and pH, #{var('pH', 'cE')}." do %>
+        <%= render "shared/forms/sop_input_row",
+            form: f,
+            field: :concentrated_effluent_generated_amount,
+            label_html: var("V","cE"),
+            unit: "#{nitric_acid_units}" %>
+                
+        <%= render "shared/forms/sop_input_row",
+            form: f,
+            field: :concentrated_effluent_generated_ph,
+            label_html: var("pH","cE"),
+            unit: "" %>
+      <% end %>
+
+            <%= render "shared/forms/sop_step",
+          number: "8",
+          text: "Wash the press filter solid; record the mass (#{var('m', 'solid')}); moisture percentage (#{var('u', 'solid')}); and pH (#{var('pH', 'solid')})." do %>
+
+        <%= f.fields_for :cake do |cake_form| %>
+          <%= render "shared/forms/sop_input_row",
+              form: cake_form,
+              field: :quantity,
+              label_html: var("m","solid"),
+              unit_field: :unit,
+              selected_unit: "kg",
+              unit_options: Products::Cake::CAKE_UNITS %>
+
+          <%= render "shared/forms/sop_input_row",
+              form: cake_form,
+              field: :moisture_percentage,
+              label_html: var("u","solid"),
+              unit: "%" %>
+
+          <%= render "shared/forms/sop_input_row",
+              form: cake_form,
+              field: :ph,
+              label_html: var("pH","solid"),
+              unit: "" %>
+        <% end %>
+      <% end %>
+
+      <%= render "shared/forms/sop_step",
+          number: "8",
+          text: "Record the diluted effluent generated amount, #{var('V', 'DE')}; and pH, #{var('pH', 'dE')}." do %>
+        <%= render "shared/forms/sop_input_row",
+            form: f,
+            field: :diluted_effluent_generated_amount,
+            label_html: var("V","dE"),
+            unit: "#{nitric_acid_units}" %>
+                
+        <%= render "shared/forms/sop_input_row",
+            form: f,
+            field: :diluted_effluent_generated_ph,
+            label_html: var("pH","dE"),
+            unit: "" %>
+      <% end %>
+      <!-- SUBMIT BUTTON -->
+      <%= f.submit "Add NOP Process Completion Data", class: "btn btn-primary mt-3 w-100" %>
+
+    <% end %>
+
+  </div>
+
+</div>

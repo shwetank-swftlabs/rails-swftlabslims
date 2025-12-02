@@ -29,10 +29,10 @@
     </div>
 
     <!-- Bottom Action -->
-    <% if bottom_action.present? %>
+    <% if local_assigns[:bottom_action].present? %>
       <div class="mt-auto pt-3 border-top">
         <div class="d-grid">
-          <%= bottom_action %>
+          <%= local_assigns[:bottom_action] %>
         </div>
       </div>
     <% end %>

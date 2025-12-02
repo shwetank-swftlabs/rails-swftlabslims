@@ -4,6 +4,8 @@ module Experiment
     default_desc :created_at
     belongs_to :reactor, class_name: "Inventory::Equipment"
 
+    has_one :cake, class_name: "Products::Cake", dependent: :destroy
+    accepts_nested_attributes_for :cake, allow_destroy: true
     
     FEEDSTOCK_TYPES = Inventory::Feedstock::FEEDSTOCK_TYPES.freeze
     FEEDSTOCK_UNITS = Inventory::Feedstock::FEEDSTOCK_UNITS.freeze
@@ -24,6 +26,10 @@ module Experiment
     validates :rotation_rate, presence: true, numericality: { greater_than: 0 }
     validates :nop_reaction_date, presence: true
     validates :created_by, presence: true
+
+    def completion_data_present?
+      total_reaction_time.present?
+    end
 
     def self.reactors_for_nop_process
       Inventory::Equipment

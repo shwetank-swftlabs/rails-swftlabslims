@@ -15,7 +15,7 @@ Rails.application.routes.draw do
 
   # Experiments routes
   namespace :experiments do
-    resources :nop_processes, only: [:index, :show, :new, :create] do
+    resources :nop_processes, only: [:index, :show, :new, :create, :edit, :update] do
       collection do
         get :batch_number
       end

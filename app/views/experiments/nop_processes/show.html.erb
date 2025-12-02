@@ -1,1 +1,13 @@
-<% content_for :title, "NOP Process Details" %>
+<% content_for :page_title, render("shared/page_title",
+  subtitle: "View NOP process details.",
+  actions: render("experiments/nop_processes/update_final_data_button", nop_process: @nop_process)
+) %>
+
+<%= render "shared/sidebar_layout/layout",
+    tabs: ["details"],
+    tab_path: :experiments_nop_process_path,
+    path_args: [@nop_process] do %>
+
+  <%= render (params[:tab] || "details"), nop_process: @nop_process %>
+
+<% end %>
