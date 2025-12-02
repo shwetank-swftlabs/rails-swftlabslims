@@ -75,7 +75,7 @@
         <th class="py-2 ps-3">Data Type</th>
         <th class="py-2 ps-3">Uploaded By</th>
         <th class="py-2 ps-3">Date</th>
-        <th class="py-2 ps-3">View Data</th>
+        <!-- <th class="py-2 ps-3">View Data</th> -->
         <th class="py-2 ps-3">Open File</th>
       </tr>
     </thead>
@@ -91,7 +91,7 @@
           <td class="py-2 ps-3"><%= data_file.data_type.humanize %></td>
           <td class="py-2 ps-3"><%= data_file.created_by %></td>
           <td class="py-2 ps-3"><%= format_date(data_file.created_at) %></td>
-          <td class="py-2 ps-3">
+          <%# <td class="py-2 ps-3">
             <button 
               class="btn btn-sm btn-outline-primary" 
               data-bs-toggle="modal" 
@@ -102,7 +102,7 @@
               onclick="loadFileData(this)">
               <i class="bi bi-eye me-1"></i> View Data
             </button>
-          </td>
+          </td> %>
           <td class="py-2 ps-3">
             <a href="<%= data_file.drive_file_url %>" target="_blank" class="text-decoration-none">
               <i class="bi bi-box-arrow-up-right"></i>

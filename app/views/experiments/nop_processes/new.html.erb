@@ -20,7 +20,7 @@
   <div class="col-md-6 p-4"
        style="height: 100vh; overflow-y: auto;"
        data-controller="nop-process-form"
-       data-nop-process-form-reactors-value="<%= Experiment::NopProcess.reactors_for_nop_process.to_json %>">
+       data-nop-process-form-reactors-value="<%= Experiments::NopProcess.reactors_for_nop_process.to_json %>">
 
     <!-- FORM ERRORS -->
     <%= render "shared/form_errors", object: @nop_process %>
@@ -86,7 +86,7 @@
       <div class="mb-4">
         <%= default_form_field(f, :reaction_type, label_text: "Reaction Type", required: true) do |req| %>
           <%= f.select :reaction_type,
-              Experiment::NopProcess::REACTION_TYPES.map { |k, v| [v, k] },
+              Experiments::NopProcess::REACTION_TYPES.map { |k, v| [v, k] },
               { prompt: "Please select a reaction type" },
               { class: "form-control" }.merge(req)
           %>
@@ -117,7 +117,7 @@
             field: :feedstock_amount,
             label_html: var("m","F"),
             unit_field: :feedstock_unit,
-            unit_options: Experiment::NopProcess::FEEDSTOCK_UNITS %>
+            unit_options: Experiments::NopProcess::FEEDSTOCK_UNITS %>
 
         <%= render "shared/forms/sop_input_row",
             form: f,
@@ -138,7 +138,7 @@
                 label_html: var("V","H"),
                 unit_field: :nitric_acid_units,
                 selected_unit: "litres",
-                unit_options: Experiment::NopProcess::NITRIC_ACID_UNITS
+                unit_options: Experiments::NopProcess::NITRIC_ACID_UNITS
               %>
                 
             <%= render "shared/forms/sop_input_row",

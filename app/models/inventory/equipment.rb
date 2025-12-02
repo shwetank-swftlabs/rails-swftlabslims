@@ -11,9 +11,9 @@ module Inventory
     has_many :images, as: :attachable, dependent: :destroy
     has_many :comments, as: :commentable, dependent: :destroy
 
-    has_many :nop_processes, class_name: "Experiment::NopProcess", foreign_key: "reactor_id", dependent: :destroy
+    has_many :nop_processes, class_name: "Experiments::NopProcess", foreign_key: "reactor_id", dependent: :destroy
     has_one :last_nop_process, -> { order(created_at: :desc) },
-    class_name: "Experiment::NopProcess",
+    class_name: "Experiments::NopProcess",
     foreign_key: :reactor_id
 
     uses_location_enum_for :equipment_location
@@ -36,7 +36,7 @@ module Inventory
     end
 
     def self.last_nop_process(reactor_id)
-      find_by(id: reactor_id)&.last_nop_process
+      Experiments::NopProcess.where(reactor_id: reactor_id).order(created_at: :desc).first
     end
   end
 end

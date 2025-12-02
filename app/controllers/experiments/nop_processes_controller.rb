@@ -14,7 +14,7 @@ module Experiments
     before_action :set_nop_process, only: [:show, :edit, :update]
 
     def index
-      scope = Experiment::NopProcess.includes(:reactor)
+      scope = Experiments::NopProcess.includes(:reactor)
 
       # Search by batch_number
       scope = scope.where("batch_number ILIKE ?", "%#{params[:q]}%") if params[:q].present?
@@ -36,13 +36,13 @@ module Experiments
 
     def new
       add_breadcrumb "Add New NOP Process", new_experiments_nop_process_path
-      @nop_process = Experiment::NopProcess.new
+      @nop_process = Experiments::NopProcess.new
     end
 
     def create
-      @nop_process = Experiment::NopProcess.new(create_nop_process_params)
+      @nop_process = Experiments::NopProcess.new(create_nop_process_params)
       if @nop_process.save
-        redirect_to experiments_nop_process_path(@nop_process), notice: "NOP process created successfully."
+        redirect_to experiments_nop_processes_path, notice: "NOP process created successfully."
       else
         render :new, status: :unprocessable_entity
       end
@@ -54,7 +54,7 @@ module Experiments
       is_reusing_effluent    = params[:is_reusing_effluent] == "true"
       nop_reaction_date      = params[:nop_reaction_date].present? ? Date.parse(params[:nop_reaction_date]) : Date.today
 
-      batch_number = Experiment::NopProcess.next_batch_number(
+      batch_number = Experiments::NopProcess.next_batch_number(
         feedstock_type,
         reactor_id,
         is_reusing_effluent,
@@ -94,7 +94,7 @@ module Experiments
     end
 
     def set_nop_process
-      @nop_process = Experiment::NopProcess.find(params[:id])
+      @nop_process = Experiments::NopProcess.find(params[:id])
     end
 
     def create_nop_process_params

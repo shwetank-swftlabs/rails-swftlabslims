@@ -8,7 +8,7 @@ module Products
       "g" => "g (Grams)",
     }.freeze
 
-    belongs_to :nop_process, class_name: "Experiment::NopProcess"
+    belongs_to :nop_process, class_name: "Experiments::NopProcess"
 
     validates :name, presence: true, uniqueness: true
     validates :quantity, presence: true, numericality: { greater_than: 0 }

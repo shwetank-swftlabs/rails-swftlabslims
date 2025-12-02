@@ -24,7 +24,7 @@
   <!-- Feedstock Type Filter -->
   <div class="col-md-3">
     <%= f.select :feedstock_type,
-        Experiment::NopProcess::FEEDSTOCK_TYPES.map { |k| [k.titleize, k] },
+        Experiments::NopProcess::FEEDSTOCK_TYPES.map { |k| [k.titleize, k] },
         {
           include_blank: "Filter by Feedstock Type",
           selected: params[:feedstock_type]

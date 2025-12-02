@@ -1,10 +1,10 @@
-module Experiment
+module Experiments
   class NopProcess < ApplicationRecord
     include DefaultDescOrder
     default_desc :created_at
     belongs_to :reactor, class_name: "Inventory::Equipment"
-    belongs_to :previous_process, class_name: "Experiment::NopProcess", optional: true
-    has_one :next_process, class_name: "Experiment::NopProcess", foreign_key: "previous_process_id", dependent: :nullify
+    belongs_to :previous_process, class_name: "Experiments::NopProcess", optional: true
+    has_one :next_process, class_name: "Experiments::NopProcess", foreign_key: "previous_process_id", dependent: :nullify
 
     has_one :cake, class_name: "Products::Cake", dependent: :destroy
     accepts_nested_attributes_for :cake, allow_destroy: true
@@ -129,3 +129,4 @@ module Experiment
     end
   end
 end
+
