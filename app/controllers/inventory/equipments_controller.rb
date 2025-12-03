@@ -12,6 +12,12 @@ module Inventory
       # Filter by type
       scope = scope.where(equipment_type_id: params[:equipment_type_id]) if params[:equipment_type_id].present?
     
+      # Filter by is_active
+      if params[:is_active].present?
+        is_active_value = params[:is_active] == "true"
+        scope = scope.where(is_active: is_active_value)
+      end
+    
       @pagy, @equipments = pagy(scope.order(:name), items: 15)
     end
 

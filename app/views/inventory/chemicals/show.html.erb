@@ -1,6 +1,6 @@
 <% content_for :page_title, render("shared/page_title", 
   subtitle: "View chemical details.",
-  actions: link_to("Edit Chemical", edit_inventory_chemical_path(@chemical), class: "btn btn-primary")
+  actions: render("shared/edit_button", label: "Edit Chemical", path: edit_inventory_chemical_path(@chemical))
 ) %>
 
 <%= render "shared/sidebar_layout/layout",

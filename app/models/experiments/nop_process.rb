@@ -2,7 +2,11 @@ module Experiments
   class NopProcess < ApplicationRecord
     include DefaultDescOrder
     default_desc :created_at
+
     belongs_to :reactor, class_name: "Inventory::Equipment"
+    belongs_to :feedstock_type, class_name: "Admin::FeedstockType"
+    belongs_to :nop_reaction_type, class_name: "Admin::NopReactionType"
+
     belongs_to :previous_process, class_name: "Experiments::NopProcess", optional: true
     has_one :next_process, class_name: "Experiments::NopProcess", foreign_key: "previous_process_id", dependent: :nullify
 
@@ -13,32 +17,25 @@ module Experiments
     has_many :comments, as: :commentable, dependent: :destroy
     has_many :data_files, as: :attachable, dependent: :destroy
     
-    FEEDSTOCK_TYPES = Inventory::Feedstock::FEEDSTOCK_TYPES.freeze
     FEEDSTOCK_UNITS = Inventory::Feedstock::FEEDSTOCK_UNITS.freeze
     NITRIC_ACID_UNITS = {
       "ml" => "mL (Milliliters)",
       "litres" => "L (Litres)"
     }.freeze
-    REACTION_TYPES = {
-      "other" => "Other",
-      "feedstock_rnd" => "Feedstock R&D",
-      "one_tonne_reaction" => "One Tonne Reaction"
-    }.freeze
     DATA_FILE_TYPES = %w[pressure_and_temp_evolution other].freeze
 
+    validates :nop_reaction_type, presence: true
+    validates :reactor, presence: true
+    validates :feedstock_type, presence: true
     validates :batch_number, presence: true, uniqueness: true
-    validates :feedstock_type, presence: true, inclusion: { in: FEEDSTOCK_TYPES }
     validates :feedstock_amount, presence: true, numericality: { greater_than: 0 }
-    validates :reaction_type, presence: true, inclusion: { in: REACTION_TYPES }
     validates :feedstock_unit, presence: true
     validates :feedstock_moisture_percentage, presence: true
     validates :nitric_acid_units, presence: true
     validates :final_nitric_acid_amount, presence: true
     validates :final_nitric_acid_molarity, presence: true
-    validates :reactor, presence: true
     validates :rotation_rate, presence: true, numericality: { greater_than: 0 }
     validates :nop_reaction_date, presence: true
-    validates :created_by, presence: true
 
     def completion_data_present?
       total_reaction_time.present?

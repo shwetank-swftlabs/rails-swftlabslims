@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_03_175425) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_03_220314) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -134,17 +134,26 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_03_175425) do
     t.index ["equipment_type_id"], name: "index_equipments_on_equipment_type_id"
   end
 
+  create_table "feedstock_types", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "created_by", default: "system"
+    t.boolean "is_active", default: true
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "feedstocks", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "created_by", default: "system", null: false
-    t.string "feedstock_type", null: false
+    t.bigint "feedstock_type_id", null: false
     t.boolean "is_active", default: true, null: false
-    t.string "location"
+    t.string "location", null: false
     t.string "name", null: false
     t.decimal "quantity", null: false
     t.string "supplier", null: false
     t.string "unit", null: false
     t.datetime "updated_at", null: false
+    t.index ["feedstock_type_id"], name: "index_feedstocks_on_feedstock_type_id"
   end
 
   create_table "images", force: :cascade do |t|
@@ -173,21 +182,31 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_03_175425) do
     t.decimal "diluted_effluent_generated_ph"
     t.decimal "feedstock_amount", null: false
     t.string "feedstock_moisture_percentage", null: false
-    t.string "feedstock_type", null: false
+    t.bigint "feedstock_type_id", null: false
     t.string "feedstock_unit", null: false
     t.decimal "final_nitric_acid_amount", null: false
     t.decimal "final_nitric_acid_molarity", null: false
     t.string "nitric_acid_units", null: false
     t.date "nop_reaction_date", null: false
+    t.bigint "nop_reaction_type_id", null: false
     t.bigint "previous_process_id"
     t.decimal "quenching_water_volume"
-    t.string "reaction_type"
     t.bigint "reactor_id", null: false
     t.decimal "rotation_rate", null: false
     t.decimal "total_reaction_time"
     t.datetime "updated_at", null: false
+    t.index ["feedstock_type_id"], name: "index_nop_processes_on_feedstock_type_id"
+    t.index ["nop_reaction_type_id"], name: "index_nop_processes_on_nop_reaction_type_id"
     t.index ["previous_process_id"], name: "index_nop_processes_on_previous_process_id"
     t.index ["reactor_id"], name: "index_nop_processes_on_reactor_id"
+  end
+
+  create_table "nop_reaction_types", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "created_by", default: "system"
+    t.boolean "is_active", default: true
+    t.string "name"
+    t.datetime "updated_at", null: false
   end
 
   create_table "usages", force: :cascade do |t|
@@ -215,6 +234,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_03_175425) do
   add_foreign_key "cakes", "nop_processes"
   add_foreign_key "chemicals", "chemical_types"
   add_foreign_key "equipments", "equipment_types"
+  add_foreign_key "feedstocks", "feedstock_types"
   add_foreign_key "nop_processes", "equipments", column: "reactor_id"
+  add_foreign_key "nop_processes", "feedstock_types"
   add_foreign_key "nop_processes", "nop_processes", column: "previous_process_id"
+  add_foreign_key "nop_processes", "nop_reaction_types"
 end

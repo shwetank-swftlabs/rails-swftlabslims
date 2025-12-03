@@ -5,12 +5,11 @@
 <%= form_with(model: @feedstock, local: false, url: inventory_feedstocks_path, html: { class: "feedstock-form" }) do |f| %>
   
   <%= default_form_field(f, :feedstock_type, label_text: "Feedstock Type", required: true) do |req| %>
-    <%= f.select :feedstock_type,
-                Inventory::Feedstock::FEEDSTOCK_TYPES.map { |k| [k.titleize, k] },
+    <%= f.select :feedstock_type_id,
+                Admin::FeedstockType.all.filter { |ft| ft.is_active? }.map { |ft| [ft.name.humanize, ft.id] },
                 { prompt: "Please select a feedstock type" },
                 { class: "form-control" }.merge(req) %>
   <% end %>
-
 
   <%= default_form_field(f, :name, label_text: "Feedstock Name (unique)", required: true) do |req| %>
     <%= f.text_field :name,
@@ -20,19 +19,17 @@
 
   <%= inline_quantity_field(f, :quantity, "Quantity", unit_field: :unit, unit_options: Inventory::Feedstock::FEEDSTOCK_UNITS, required: true) %>
 
-  <%= default_form_field(f, :supplier, label_text: "Feedstock Supplier", required: false) do |req| %>
+  <%= default_form_field(f, :supplier, label_text: "Feedstock Supplier (optional)", required: false) do |req| %>
     <%= f.text_field :supplier,
                     { class: "form-control",
-                      placeholder: "Optional" }.merge(req) %>
+                      placeholder: "Please enter the feedstock supplier (optional)" }.merge(req) %>
   <% end %>
 
-  <%= default_form_field(f, :location, label_text: "Location", required: false) do |req| %>
+  <%= default_form_field(f, :location, label_text: "Feedstock Location (optional)", required: false) do |req| %>
     <%= f.text_field :location,
                     { class: "form-control",
-                      placeholder: "Optional" }.merge(req) %>
+                      placeholder: "Please enter the feedstock location (optional)" }.merge(req) %>
   <% end %>
-
-  <%= render "shared/forms/creator_fields", f: f %>
 
   <!-- Larger space before buttons -->
 

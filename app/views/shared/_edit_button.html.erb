@@ -1,0 +1,21 @@
+<%
+  label = local_assigns[:label] || "Edit"
+  path = local_assigns[:path] || "#"
+  size = local_assigns[:size] || "md"
+  
+  size_class = case size
+    when "sm"
+      "btn-sm"
+    when "lg"
+      "btn-lg"
+    else
+      ""
+  end
+  
+  button_class = ["btn", "btn-primary", size_class].reject(&:blank?).join(" ")
+%>
+
+<%= link_to path, class: button_class do %>
+  <i class="bi bi-pencil me-1"></i><%= label %>
+<% end %>
+

@@ -15,6 +15,9 @@ export default class extends Controller {
   ];
 
   connect() {
+    console.log('NopProcessFormController connected');
+    console.log(this.reactorsValue);
+
     if (this.reactorSelectTarget.value) {
       this.setSelectedReactorId(parseInt(this.reactorSelectTarget.value, 10));
     }

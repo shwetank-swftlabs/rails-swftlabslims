@@ -38,7 +38,7 @@
       <div class="mb-4">
         <%= default_form_field(f, :reactor_id, label_text: "Reactor", required: true) do |req| %>
           <%= f.select :reactor_id,
-              Inventory::Equipment.reactor.map { |r| [r.name, r.id] },
+              Inventory::Equipment.reactor.filter { |r| r.is_active? }.map { |r| [r.name.titleize, r.id] },
               { prompt: "Please select a reactor" },
               { class: "form-control",
                 data: { 
@@ -51,9 +51,9 @@
       </div>
 
       <div class="mb-4">
-        <%= default_form_field(f, :reaction_type, label_text: "Reaction Type", required: true) do |req| %>
-          <%= f.select :reaction_type,
-              Experiments::NopProcess::REACTION_TYPES.map { |k, v| [v, k] },
+        <%= default_form_field(f, :nop_reaction_type_id, label_text: "NOP Reaction Type", required: true) do |req| %>
+          <%= f.select :nop_reaction_type_id,
+              Admin::NopReactionType.all.filter { |rt| rt.is_active? }.map { |rt| [rt.name.humanize, rt.id] },
               { prompt: "Please select a reaction type" },
               { class: "form-control",
                 data: { "nop-process-form-target": "reactionTypeSelect" }
@@ -63,9 +63,9 @@
       </div>
 
       <div class="mb-4">
-        <%= default_form_field(f, :feedstock_type, label_text: "Select Feedstock Type", required: true) do |req| %>
-          <%= f.select :feedstock_type,
-              Inventory::Feedstock::FEEDSTOCK_TYPES.map { |k| [k.titleize, k] },
+        <%= default_form_field(f, :feedstock_type_id, label_text: "Select Feedstock Type", required: true) do |req| %>
+          <%= f.select :feedstock_type_id,
+              Admin::FeedstockType.all.filter { |ft| ft.is_active? }.map { |ft| [ft.name.humanize, ft.id] },
               { prompt: "Please select a feedstock type" },
               {
                 class: "form-control",
@@ -74,6 +74,10 @@
           %>
         <% end %>
       </div>
+
+      <small class="text-muted">
+        The above fields for feedstock types, NOP reaction types, and reactors are only show types which are marked as active. Please contact support if this is incorrect.
+      </small>
 
       <%= render "shared/forms/sop_section_header", title: "Standard Operating Procedure", icon: "bi bi-clipboard-check" %>
 
@@ -142,24 +146,17 @@
         <% end %>
       </div>
 
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <%= f.label :created_by, class: "form-label fw-bold mb-1" %>
-          <%= f.text_field :created_by,
-                class: "form-control",
-                value: current_user.email %>
-        </div>
+ 
 
-        <div class="col-md-6 mb-3">
-          <%= f.label :nop_reaction_date, "NOP Reaction Date", class: "form-label fw-bold mb-1" %>
-          <%= f.date_field :nop_reaction_date,
-                class: "form-control",
-                value: Date.today,
-                data: { 
-                  "nop-process-form-target": "nopReactionDateInput",
-                  action: "focus->nop-process-form#storeNopReactionDateValue change->nop-process-form#handleNopReactionDateChange"
-                } %>
-        </div>
+      <div class="col-md-6 mb-3">
+        <%= f.label :nop_reaction_date, "NOP Reaction Date", class: "form-label fw-bold mb-1" %>
+        <%= f.date_field :nop_reaction_date,
+              class: "form-control",
+              value: Date.today,
+              data: { 
+                "nop-process-form-target": "nopReactionDateInput",
+                action: "focus->nop-process-form#storeNopReactionDateValue change->nop-process-form#handleNopReactionDateChange"
+              } %>
       </div>
 
       <!-- SUBMIT BUTTON -->

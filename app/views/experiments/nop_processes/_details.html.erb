@@ -1,7 +1,7 @@
 <%= render "shared/sidebar_layout/details_list_main_area", details: {
   "Batch Number" => nop_process.batch_number,
   "Reactor" => nop_process.reactor.name,
-  "Feedstock Type" => nop_process.feedstock_type.titleize,
+  "Feedstock Type" => nop_process.feedstock_type.name.humanize,
   "Feedstock Amount" => "#{nop_process.feedstock_amount} #{nop_process.feedstock_unit.upcase}",
   "Feedstock Moisture Percentage" => "#{nop_process.feedstock_moisture_percentage}%",
   "Nitric Acid Units" => nop_process.nitric_acid_units.titleize,

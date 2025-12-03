@@ -1,6 +1,6 @@
 <% content_for :page_title, render("shared/page_title",
   subtitle: "Manage chemicals and their data.",
-  actions: link_to("Add New Chemical", new_inventory_chemical_path, class: "btn btn-primary")
+  actions: render("shared/add_button", label: "Add New Chemical", path: new_inventory_chemical_path)
 ) %>
 
 <!-- UNIFIED FILTER BAR -->
@@ -21,6 +21,18 @@
         onchange: "this.form.submit();" %>
   </div>
 
+  <!-- Active Status Filter -->
+  <div class="col-md-3">
+    <%= f.select :is_active,
+        [["Active", "true"], ["Inactive", "false"]],
+        {
+          include_blank: "Filter by Status",
+          selected: params[:is_active]
+        },
+        class: "form-select",
+        onchange: "this.form.submit();" %>
+  </div>
+
 <% end %>
 
 <!-- EQUIPMENT TABLE -->
@@ -33,6 +45,7 @@
         <th>Quantity</th>
         <th>Expiry Date</th>
         <th>Location</th>
+        <th>Status</th>
         <th>Print QR</th>
       <% end,
       row: ->(chemical) do %>
@@ -41,6 +54,17 @@
         <td><%= "#{chemical.quantity} #{chemical.unit.humanize}" %></td>
         <td><%= chemical.expiry_date.present? ? format_date(chemical.expiry_date) : "N/A" %></td>
         <td><%= chemical.location.present? ? chemical.location.humanize : "N/A" %></td>
+        <td>
+          <% if chemical.is_active? %>
+            <span class="badge bg-success">
+              <i class="bi bi-check-circle me-1"></i>Active
+            </span>
+          <% else %>
+            <span class="badge bg-danger">
+              <i class="bi bi-x-circle me-1"></i>Inactive
+            </span>
+          <% end %>
+        </td>
         <td><%= render "shared/print_qr_button", 
                         qr_code_path: qr_code_inventory_chemical_path(chemical),
                         label: "Print QR" %>

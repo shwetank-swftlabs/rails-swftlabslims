@@ -24,13 +24,16 @@ module Inventory
       name.upcase
     end
 
+    scope :reactor, -> { joins(:equipment_type).where(equipment_types: { name: "reactor" }).where(is_active: true) }
+
     def self.reactors
-      where(equipment_type: "reactor").map do |reactor|
+      where(equipment_type: { name: "reactor" }, is_active: true).includes(:equipment_type).map do |reactor|
         reactor.as_json.merge(
           "last_nop_process" => last_nop_process(reactor.id).as_json
         )
       end
     end
+    
     
     def self.last_nop_process(reactor_id)
       Experiments::NopProcess.where(reactor_id: reactor_id).order(created_at: :desc).first

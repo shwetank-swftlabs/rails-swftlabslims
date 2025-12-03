@@ -1,6 +1,6 @@
 <% content_for :page_title, render("shared/page_title",
   subtitle: "Manage equipment and their data.",
-  actions: link_to("Add New Equipment", new_inventory_equipment_path, class: "btn btn-primary")
+  actions: render("shared/add_button", label: "Add New Equipment", path: new_inventory_equipment_path)
 ) %>
 
 <!-- UNIFIED FILTER BAR -->
@@ -16,6 +16,18 @@
         {
           include_blank: "Filter by Type",
           selected: params[:equipment_type_id]
+        },
+        class: "form-select",
+        onchange: "this.form.submit();" %>
+  </div>
+
+  <!-- Active Status Filter -->
+  <div class="col-md-3">
+    <%= f.select :is_active,
+        [["Active", "true"], ["Inactive", "false"]],
+        {
+          include_blank: "Filter by Status",
+          selected: params[:is_active]
         },
         class: "form-select",
         onchange: "this.form.submit();" %>

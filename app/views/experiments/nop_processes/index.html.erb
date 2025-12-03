@@ -1,7 +1,18 @@
-<% content_for :page_title, render("shared/page_title",
-  subtitle: "Manage NOP processes and their data.",
-  actions: link_to("Add New NOP Process", select_if_standalone_batch_experiments_nop_processes_path, class: "btn btn-primary")
-) %>
+<% content_for :page_title do %>
+  <div class="row mb-5 mt-4 align-items-end">
+    <div class="col">
+      <h1 class="display-5 fw-bold mb-1 page-title-h1">
+        <i class="bi bi-flask me-2"></i>NOP Processes
+      </h1>
+      <p class="text-muted mb-0">Manage NOP processes and their data.</p>
+    </div>
+    <div class="col-auto">
+      <div class="page-title-actions-wrapper">
+        <%= render "shared/add_button", label: "Add New NOP Process", path: select_if_standalone_batch_experiments_nop_processes_path %>
+      </div>
+    </div>
+  </div>
+<% end %>
 
 <!-- UNIFIED FILTER BAR -->
 <%= render "shared/tables/default_filter_bar",
@@ -24,7 +35,7 @@
   <!-- Feedstock Type Filter -->
   <div class="col-md-3">
     <%= f.select :feedstock_type,
-        Experiments::NopProcess::FEEDSTOCK_TYPES.map { |k| [k.titleize, k] },
+        Admin::FeedstockType.all.filter { |ft| ft.is_active? }.map { |ft| [ft.name.humanize, ft.id] },
         {
           include_blank: "Filter by Feedstock Type",
           selected: params[:feedstock_type]
@@ -49,7 +60,7 @@
       row: ->(nop_process) do %>
         <td><%= link_to nop_process.batch_number, experiments_nop_process_path(nop_process), class: "text-decoration-underline fw-semibold" %></td>
         <td><%= nop_process.reactor.name %></td>
-        <td><%= nop_process.feedstock_type.titleize %></td>
+        <td><%= nop_process.feedstock_type.name.humanize %></td>
         <td><%= format_date(nop_process.nop_reaction_date) %></td>
         <td>
           <%= render("experiments/nop_processes/update_final_data_button", nop_process: nop_process) %>

@@ -1,9 +1,7 @@
 <% content_for :page_title,
    render("shared/page_title",
      subtitle: "View and manage equipment information.",
-     actions: link_to(edit_inventory_equipment_path(@equipment), class: "btn btn-primary") do
-       tag.i("", class: "bi bi-pencil me-1") + "Edit Equipment"
-     end
+     actions: render("shared/edit_button", label: "Edit Equipment", path: edit_inventory_equipment_path(@equipment))
    )
 %>
 

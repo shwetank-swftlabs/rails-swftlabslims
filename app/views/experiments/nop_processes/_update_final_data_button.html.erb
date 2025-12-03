@@ -3,5 +3,5 @@
     <i class="bi bi-check-circle-fill me-2"></i>Final Data Added
   </span>
 <% else %>
-  <%= link_to "Add Final Data", edit_experiments_nop_process_path(nop_process), class: "btn btn-primary mt-3" %>
+  <%= render "shared/edit_button", label: "Add Final Data", path: edit_experiments_nop_process_path(nop_process) %>
 <% end %>

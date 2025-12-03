@@ -1,8 +1,6 @@
 <% content_for :page_title, render("shared/page_title",
   subtitle: "Manage chemical types.",
-  actions: link_to(new_admin_chemical_type_path, class: "btn btn-primary") do %>
-    <i class="bi bi-plus-circle me-1"></i>Add Chemical Type
-  <% end
+  actions: render("shared/add_button", label: "Add Chemical Type", path: new_admin_chemical_type_path)
 ) %>
 
 <!-- CHEMICAL TYPES TABLE -->
@@ -28,9 +26,7 @@
           <% end %>
         </td>
         <td>
-          <%= link_to edit_admin_chemical_type_path(chemical_type), class: "btn btn-sm btn-outline-secondary px-3" do %>
-            <i class="bi bi-pencil me-1"></i>Edit
-          <% end %>
+          <%= render "shared/edit_button", label: "Edit", path: edit_admin_chemical_type_path(chemical_type), size: "sm" %>
         </td>
       <% end %>
 

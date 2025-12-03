@@ -1,7 +1,17 @@
 <% content_for :page_title, render("shared/page_title", subtitle: "Manage different types.") %>
 
 <div class="list-group">
-  <%= link_to "Manage Equipment Types", admin_equipment_types_path, class: "list-group-item list-group-item-action fw-semibold py-3" %>
-  <%= link_to "Manage Chemical Types", admin_chemical_types_path, class: "list-group-item list-group-item-action fw-semibold py-3" %>
+  <%= link_to admin_equipment_types_path, class: "list-group-item list-group-item-action fw-semibold py-3" do %>
+    <i class="bi bi-tools me-2"></i>Manage Equipment Types
+  <% end %>
+  <%= link_to admin_chemical_types_path, class: "list-group-item list-group-item-action fw-semibold py-3" do %>
+    <i class="bi bi-droplet-half me-2"></i>Manage Chemical Types
+  <% end %>
+  <%= link_to admin_feedstock_types_path, class: "list-group-item list-group-item-action fw-semibold py-3" do %>
+    <i class="bi bi-box-seam me-2"></i>Manage Feedstock Types
+  <% end %>
+  <%= link_to admin_nop_reaction_types_path, class: "list-group-item list-group-item-action fw-semibold py-3" do %>
+    <i class="bi bi-funnel me-2"></i>Manage NOP Reaction Types
+  <% end %>
 </div>
 

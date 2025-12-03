@@ -6,6 +6,9 @@
   "Expiry Date" => chemical.expiry_date.present? ? format_date(chemical.expiry_date) : "N/A",
   "Location" => chemical.location.present? ? chemical.location.humanize : "N/A",
   "Supplier" => chemical.supplier.present? ? chemical.supplier.humanize : "N/A",
+  "Status" => (chemical.is_active? ? 
+    '<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Active</span>'.html_safe :
+    '<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Inactive</span>'.html_safe),
   "Created By" => chemical.created_by,
   "Created At" => chemical.created_at.strftime("%B %d, %Y %I:%M %p")
 }

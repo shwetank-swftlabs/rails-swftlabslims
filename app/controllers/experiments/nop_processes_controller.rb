@@ -39,15 +39,6 @@ module Experiments
       @nop_process = Experiments::NopProcess.new
     end
 
-    def create
-      @nop_process = Experiments::NopProcess.new(create_nop_process_params)
-      if @nop_process.save
-        redirect_to experiments_nop_processes_path, notice: "NOP process created successfully."
-      else
-        render :new, status: :unprocessable_entity
-      end
-    end
-
     def batch_number
       feedstock_type         = params[:feedstock_type]
       reactor_id             = params[:reactor_id]
@@ -108,6 +99,8 @@ module Experiments
 
     def create_standalone_batch
       @nop_process = Experiments::NopProcess.new(create_standalone_batch_params)
+      @nop_process.created_by = current_user.email
+
       if @nop_process.save
         redirect_to experiments_nop_processes_path, notice: "NOP process created successfully."
       else
@@ -127,8 +120,8 @@ module Experiments
 
     def create_standalone_batch_params
       params.require(:standalone_batch).permit(
-        :reaction_type,
-        :feedstock_type,
+        :nop_reaction_type_id,
+        :feedstock_type_id,
         :feedstock_amount,
         :feedstock_unit,
         :feedstock_moisture_percentage,
@@ -138,7 +131,6 @@ module Experiments
         :rotation_rate,
         :reactor_id,
         :batch_number,
-        :created_by,
         :nop_reaction_date
       )
     end

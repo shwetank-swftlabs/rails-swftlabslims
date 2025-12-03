@@ -1,9 +1,13 @@
 <%= render "shared/sidebar_layout/details_list_main_area", details: {
+  "Amount Remaining" => "#{feedstock.remaining_amount} #{feedstock.unit.upcase}",
+  "Type" => feedstock.feedstock_type.name.humanize,
   "Name" => feedstock.name,
-  "Type" => feedstock.feedstock_type.humanize,
   "Quantity Added" => "#{feedstock.quantity} #{feedstock.unit.upcase}",
   "Location" => feedstock.location.present? ? feedstock.location : "N/A",
   "Supplier" => feedstock.supplier.present? ? feedstock.supplier : "N/A",
+  "Status" => (feedstock.is_active? ? 
+    '<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Active</span>'.html_safe :
+    '<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Inactive</span>'.html_safe),
   "Created By" => feedstock.created_by,
   "Created At" => feedstock.created_at.strftime("%B %d, %Y %I:%M %p")
 }

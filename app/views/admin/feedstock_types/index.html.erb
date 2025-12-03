@@ -1,21 +1,21 @@
 <% content_for :page_title, render("shared/page_title",
-  subtitle: "Manage equipment types.",
-  actions: render("shared/add_button", label: "Add Equipment Type", path: new_admin_equipment_type_path)
+  subtitle: "Manage feedstock types.",
+  actions: render("shared/add_button", label: "Add Feedstock Type", path: new_admin_feedstock_type_path)
 ) %>
 
-<!-- EQUIPMENT TYPES TABLE -->
+<!-- FEEDSTOCK TYPES TABLE -->
 <%= render "shared/tables/default_table",
-      collection: @equipment_types,
+      collection: @feedstock_types,
       pagy: nil,
       headers: ->(_) do %>
         <th>Name</th>
         <th>Status</th>
         <th>Actions</th>
       <% end,
-      row: ->(equipment_type) do %>
-        <td class="fw-semibold"><%= equipment_type.name %></td>
+      row: ->(feedstock_type) do %>
+        <td class="fw-semibold"><%= feedstock_type.name %></td>
         <td>
-          <% if equipment_type.is_active? %>
+          <% if feedstock_type.is_active? %>
             <span class="badge bg-success">
               <i class="bi bi-check-circle me-1"></i>Active
             </span>
@@ -26,6 +26,7 @@
           <% end %>
         </td>
         <td>
-          <%= render "shared/edit_button", label: "Edit", path: edit_admin_equipment_type_path(equipment_type), size: "sm" %>
+          <%= render "shared/edit_button", label: "Edit", path: edit_admin_feedstock_type_path(feedstock_type), size: "sm" %>
         </td>
       <% end %>
+

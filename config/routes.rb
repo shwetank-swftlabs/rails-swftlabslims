@@ -18,6 +18,8 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :equipment_types, only: [:index, :new, :create, :edit, :update] 
     resources :chemical_types, only: [:index, :new, :create, :edit, :update]
+    resources :feedstock_types, only: [:index, :new, :create, :edit, :update]
+    resources :nop_reaction_types, only: [:index, :new, :create, :edit, :update]
   end
 
   # Experiments routes
@@ -60,7 +62,7 @@ Rails.application.routes.draw do
       resources :usages, only: [:create], controller: "/usages"
     end
 
-    resources :feedstocks, only: [:index, :new, :create, :show] do
+    resources :feedstocks, only: [:index, :new, :create, :show, :edit, :update] do
       member do
         get :qr_code
       end
