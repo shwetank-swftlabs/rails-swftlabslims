@@ -51,13 +51,13 @@ module Experiments
     def batch_number
       feedstock_type         = params[:feedstock_type]
       reactor_id             = params[:reactor_id]
-      is_reusing_effluent    = params[:is_reusing_effluent] == "true"
+      is_standalone_batch    = params[:is_standalone_batch] == "true"
       nop_reaction_date      = params[:nop_reaction_date].present? ? Date.parse(params[:nop_reaction_date]) : Date.today
 
       batch_number = Experiments::NopProcess.next_batch_number(
         feedstock_type,
         reactor_id,
-        is_reusing_effluent,
+        is_standalone_batch,
         nop_reaction_date
       )
 
@@ -87,6 +87,34 @@ module Experiments
       end
     end
 
+    def select_if_standalone_batch
+      add_breadcrumb "Select if Standalone Batch", select_if_standalone_batch_experiments_nop_processes_path
+
+      if request.get?
+        render :select_if_standalone_batch
+      elsif request.post?
+        if params[:is_new_standalone_batch] == "yes"
+          redirect_to new_standalone_batch_experiments_nop_processes_path
+        else
+          redirect_to new_effluent_reuse_batch_experiments_nop_processes_path
+        end
+      end
+    end
+
+    def new_standalone_batch
+      add_breadcrumb "Add New Standalone Batch", new_standalone_batch_experiments_nop_processes_path
+      @nop_process = Experiments::NopProcess.new
+    end
+
+    def create_standalone_batch
+      @nop_process = Experiments::NopProcess.new(create_standalone_batch_params)
+      if @nop_process.save
+        redirect_to experiments_nop_processes_path, notice: "NOP process created successfully."
+      else
+        render :new_standalone_batch, status: :unprocessable_entity
+      end
+    end
+
     private
 
     def set_nop_breadcrumbs_root
@@ -97,23 +125,21 @@ module Experiments
       @nop_process = Experiments::NopProcess.find(params[:id])
     end
 
-    def create_nop_process_params
-      params.require(:experiment_nop_process).permit(
+    def create_standalone_batch_params
+      params.require(:standalone_batch).permit(
+        :reaction_type,
         :feedstock_type,
         :feedstock_amount,
         :feedstock_unit,
         :feedstock_moisture_percentage,
         :nitric_acid_units,
-        :additional_nitric_acid_amount,
-        :additional_nitric_acid_molarity,
         :final_nitric_acid_amount,
         :final_nitric_acid_molarity,
         :rotation_rate,
         :reactor_id,
         :batch_number,
         :created_by,
-        :nop_reaction_date,
-        :reaction_type
+        :nop_reaction_date
       )
     end
 

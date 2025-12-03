@@ -20,14 +20,16 @@
   <div class="col-md-6 p-4"
        style="height: 100vh; overflow-y: auto;"
        data-controller="nop-process-form"
-       data-nop-process-form-reactors-value="<%= Experiments::NopProcess.reactors_for_nop_process.to_json %>">
+       data-nop-process-form-reactors-value="<%= Inventory::Equipment.reactors.to_json %>"
+       data-nop-process-form-is-standalone-batch-value="true">
+
 
     <!-- FORM ERRORS -->
     <%= render "shared/form_errors", object: @nop_process %>
 
-    <%= form_with(model: @nop_process,
+    <%= form_with(scope: :standalone_batch, model: @nop_process,
                   local: true,
-                  url: experiments_nop_processes_path,
+                  url: create_standalone_batch_experiments_nop_processes_path,
                   html: { class: "nop-process-form" }) do |f| %>
 
 
@@ -49,46 +51,13 @@
       </div>
 
       <div class="mb-4">
-        <label class="form-label fw-semibold">Is this a new standalone batch?</label>
-
-        <div class="d-flex align-items-center gap-4">
-          <!-- YES -->
-          <div class="form-check">
-            <input class="form-check-input"
-                   type="radio"
-                   name="is_new_standalone_batch"
-                   id="new-standalone-batch-yes"
-                   value="yes"
-                   checked
-                   data-nop-process-form-target="newStandaloneBatchYesRadio"
-                   data-action="change->nop-process-form#newStandaloneBatchChanged">
-            <label class="form-check-label" for="new-standalone-batch-yes">
-              Yes (It's a new standalone batch)
-            </label>
-          </div>
-          
-          <!-- NO (DEFAULT) -->
-          <div class="form-check">
-            <input class="form-check-input"
-                   type="radio"
-                   name="is_new_standalone_batch"
-                   id="new-standalone-batch-no"
-                   value="no"
-                   data-nop-process-form-target="newStandaloneBatchNoRadio"
-                   data-action="change->nop-process-form#newStandaloneBatchChanged">
-            <label class="form-check-label" for="new-standalone-batch-no">
-              No (It reuses effluents)
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div class="mb-4">
         <%= default_form_field(f, :reaction_type, label_text: "Reaction Type", required: true) do |req| %>
           <%= f.select :reaction_type,
               Experiments::NopProcess::REACTION_TYPES.map { |k, v| [v, k] },
               { prompt: "Please select a reaction type" },
-              { class: "form-control" }.merge(req)
+              { class: "form-control",
+                data: { "nop-process-form-target": "reactionTypeSelect" }
+              }.merge(req)
           %>
         <% end %>
       </div>

@@ -3,36 +3,34 @@ import { Controller } from '@hotwired/stimulus';
 export default class extends Controller {
   static values = {
     reactors: Array,
+    isStandaloneBatch: String, // "true" or "false"
   };
 
   static targets = [
-    'newStandaloneBatchYesRadio',
-    'newStandaloneBatchNoRadio',
     'feedstockTypeSelect',
     'batchNumberInput',
     'nopReactionDateInput',
     'reactorSelect',
+    'reactionTypeSelect',
   ];
 
   connect() {
-    const reactors = this.reactorsValue;
-    this.selectedReactor = this.reactorSelectTarget.value
-      ? reactors.find((r) => r.reactor_id === +this.reactorSelectTarget.value)
-      : null;
-    this.initialNopReactionDateValue = this.nopReactionDateInputTarget.value;
+    if (this.reactorSelectTarget.value) {
+      this.setSelectedReactorId(parseInt(this.reactorSelectTarget.value, 10));
+    }
+    // Initialize the previous date value with the current value
+    if (this.hasNopReactionDateInputTarget) {
+      this.previousNopReactionDateValue = this.nopReactionDateInputTarget.value;
+    }
+  }
+
+  setSelectedReactorId(reactorId) {
+    this.selectedReactorId = reactorId;
   }
 
   storeNopReactionDateValue(event) {
     // Store the current value before user changes it
     this.previousNopReactionDateValue = event.target.value;
-  }
-
-  resetNewStandaloneBatch() {
-    this.newStandaloneBatchYesRadioTarget.checked = true;
-  }
-
-  selectNoEffluentReuse() {
-    this.newStandaloneBatchYesRadioTarget.checked = true;
   }
 
   resetSelectFeedstockType() {
@@ -43,11 +41,17 @@ export default class extends Controller {
     this.batchNumberInputTarget.value = '';
   }
 
+  resetReactionType() {
+    this.reactionTypeSelectTarget.value = '';
+  }
+
   reactorSelectionChanged(event) {
     const reactorId = parseInt(this.reactorSelectTarget.value, 10);
+
+    // Reset the form fields
     this.resetSelectFeedstockType();
-    this.resetNewStandaloneBatch();
-    this.batchNumberInputTarget.value = '';
+    this.resetBatchNumber();
+    this.resetReactionType();
 
     if (!reactorId) {
       // user selected "Please select a reactor"
@@ -55,32 +59,20 @@ export default class extends Controller {
       return;
     }
 
-    const selectedReactor = this.reactorsValue.find(
-      (r) => r.reactor_id === reactorId
-    );
-
-    if (!selectedReactor) {
+    if (!this.reactorsValue.find((r) => r.id === reactorId)) {
       alert(
         'Could not find the reactor object. Please refresh the page and try again. If the problem persists, please contact support.'
       );
       return;
     }
 
-    this.selectedReactor = selectedReactor;
-    console.log('Selected reactor:', this.selectedReactor);
-  }
-
-  newStandaloneBatchChanged(event) {
-    alert('Setting up batches with reuse of effluents is work in progress.');
-    this.newStandaloneBatchYesRadioTarget.checked = true;
-
-    return;
+    this.setSelectedReactorId(reactorId);
   }
 
   handleNopReactionDateChange(event) {
     // Check if feedstock type is not selected
     if (!this.feedstockTypeSelectTarget.value) {
-      this.nopReactionDateInputTarget.value = this.initialNopReactionDateValue;
+      this.nopReactionDateInputTarget.value = this.previousNopReactionDateValue;
       alert('Please select a feedstock type first.');
       return;
     }
@@ -91,7 +83,7 @@ export default class extends Controller {
   feedstockTypeChanged(event) {
     this.resetBatchNumber();
 
-    if (!this.selectedReactor) {
+    if (!this.selectedReactorId) {
       alert('Please select a reactor first.');
       this.resetSelectFeedstockType();
       return;
@@ -105,21 +97,16 @@ export default class extends Controller {
   }
 
   async setBatchNumber() {
-    if (!this.selectedReactor) {
-      console.warn('Cannot set batch number: reactor not selected');
-      return;
-    }
-
     const feedstockType = this.feedstockTypeSelectTarget.value;
-    const reactorId = this.selectedReactor.reactor_id;
-    const isReusingEffluent = this.newStandaloneBatchNoRadioTarget.checked;
+    const reactorId = this.selectedReactorId;
+    const isStandaloneBatch = this.isStandaloneBatchValue === 'true';
 
     const url =
       `/experiments/nop_processes/batch_number?` +
       new URLSearchParams({
         feedstock_type: feedstockType,
         reactor_id: reactorId,
-        is_reusing_effluent: isReusingEffluent,
+        is_standalone_batch: isStandaloneBatch,
         nop_reaction_date: this.nopReactionDateInputTarget.value,
       });
 

@@ -1,6 +1,6 @@
 <% content_for :page_title, render("shared/page_title",
   subtitle: "Manage NOP processes and their data.",
-  actions: link_to("Add New NOP Process", new_experiments_nop_process_path, class: "btn btn-primary")
+  actions: link_to("Add New NOP Process", select_if_standalone_batch_experiments_nop_processes_path, class: "btn btn-primary")
 ) %>
 
 <!-- UNIFIED FILTER BAR -->

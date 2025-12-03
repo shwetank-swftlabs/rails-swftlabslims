@@ -31,10 +31,14 @@ module Inventory
       name.upcase
     end
 
-    def self.reactor
-      where(equipment_type: "reactor")
+    def self.reactors
+      where(equipment_type: "reactor").map do |reactor|
+        reactor.as_json.merge(
+          "last_nop_process" => last_nop_process(reactor.id).as_json
+        )
+      end
     end
-
+    
     def self.last_nop_process(reactor_id)
       Experiments::NopProcess.where(reactor_id: reactor_id).order(created_at: :desc).first
     end

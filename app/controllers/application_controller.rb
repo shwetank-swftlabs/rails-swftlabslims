@@ -15,11 +15,7 @@ class ApplicationController < ActionController::Base
   private
 
   def current_user
-    if session[:user_id]
-      @current_user ||= User.find_by(id: session[:user_id]) 
-    else
-      @current_user = User.find_by(email: "admin@swftlabs.com")
-    end
+    @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
   end
 
   def logged_in?

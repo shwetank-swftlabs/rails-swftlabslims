@@ -15,8 +15,16 @@ Rails.application.routes.draw do
 
   # Experiments routes
   namespace :experiments do
-    resources :nop_processes, only: [:index, :show, :new, :create, :edit, :update] do
+    resources :nop_processes, only: [:index, :show, :edit, :update] do
       collection do
+        match :select_if_standalone_batch, via: [:get, :post]
+
+        get :new_standalone_batch
+        post :create_standalone_batch
+
+        get :new_effluent_reuse_batch
+        post :create_effluent_reuse_batch
+
         get :batch_number
       end
       resources :images, only: [:create, :show], controller: "/images"

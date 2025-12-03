@@ -1,0 +1,39 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Select batch type for new NOP process.") %>
+
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <%= form_with url: select_if_standalone_batch_experiments_nop_processes_path, method: :post, local: true, html: { class: "card p-4" } do |f| %>
+      
+      <div class="mb-4">
+        <h3 class="mb-3">Is this a new standalone batch?</h3>
+      </div>
+
+      <div class="mb-3">
+        <div class="form-check mb-3">
+          <%= f.radio_button :is_new_standalone_batch, "yes", 
+                { class: "form-check-input", id: "standalone_yes", required: true, checked: true } %>
+          <%= f.label :is_new_standalone_batch, "Yes, It's a new standalone batch", 
+                value: "yes", 
+                class: "form-check-label", 
+                for: "standalone_yes" %>
+        </div>
+        
+        <div class="form-check">
+          <%= f.radio_button :is_new_standalone_batch, "no", 
+                { class: "form-check-input", id: "standalone_no", required: true } %>
+          <%= f.label :is_new_standalone_batch, "No, It reuses effluents from a previous process", 
+                value: "no", 
+                class: "form-check-label", 
+                for: "standalone_no" %>
+        </div>
+      </div>
+
+      <div class="mt-4 d-flex justify-content-between">
+        <%= f.submit "Continue", class: "btn btn-primary px-4" %>
+        <%= link_to "Cancel", request.referer || experiments_nop_processes_path, class: "btn btn-outline-primary px-4" %>
+      </div>
+
+    <% end %>
+  </div>
+</div>
+

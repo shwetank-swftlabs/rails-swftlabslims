@@ -44,36 +44,13 @@ module Experiments
       total_reaction_time.present?
     end
 
-    def self.reactors_for_nop_process
-      Inventory::Equipment
-        .where(equipment_type: "reactor")
-        .includes(:last_nop_process)
-        .map do |reactor|
-          last = reactor.last_nop_process
-          {
-            reactor_id: reactor.id,
-            reactor_name: reactor.name,
-            last_batch_info: last.present? ? {
-              id: last.id,
-              feedstock_type: last.feedstock_type,
-              batch_number: last.batch_number,
-              concentrated_effluent_generated_amount: last.concentrated_effluent_generated_amount,
-              concentrated_effluent_generated_ph: last.concentrated_effluent_generated_ph,
-              nitric_acid_units: last.nitric_acid_units,
-              created_at: last.created_at
-            } : nil
-          }
-        end
-    end
-
     # ---------------------------
     # Public API
     # ---------------------------
 
-    def self.next_batch_number(feedstock_type, reactor_id, is_reusing_effluent, nop_reaction_date)
+    def self.next_batch_number(feedstock_type, reactor_id, is_standalone_batch, nop_reaction_date)
       base = base_batch_number(feedstock_type, reactor_id, nop_reaction_date)
-
-      return base unless is_reusing_effluent
+      return base if is_standalone_batch
 
       chain_count = current_chain_count(reactor_id)
 
