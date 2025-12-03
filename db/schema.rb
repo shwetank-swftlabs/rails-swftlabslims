@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_03_172217) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_03_175425) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -74,18 +74,18 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_03_172217) do
   end
 
   create_table "chemicals", force: :cascade do |t|
-    t.string "chemical_type", null: false
+    t.bigint "chemical_type_id", null: false
     t.datetime "created_at", null: false
     t.string "created_by", default: "system", null: false
     t.date "expiry_date"
     t.boolean "is_active", default: true, null: false
     t.string "location"
-    t.string "location_details"
     t.string "name", null: false
     t.decimal "quantity", null: false
     t.string "supplier"
     t.string "unit", null: false
     t.datetime "updated_at", null: false
+    t.index ["chemical_type_id"], name: "index_chemicals_on_chemical_type_id"
   end
 
   create_table "comments", force: :cascade do |t|
@@ -213,6 +213,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_03_172217) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cakes", "nop_processes"
+  add_foreign_key "chemicals", "chemical_types"
   add_foreign_key "equipments", "equipment_types"
   add_foreign_key "nop_processes", "equipments", column: "reactor_id"
   add_foreign_key "nop_processes", "nop_processes", column: "previous_process_id"

@@ -1,10 +1,11 @@
 <%= render "shared/sidebar_layout/details_list_main_area", details: {
+  "Amount Remaining" => "#{chemical.remaining_amount} #{chemical.unit.upcase}",
   "Name" => chemical.name,
-  "Type" => chemical.chemical_type.humanize,
+  "Type" => chemical.chemical_type.name.humanize,
   "Quantity Added" => "#{chemical.quantity} #{chemical.unit.upcase}",
-  "Expiry Date" => format_date(chemical.expiry_date),
-  "Location" => "#{chemical.location.humanize} - #{chemical.location_details}",
-  "Supplier" => chemical.supplier.humanize,
+  "Expiry Date" => chemical.expiry_date.present? ? format_date(chemical.expiry_date) : "N/A",
+  "Location" => chemical.location.present? ? chemical.location.humanize : "N/A",
+  "Supplier" => chemical.supplier.present? ? chemical.supplier.humanize : "N/A",
   "Created By" => chemical.created_by,
   "Created At" => chemical.created_at.strftime("%B %d, %Y %I:%M %p")
 }

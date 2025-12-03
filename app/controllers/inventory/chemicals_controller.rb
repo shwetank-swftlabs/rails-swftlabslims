@@ -1,7 +1,7 @@
 module Inventory
   class ChemicalsController < BaseController
     before_action :set_chemicals_breadcrumbs_root
-    before_action :set_chemical, only: [:show, :qr_code]
+    before_action :set_chemical, only: [:show, :qr_code, :edit, :update]
 
     def index
       scope = Inventory::Chemical.all
@@ -10,7 +10,7 @@ module Inventory
       scope = scope.where("name ILIKE ?", "%#{params[:q]}%") if params[:q].present?
     
       # Filter by type
-      scope = scope.where(chemical_type: params[:chemical_type]) if params[:chemical_type].present?
+      scope = scope.where(chemical_type_id: params[:chemical_type_id]) if params[:chemical_type_id].present?
     
       @pagy, @chemicals = pagy(scope.order(:name), items: 15)
     end
@@ -21,11 +21,13 @@ module Inventory
     end
 
     def show
-      add_breadcrumb "#{@chemical.chemical_type.titleize} #{@chemical.name} Details", inventory_chemical_path(@chemical)
+      add_breadcrumb "#{@chemical.chemical_type.name.humanize} #{@chemical.name} Details", inventory_chemical_path(@chemical)
     end 
 
     def create
       @chemical = Inventory::Chemical.new(chemical_params)
+      @chemical.created_by = current_user.email
+      
       if @chemical.save
         redirect_to inventory_chemicals_path, notice: "Chemical created successfully"
       else
@@ -42,7 +44,20 @@ module Inventory
         disposition: "inline"
     end
 
+    def edit
+      add_breadcrumb "Edit Chemical #{@chemical.name}", edit_inventory_chemical_path(@chemical)
+    end
+
+    def update
+      if @chemical.update(update_chemical_params)
+        redirect_to inventory_chemical_path(@chemical), notice: "Chemical updated successfully"
+      else
+        render :edit, status: :unprocessable_entity
+      end
+    end
+
     private
+
     def set_chemicals_breadcrumbs_root
       add_breadcrumb "Chemicals", inventory_chemicals_path
     end
@@ -52,7 +67,11 @@ module Inventory
     end
 
     def chemical_params
-      params.require(:inventory_chemical).permit(:name, :chemical_type, :quantity, :unit, :supplier, :location, :location_details, :expiry_date, :created_by, :created_at)
+      params.require(:inventory_chemical).permit(:name, :chemical_type_id, :quantity, :unit, :supplier, :location, :expiry_date)
+    end
+
+    def update_chemical_params
+      params.require(:inventory_chemical).permit(:supplier, :location, :expiry_date, :is_active)
     end
   end
 end

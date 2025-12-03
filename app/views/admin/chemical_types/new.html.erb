@@ -7,7 +7,7 @@
   <%= default_form_field(f, :name, label_text: "Chemical Type Name (unique)", required: true) do |req| %>
     <%= f.text_field :name,
                     { class: "form-control",
-                      placeholder: "Please enter a unique chemical type name",
+                      placeholder: "Please enter a unique chemical type name (e.g. nitric_acid)",
                       pattern: "^[a-z0-9_]+$",
                       title: "Only lowercase letters, numbers, and underscores are allowed" }.merge(req) %>
       <small class="text-muted">
@@ -29,8 +29,6 @@
       </small>
     </div>
   <% end %>
-
-  <%= render "shared/forms/creator_fields", f: f %>
 
   <!-- CONFIRM SUBMIT -->
   <%= f.submit "Save Chemical Type", 

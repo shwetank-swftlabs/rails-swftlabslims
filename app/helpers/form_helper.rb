@@ -9,8 +9,8 @@ module FormHelper
   end
 
   def inline_quantity_field(f, amount_field, amount_label, unit_field: nil, default_units: nil, unit_options: nil, required: false)
-    # Default unit_options to Inventory::Chemical::AMOUNT_UNITS if not provided
-    unit_options ||= Inventory::Chemical::AMOUNT_UNITS if defined?(Inventory::Chemical::AMOUNT_UNITS)
+    # Default unit_options to ApplicationRecord::AMOUNT_UNITS if not provided
+    unit_options ||= ApplicationRecord::AMOUNT_UNITS if defined?(ApplicationRecord::AMOUNT_UNITS)
 
     content_tag :div, class: "mb-3" do
       concat(

@@ -42,7 +42,7 @@ module Admin
     end
 
     def equipment_type_params
-      params.require(:admin_equipment_type).permit(:name, :is_active, :created_by, :created_at)
+      params.require(:admin_equipment_type).permit(:name, :is_active)
     end
 
     def set_equipment_types_breadcrumbs_root

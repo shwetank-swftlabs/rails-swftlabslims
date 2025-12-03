@@ -11,11 +11,11 @@
 
   <!-- Type Filter -->
   <div class="col-md-3">
-    <%= f.select :chemical_type,
-        Inventory::Chemical::TYPES.map { |k| [k.titleize, k] },
+    <%= f.select :chemical_type_id,
+        Admin::ChemicalType.all.map { |ct| [ct.name.humanize, ct.id] },
         {
           include_blank: "Filter by Type",
-          selected: params[:chemical_type]
+          selected: params[:chemical_type_id]
         },
         class: "form-select",
         onchange: "this.form.submit();" %>
@@ -37,10 +37,10 @@
       <% end,
       row: ->(chemical) do %>
         <td><%= link_to chemical.name, inventory_chemical_path(chemical), class: "text-decoration-underline fw-semibold" %></td>
-        <td><%= chemical.chemical_type.humanize %></td>
+        <td><%= chemical.chemical_type.name.humanize %></td>
         <td><%= "#{chemical.quantity} #{chemical.unit.humanize}" %></td>
-        <td><%= format_date(chemical.expiry_date) %></td>
-        <td><%= "#{chemical.location.humanize} #{chemical.location_details.present? ? " - #{chemical.location_details}" : ""}" %></td>
+        <td><%= chemical.expiry_date.present? ? format_date(chemical.expiry_date) : "N/A" %></td>
+        <td><%= chemical.location.present? ? chemical.location.humanize : "N/A" %></td>
         <td><%= render "shared/print_qr_button", 
                         qr_code_path: qr_code_inventory_chemical_path(chemical),
                         label: "Print QR" %>

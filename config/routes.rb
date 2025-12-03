@@ -51,7 +51,7 @@ Rails.application.routes.draw do
       resources :comments, only: [:create], controller: "/comments"
     end
 
-    resources :chemicals, only: [:index, :new, :create, :show] do
+    resources :chemicals, only: [:index, :new, :create, :show, :edit, :update] do
       member do
         get :qr_code
       end

@@ -1,0 +1,53 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Edit chemical details in the inventory.") %>
+
+<%= render "shared/form_errors", object: @chemical %>
+
+<%= form_with(model: @chemical, local: false, url: inventory_chemical_path(@chemical), method: :patch, html: { class: "chemical-form" }) do |f| %>
+
+  <%= default_form_field(f, :supplier, label_text: "Chemical Supplier (optional)") do |req| %>
+    <%= f.text_field :supplier,
+                    { class: "form-control",
+                      placeholder: "Please enter a chemical supplier (optional)",
+                      value: @chemical.supplier }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :location, label_text: "Chemical Location (optional)") do |req| %>
+    <%= f.text_field :location,
+                    { class: "form-control",
+                      placeholder: "Please enter a chemical location (optional)",
+                      value: @chemical.location }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :expiry_date, label_text: "Expiry Date (optional)") do |req| %>
+    <%= f.date_field :expiry_date,
+                    { class: "form-control",
+                      value: @chemical.expiry_date }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :is_active, label_text: "Status") do |req| %>
+    <div class="d-flex align-items-center gap-3">
+      <div class="form-check form-switch">
+        <%= f.check_box :is_active, { class: "form-check-input" } %>
+        <label class="form-check-label" for="inventory_chemical_is_active">
+          <%= @chemical.is_active? ? "Active" : "Inactive" %>
+        </label>
+      </div>
+      <small class="text-muted">
+        (<%= @chemical.is_active? ? "Uncheck to mark as inactive" : "Check to mark as active" %>)
+      </small>
+    </div>
+  <% end %>
+
+  <!-- Larger space before buttons -->
+  <div class="mt-4">
+    <!-- CONFIRM SUBMIT -->
+    <%= f.submit "Update Chemical", 
+          class: "btn btn-primary px-4 mt-3",
+          data: { turbo_confirm: "Are you sure you want to update this chemical?" } %>
+    
+    <%= link_to "Cancel", inventory_chemical_path(@chemical), 
+          class: "btn btn-outline-secondary px-4 mt-3 ms-2" %>
+  </div>
+
+<% end %>
+
