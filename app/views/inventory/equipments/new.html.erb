@@ -4,6 +4,13 @@
 
 <%= form_with(model: @equipment, local: false, url: inventory_equipments_path, html: { class: "equipment-form" }) do |f| %>
 
+    <%= default_form_field(f, :equipment_type, label_text: "Equipment Type", required: true) do |req| %>
+    <%= f.select :equipment_type_id,
+                Admin::EquipmentType.all.filter { |et| et.is_active? }.map { |et| [et.name, et.id] },
+                { prompt: "Please select an equipment type" },
+                { class: "form-control" }.merge(req) %>
+  <% end %>
+
   <%= default_form_field(f, :name, label_text: "Equipment Name (unique)", required: true) do |req| %>
     <%= f.text_field :name,
                     { class: "form-control",
@@ -15,36 +22,17 @@
                     { class: "form-control text-uppercase"}.merge(req) %>
   <% end %>
 
-
-  <%= default_form_field(f, :equipment_type, label_text: "Equipment Type", required: true) do |req| %>
-    <%= f.select :equipment_type,
-                Inventory::Equipment.equipment_types.keys.map { |k| [k.titleize, k] },
-                { prompt: "Please select an equipment type" },
-                { class: "form-control" }.merge(req) %>
-  <% end %>
-
-  <%= default_form_field(f, :equipment_supplier, label_text: "Equipment Supplier", required: true) do |req| %>
-    <%= f.select :equipment_supplier,
-                Inventory::Equipment.equipment_suppliers.keys.map { |k| [k.titleize, k] },
-                { prompt: "Please select an equipment supplier" },
-                { class: "form-control" }.merge(req) %>
-  <% end %>
-
-  <%= default_form_field(f, :equipment_location, label_text: "Equipment Location", required: true) do |req| %>
-    <%= f.select :equipment_location,
-                Inventory::Equipment.equipment_locations.keys.map { |k| [k.titleize, k] },
-                { prompt: "Please select a location" },
-                { class: "form-control" }.merge(req) %>
-  <% end %>
-
-
-  <%= default_form_field(f, :location_details, label_text: "Location Details", required: false) do |req| %>
-    <%= f.text_field :location_details,
+  <%= default_form_field(f, :supplier, label_text: "Supplier (optional)") do |req| %>
+    <%= f.text_field :supplier,
                     { class: "form-control",
-                      placeholder: "Optional" }.merge(req) %>
+                      placeholder: "Please enter an equipment supplier" }.merge(req) %>
   <% end %>
 
-  <%= render "shared/forms/creator_fields", f: f %>
+  <%= default_form_field(f, :location, label_text: "Location (optional)") do |req| %>
+    <%= f.text_field :location,
+                    { class: "form-control",
+                      placeholder: "Please enter a location" }.merge(req) %>
+  <% end %>
 
   <!-- Larger space before buttons -->
 

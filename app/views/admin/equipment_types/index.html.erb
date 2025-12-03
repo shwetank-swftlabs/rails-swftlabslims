@@ -1,6 +1,8 @@
 <% content_for :page_title, render("shared/page_title",
   subtitle: "Manage equipment types.",
-  actions: link_to("Add Equipment Type", new_admin_equipment_type_path, class: "btn btn-primary")
+  actions: link_to(new_admin_equipment_type_path, class: "btn btn-primary") do %>
+    <i class="bi bi-plus-circle me-1"></i>Add Equipment Type
+  <% end
 ) %>
 
 <!-- EQUIPMENT TYPES TABLE -->
@@ -16,12 +18,18 @@
         <td class="fw-semibold"><%= equipment_type.name %></td>
         <td>
           <% if equipment_type.is_active? %>
-            <span class="badge bg-success">Active</span>
+            <span class="badge bg-success">
+              <i class="bi bi-check-circle me-1"></i>Active
+            </span>
           <% else %>
-            <span class="badge bg-secondary">Inactive</span>
+            <span class="badge bg-danger">
+              <i class="bi bi-x-circle me-1"></i>Inactive
+            </span>
           <% end %>
         </td>
         <td>
-          <%= link_to "Edit", edit_admin_equipment_type_path(equipment_type), class: "btn btn-sm btn-outline-primary" %>
+          <%= link_to edit_admin_equipment_type_path(equipment_type), class: "btn btn-sm btn-outline-secondary px-3" do %>
+            <i class="bi bi-pencil me-1"></i>Edit
+          <% end %>
         </td>
       <% end %>

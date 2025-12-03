@@ -1,0 +1,67 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Edit equipment in the inventory.") %>
+
+<%= render "shared/form_errors", object: @equipment %>
+
+<%= form_with(model: @equipment, local: false, url: inventory_equipment_path(@equipment), method: :patch, html: { class: "equipment-form" }) do |f| %>
+
+  <%= default_form_field(f, :equipment_type, label_text: "Equipment Type", required: true) do |req| %>
+    <%= f.select :equipment_type_id,
+                Admin::EquipmentType.all.filter { |et| et.is_active? }.map { |et| [et.name, et.id] },
+                { prompt: "Please select an equipment type" },
+                { class: "form-control", selected: @equipment.equipment_type_id }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :name, label_text: "Equipment Name (unique)", required: true) do |req| %>
+    <%= f.text_field :name,
+                    { class: "form-control",
+                      placeholder: "Please enter a unique equipment name",
+                      value: @equipment.name }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :code, label_text: "Equipment Code (unique, example: 5LR for 5L Reactor)", required: true) do |req| %>
+    <%= f.text_field :code,
+                    { class: "form-control text-uppercase",
+                      value: @equipment.code }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :supplier, label_text: "Supplier (optional)") do |req| %>
+    <%= f.text_field :supplier,
+                    { class: "form-control",
+                      placeholder: "Please enter an equipment supplier",
+                      value: @equipment.supplier }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :location, label_text: "Location (optional)") do |req| %>
+    <%= f.text_field :location,
+                    { class: "form-control",
+                      placeholder: "Please enter a location",
+                      value: @equipment.location }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :is_active, label_text: "Status") do |req| %>
+    <div class="d-flex align-items-center gap-3">
+      <div class="form-check form-switch">
+        <%= f.check_box :is_active, { class: "form-check-input" } %>
+        <label class="form-check-label" for="inventory_equipment_is_active">
+          <%= @equipment.is_active? ? "Active" : "Inactive" %>
+        </label>
+      </div>
+      <small class="text-muted">
+        (<%= @equipment.is_active? ? "Uncheck to mark as inactive" : "Check to mark as active" %>)
+      </small>
+    </div>
+  <% end %>
+
+  <!-- Larger space before buttons -->
+  <div class="mt-4">
+    <!-- CONFIRM SUBMIT -->
+    <%= f.submit "Update Equipment", 
+          class: "btn btn-primary px-4 mt-3",
+          data: { turbo_confirm: "Are you sure you want to update this equipment?" } %>
+    
+    <%= link_to "Cancel", inventory_equipment_path(@equipment), 
+          class: "btn btn-outline-secondary px-4 mt-3 ms-2" %>
+  </div>
+
+<% end %>
+

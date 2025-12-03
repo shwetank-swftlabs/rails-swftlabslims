@@ -1,7 +1,7 @@
 module Inventory
   class EquipmentsController < BaseController
     before_action :set_equipments_breadcrumbs_root
-    before_action :set_equipment, only: [:show, :qr_code]
+    before_action :set_equipment, only: [:show, :edit, :update, :qr_code]
 
     def index
       scope = Inventory::Equipment.all
@@ -10,7 +10,7 @@ module Inventory
       scope = scope.where("name ILIKE ?", "%#{params[:q]}%") if params[:q].present?
     
       # Filter by type
-      scope = scope.where(equipment_type: params[:equipment_type]) if params[:equipment_type].present?
+      scope = scope.where(equipment_type_id: params[:equipment_type_id]) if params[:equipment_type_id].present?
     
       @pagy, @equipments = pagy(scope.order(:name), items: 15)
     end
@@ -27,12 +27,24 @@ module Inventory
     def create
       @equipment = Inventory::Equipment.new(equipment_params)
       @equipment.code.upcase!
-
+      @equipment.created_by = current_user.email
+      
       if @equipment.save
         redirect_to inventory_equipments_path, notice: "Equipment created successfully"
       else
-        flash.now[:alert] = "Failed to create equipment. Please check the form and try again."
         render :new, status: :unprocessable_entity
+      end
+    end
+
+    def edit
+      add_breadcrumb "Edit Equipment", edit_inventory_equipment_path(@equipment)
+    end
+
+    def update
+      if @equipment.update(update_equipment_params)
+        redirect_to inventory_equipment_path(@equipment), notice: "Equipment updated successfully"
+      else
+        render :edit, status: :unprocessable_entity
       end
     end
 
@@ -51,7 +63,11 @@ module Inventory
     end
 
     def equipment_params
-      params.require(:inventory_equipment).permit(:name, :code, :equipment_type, :equipment_supplier, :equipment_location, :location_details, :created_by, :created_at)
+      params.require(:inventory_equipment).permit(:name, :code, :equipment_type_id)
+    end
+
+    def update_equipment_params
+      params.require(:inventory_equipment).permit(:name, :code, :equipment_type_id, :supplier, :location, :is_active)
     end
 
     def set_equipment

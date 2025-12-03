@@ -15,7 +15,7 @@
       <%= f.check_box :is_active,
                       { class: "form-check-input" } %>
       <label class="form-check-label fw-bold" for="admin_equipment_type_is_active">
-        This equipment type is active
+        <%= @equipment_type.is_active? ? "Mark as inactive" : "Mark as active" %>
       </label>
     </div>
   </div>

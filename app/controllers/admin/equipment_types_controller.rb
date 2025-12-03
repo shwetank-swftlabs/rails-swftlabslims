@@ -1,13 +1,14 @@
 module Admin
-  class EquipmentTypesController < ApplicationController
-    before_action :require_admin
+  class EquipmentTypesController < BaseAdminController
     before_action :set_equipment_type, only: [:edit, :update]
+    before_action :set_equipment_types_breadcrumbs_root, only: [:index, :new, :create, :edit, :update]
 
     def index
       @equipment_types = Admin::EquipmentType.all.order(:name)
     end
 
     def new
+      add_breadcrumb "Add Equipment Type", new_admin_equipment_type_path
       @equipment_type = Admin::EquipmentType.new
     end
 
@@ -18,19 +19,18 @@ module Admin
       if @equipment_type.save
         redirect_to admin_equipment_types_path, notice: "Equipment type created successfully"
       else
-        flash.now[:alert] = "Failed to create equipment type. Please check the form and try again."
         render :new, status: :unprocessable_entity
       end
     end
 
     def edit
+      add_breadcrumb "Edit Equipment Type", edit_admin_equipment_type_path(@equipment_type)
     end
 
     def update
       if @equipment_type.update(equipment_type_params)
         redirect_to admin_equipment_types_path, notice: "Equipment type updated successfully"
       else
-        flash.now[:alert] = "Failed to update equipment type. Please check the form and try again."
         render :edit, status: :unprocessable_entity
       end
     end
@@ -48,6 +48,10 @@ module Admin
 
     def equipment_type_params
       params.require(:admin_equipment_type).permit(:name, :is_active, :created_by, :created_at)
+    end
+
+    def set_equipment_types_breadcrumbs_root
+      add_breadcrumb "Equipment Types", admin_equipment_types_path
     end
   end
 end

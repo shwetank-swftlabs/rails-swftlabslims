@@ -45,7 +45,7 @@ Rails.application.routes.draw do
 
   # Inventory routes (proper namespace)
   namespace :inventory do
-    resources :equipments, only: [:index, :new, :create, :show] do
+    resources :equipments, only: [:index, :new, :create, :show, :edit, :update] do
       member do
         get :qr_code
       end 
