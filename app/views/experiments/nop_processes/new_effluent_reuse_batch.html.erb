@@ -1,1 +1,172 @@
-<h2>New Effluent Reuse Batch</h2>
+<% content_for :page_title, render("shared/page_title", subtitle: "Add a new NOP process.") %>
+
+<div class="row" style="height: 100vh; overflow: hidden;">
+
+  <!-- LEFT SIDE: SOP IMAGE -->
+  <div class="col-md-6 border-end p-4" style="height: 100vh; overflow-y: auto;">
+    <h2 class="text-center mb-3">SOP for Reaction</h2>
+
+    <div class="d-flex justify-content-center">
+      <img 
+        src="<%= asset_path('nop_process_sop.jpeg') %>"
+        alt="SOP Image"
+        class="img-fluid"
+        style="max-height: 100%; object-fit: contain;"
+      />
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE: FORM -->
+  <div class="col-md-6 p-4"
+       style="height: 100vh; overflow-y: auto;"
+       data-controller="nop-process-form"
+       data-nop-process-form-reactors-value="<%= Inventory::Equipment.reactors.filter { |r| r.last_nop_process.present? }.to_json %>"
+       data-nop-process-form-is-standalone-batch-value="false">
+
+
+    <!-- FORM ERRORS -->
+    <%= render "shared/form_errors", object: @nop_process %>
+
+    <%= form_with(scope: :standalone_batch, model: @nop_process,
+                  local: true,
+                  url: create_standalone_batch_experiments_nop_processes_path,
+                  html: { class: "nop-process-form" }) do |f| %>
+
+
+      <%= render "shared/forms/sop_section_header", title: "Reaction Setup Info", icon: "bi bi-gear", is_first: true %>
+
+      <div class="mb-4">
+        <%= default_form_field(f, :reactor_id, label_text: "Reactor", required: true) do |req| %>
+          <%= f.select :reactor_id,
+              Inventory::Equipment.reactor.map { |r| [r.name, r.id] },
+              { prompt: "Please select a reactor" },
+              { class: "form-control",
+                data: { 
+                  action: "change->nop-process-form#reactorSelectionChanged",
+                  "nop-process-form-target": "reactorSelect"
+                }
+              }.merge(req)
+          %>
+        <% end %>
+      </div>
+
+      <div class="mb-4">
+        <%= default_form_field(f, :reaction_type, label_text: "Reaction Type", required: true) do |req| %>
+          <%= f.select :reaction_type,
+              Experiments::NopProcess::REACTION_TYPES.map { |k, v| [v, k] },
+              { prompt: "Please select a reaction type" },
+              { class: "form-control",
+                data: { "nop-process-form-target": "reactionTypeSelect" }
+              }.merge(req)
+          %>
+        <% end %>
+      </div>
+
+      <div class="mb-4">
+        <%= default_form_field(f, :feedstock_type, label_text: "Select Feedstock Type", required: true) do |req| %>
+          <%= f.select :feedstock_type,
+              Inventory::Feedstock::FEEDSTOCK_TYPES.map { |k| [k.titleize, k] },
+              { prompt: "Please select a feedstock type" },
+              {
+                class: "form-control",
+                data: { action: "change->nop-process-form#feedstockTypeChanged", "nop-process-form-target": "feedstockTypeSelect" }
+              }.merge(req)
+          %>
+        <% end %>
+      </div>
+
+      <%= render "shared/forms/sop_section_header", title: "Standard Operating Procedure", icon: "bi bi-clipboard-check" %>
+
+      <%= render "shared/forms/sop_step",
+          number: 1,
+          text: "Weigh the feedstock, #{var('m','F')}; measure the moisture, #{var('u','F')}." do %>
+
+        <%= render "shared/forms/sop_input_row",
+            form: f,
+            field: :feedstock_amount,
+            label_html: var("m","F"),
+            unit_field: :feedstock_unit,
+            unit_options: Experiments::NopProcess::FEEDSTOCK_UNITS %>
+
+        <%= render "shared/forms/sop_input_row",
+            form: f,
+            field: :feedstock_moisture_percentage,
+            label_html: var("u","F"),
+            unit: "%" %>
+
+      <% end %>
+
+      <div id="standalone-batch-fields" 
+           style="display: block;">
+        <%= render "shared/forms/sop_step",
+            number: "2A",
+            text: "Measure the volume of 50 wt% HNO<sub>3</sub>, #{var('V', 'H')}; also record the molarity, #{var('c', 'H')}." do %>
+            <%= render "shared/forms/sop_input_row",
+                form: f,
+                field: :final_nitric_acid_amount,
+                label_html: var("V","H"),
+                unit_field: :nitric_acid_units,
+                selected_unit: "litres",
+                unit_options: Experiments::NopProcess::NITRIC_ACID_UNITS
+              %>
+                
+            <%= render "shared/forms/sop_input_row",
+                form: f,
+                field: :final_nitric_acid_molarity,
+                label_html: var("c","H"),
+                unit: "mol/L" %>
+        <% end %>
+      </div>
+
+
+
+      <%= render "shared/forms/sop_step",
+          number: "3",
+          text: "Put the feedstock in the reactor; put HNO<sub>3</sub> solution in the reactor; start the motor; record the rotation rate, #{var('R', 'M')}." do %>
+          <%= render "shared/forms/sop_input_row",
+              form: f,
+              field: :rotation_rate,
+              label_html: var("R","M"),
+              unit: "rpm" %>
+      <% end %>
+
+      <%= render "shared/forms/sop_section_header", title: "General Info", icon: "bi bi-file-text" %>
+
+      <div class="mb-4">
+        <%= default_form_field(f, :batch_number, label_text: "Batch Number (Auto-generated when you select feedstock type or reaction date)", required: true) do |req| %>
+          <%= f.text_field :batch_number,
+              { class: "form-control",
+                placeholder: "Auto-generated batch number. Please modify if needed.",
+                data: { "nop-process-form-target": "batchNumberInput" }
+              }.merge(req) %>
+        <% end %>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <%= f.label :created_by, class: "form-label fw-bold mb-1" %>
+          <%= f.text_field :created_by,
+                class: "form-control",
+                value: current_user.email %>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <%= f.label :nop_reaction_date, "NOP Reaction Date", class: "form-label fw-bold mb-1" %>
+          <%= f.date_field :nop_reaction_date,
+                class: "form-control",
+                value: Date.today,
+                data: { 
+                  "nop-process-form-target": "nopReactionDateInput",
+                  action: "focus->nop-process-form#storeNopReactionDateValue change->nop-process-form#handleNopReactionDateChange"
+                } %>
+        </div>
+      </div>
+
+      <!-- SUBMIT BUTTON -->
+      <%= f.submit "Add NOP Process", class: "btn btn-primary mt-3 w-100" %>
+
+    <% end %>
+
+  </div>
+
+</div>

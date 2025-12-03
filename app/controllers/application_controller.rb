@@ -64,6 +64,11 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def require_admin
+    unless current_user.is_admin?
+      redirect_to root_path, alert: "You are not authorized to access the admin page."
+    end
+  end
 
   private
 

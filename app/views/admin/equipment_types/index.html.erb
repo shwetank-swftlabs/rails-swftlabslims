@@ -1,0 +1,27 @@
+<% content_for :page_title, render("shared/page_title",
+  subtitle: "Manage equipment types.",
+  actions: link_to("Add Equipment Type", new_admin_equipment_type_path, class: "btn btn-primary")
+) %>
+
+<!-- EQUIPMENT TYPES TABLE -->
+<%= render "shared/tables/default_table",
+      collection: @equipment_types,
+      pagy: nil,
+      headers: ->(_) do %>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Actions</th>
+      <% end,
+      row: ->(equipment_type) do %>
+        <td class="fw-semibold"><%= equipment_type.name %></td>
+        <td>
+          <% if equipment_type.is_active? %>
+            <span class="badge bg-success">Active</span>
+          <% else %>
+            <span class="badge bg-secondary">Inactive</span>
+          <% end %>
+        </td>
+        <td>
+          <%= link_to "Edit", edit_admin_equipment_type_path(equipment_type), class: "btn btn-sm btn-outline-primary" %>
+        </td>
+      <% end %>

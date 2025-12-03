@@ -12,6 +12,16 @@ Rails.application.routes.draw do
   get "/experiments", to: "experiments#index", as: :experiments
   get "/inventory", to: "inventory#index", as: :inventory
   get "/products", to: "products#index", as: :products
+  get "/admin", to: "admin#index", as: :admin
+
+  # Admin routes
+  namespace :admin do
+    resources :equipment_types, only: [:index, :new, :create, :edit, :update] do
+      member do
+        patch :toggle_active
+      end
+    end
+  end
 
   # Experiments routes
   namespace :experiments do

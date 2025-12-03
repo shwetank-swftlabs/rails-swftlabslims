@@ -25,6 +25,15 @@
 
       <ul class="navbar-nav ms-auto">
 
+        <!-- Admin -->
+        <% if current_user.is_admin? %>
+          <li class="nav-item">
+            <%= link_to "Admin",
+                        admin_path,
+                        class: "nav-link #{'active' if request.path.start_with?('/admin')}" %>
+          </li>
+        <% end %>
+
         <!-- Experiments -->
         <li class="nav-item">
           <%= link_to "Experiments",
