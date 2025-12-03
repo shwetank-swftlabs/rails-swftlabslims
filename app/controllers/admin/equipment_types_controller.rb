@@ -35,11 +35,6 @@ module Admin
       end
     end
 
-    def toggle_active
-      @equipment_type.update(is_active: !@equipment_type.is_active)
-      redirect_to admin_equipment_types_path, notice: "Equipment type #{@equipment_type.is_active? ? 'activated' : 'deactivated'} successfully"
-    end
-
     private
 
     def set_equipment_type

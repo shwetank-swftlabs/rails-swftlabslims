@@ -16,11 +16,8 @@ Rails.application.routes.draw do
 
   # Admin routes
   namespace :admin do
-    resources :equipment_types, only: [:index, :new, :create, :edit, :update] do
-      member do
-        patch :toggle_active
-      end
-    end
+    resources :equipment_types, only: [:index, :new, :create, :edit, :update] 
+    resources :chemical_types, only: [:index, :new, :create, :edit, :update]
   end
 
   # Experiments routes

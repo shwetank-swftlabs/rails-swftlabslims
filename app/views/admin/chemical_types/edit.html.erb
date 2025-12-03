@@ -1,0 +1,39 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Edit chemical type: #{@chemical_type.name}") %>
+
+<%= render "shared/form_errors", object: @chemical_type %>
+
+<%= form_with(model: @chemical_type, url: admin_chemical_type_path(@chemical_type), method: :patch, local: true, html: { class: "chemical-type-form" }) do |f| %>
+
+  <%= default_form_field(f, :name, label_text: "Chemical Type Name (unique)", required: true) do |req| %>
+    <%= f.text_field :name,
+                    { class: "form-control",
+                      placeholder: "Please enter a unique chemical type name",
+                      pattern: "^[a-z0-9_]+$",
+                      title: "Only lowercase letters, numbers, and underscores are allowed" }.merge(req) %>
+      <small class="text-muted">
+        Only lowercase letters, numbers, and underscores are allowed
+      </small>
+  <% end %>
+
+  <%= default_form_field(f, :is_active, label_text: "Status") do |req| %>
+    <div class="d-flex align-items-center gap-3">
+      <div class="form-check form-switch">
+        <%= f.check_box :is_active, { class: "form-check-input" } %>
+        <label class="form-check-label" for="admin_chemical_type_is_active">
+          <%= @chemical_type.is_active? ? "Active" : "Inactive" %>
+        </label>
+      </div>
+      <small class="text-muted">
+        (<%= @chemical_type.is_active? ? "Toggle to mark as inactive" : "Toggle to mark as active" %>)
+      </small>
+    </div>
+  <% end %>
+
+  <!-- CONFIRM SUBMIT -->
+  <%= f.submit "Update Chemical Type", 
+        class: "btn btn-primary px-4 mt-5",
+        data: { turbo_confirm: "Are you sure you want to update this chemical type?" } %>
+
+<% end %>
+
+

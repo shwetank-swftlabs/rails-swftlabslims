@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_03_165636) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_03_172217) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -63,6 +63,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_03_165636) do
     t.string "unit", null: false
     t.datetime "updated_at", null: false
     t.index ["nop_process_id"], name: "index_cakes_on_nop_process_id"
+  end
+
+  create_table "chemical_types", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "created_by"
+    t.boolean "is_active", default: true
+    t.string "name"
+    t.datetime "updated_at", null: false
   end
 
   create_table "chemicals", force: :cascade do |t|
