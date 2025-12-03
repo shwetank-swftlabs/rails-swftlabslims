@@ -14,20 +14,56 @@ class ApplicationController < ActionController::Base
 
   private
 
+  # def current_user
+  #   @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
+  # end
+
   def current_user
-    @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
+    if session[:user_id].present?
+      Rails.logger.info "AUTH: session[:user_id] = #{session[:user_id]}"
+      @current_user ||= User.find_by(id: session[:user_id])
+      Rails.logger.info "AUTH: current_user resolved as #{@current_user&.email || 'nil'}"
+    else
+      Rails.logger.info "AUTH: No session[:user_id] present"
+    end
+  
+    @current_user
   end
+
+
+  # def logged_in?
+  #   !!current_user
+  # end
 
   def logged_in?
-    !!current_user
+    is_logged_in = !!current_user
+    Rails.logger.info "AUTH: logged_in? = #{is_logged_in}"
+    is_logged_in
   end
 
+
+  # def require_login
+  #   unless logged_in?
+  #     session[:return_to] = request.fullpath if request.get?
+  #     redirect_to login_path, alert: "Please log in first"
+  #   end
+  # end
+
   def require_login
+    Rails.logger.info "AUTH: require_login before_action on #{request.fullpath}"
+  
     unless logged_in?
+      reason = session[:user_id].present? ? "User record not found" : "No session present"
+  
+      Rails.logger.warn "AUTH: Not authenticated (#{reason}). Redirecting to login_path."
+  
       session[:return_to] = request.fullpath if request.get?
       redirect_to login_path, alert: "Please log in first"
+    else
+      Rails.logger.info "AUTH: Access granted to #{current_user.email} for #{request.fullpath}"
     end
   end
+
 
   private
 
