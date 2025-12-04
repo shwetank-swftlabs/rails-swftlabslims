@@ -5,8 +5,7 @@ module Inventory
 
     include QrLabelable
     include Usageable
-
-    has_many :comments, as: :commentable, dependent: :destroy
+    include Commentable
     belongs_to :chemical_type, class_name: "Admin::ChemicalType", optional: false
 
     USAGE_PURPOSES = %w[nop_reaction other].freeze

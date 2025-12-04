@@ -18,7 +18,7 @@ class ImagesController < ApplicationController
   end
 
   def create
-    @attachable = find_attachable
+    @attachable = find_polymorphic_parent
 
     uploaded_file = params[:file]
     label = params[:label]
@@ -39,63 +39,11 @@ class ImagesController < ApplicationController
         label: label
       )
 
-      redirect_to_attachable(notice: "Image uploaded successfully.")
+      redirect_to_polymorphic_parent(@attachable, tab: :images, flash_hash: { notice: "Image uploaded successfully." })
 
     rescue => e
       Rails.logger.error("Image upload failed: #{e.message}")
-      return redirect_to_attachable(alert: "Image upload failed. Please try again.")
+      return redirect_to_polymorphic_parent(@attachable, tab: :images, flash_hash: { alert: "Image upload failed. Please try again." })
     end
-  end
-
-  private
-
-  def find_attachable
-    params.each do |key, value|
-      next unless key.to_s =~ /(.+)_id$/
-  
-      basename = $1.classify  # "Equipment"
-  
-      # Try top-level first (User, Product, etc.)
-      klass = basename.safe_constantize
-  
-      # Try namespaced versions (e.g., Inventory::Equipment)
-      if klass.nil?
-        # Search loaded constants for matches ending in ::Equipment
-        klass = ObjectSpace.each_object(Class).find do |c|
-          c.name&.end_with?("::#{basename}")
-        end
-      end
-  
-      # If we found it, load the record
-      return klass.find(value) if klass
-    end
-  
-    rdef find_attachable
-    params.each do |key, value|
-      next unless key.to_s =~ /(.+)_id$/
-  
-      basename = $1.classify  # "Equipment"
-  
-      # Try top-level first (User, Product, etc.)
-      klass = basename.safe_constantize
-  
-      # Try namespaced versions (e.g., Inventory::Equipment)
-      if klass.nil?
-        # Search loaded constants for matches ending in ::Equipment
-        klass = ObjectSpace.each_object(Class).find do |c|
-          c.name&.end_with?("::#{basename}")
-        end
-      end
-  
-      # If we found it, load the record
-      return klass.find(value) if klass
-    end
-  
-    raise "Attachable not found"
-  end
-  
-
-  def redirect_to_attachable(flash_hash = {})
-    redirect_to polymorphic_url(@attachable, { tab: :images }), flash: flash_hash
   end
 end

@@ -18,6 +18,23 @@ class ApplicationController < ActionController::Base
   def index
   end
 
+  def find_polymorphic_parent
+    params.each do |key, value|
+      next unless key.to_s =~ /(.+)_id$/
+      basename = $1.classify
+      klass = [basename, "Inventory::#{basename}", "Experiments::#{basename}"].map(&:safe_constantize).compact.first
+      return klass.find(value) if klass
+    end
+    raise "Polymorphic parent not found"
+  end
+
+  def redirect_to_polymorphic_parent(resource, tab: nil, flash_hash: {})
+    url_params = {}
+    url_params = { tab: tab } if tab.present?
+
+    redirect_to polymorphic_url(resource, url_params), flash: flash_hash
+  end
+
   private
 
   def current_user

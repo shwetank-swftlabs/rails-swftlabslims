@@ -3,10 +3,9 @@ module Inventory
     include DefaultDescOrder
     include QrLabelable
     include Usageable
+    include Imageable
+    include Commentable
     default_desc :updated_at
-
-    has_many :images, as: :attachable, dependent: :destroy
-    has_many :comments, as: :commentable, dependent: :destroy
     has_many :data_files, as: :attachable, dependent: :destroy
     belongs_to :feedstock_type, class_name: "Admin::FeedstockType"
 

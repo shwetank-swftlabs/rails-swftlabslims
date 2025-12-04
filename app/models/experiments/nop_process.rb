@@ -10,11 +10,11 @@ module Experiments
     belongs_to :previous_process, class_name: "Experiments::NopProcess", optional: true
     has_one :next_process, class_name: "Experiments::NopProcess", foreign_key: "previous_process_id", dependent: :nullify
 
+    include Imageable
+    include Commentable
+
     has_one :cake, class_name: "Products::Cake", dependent: :destroy
     accepts_nested_attributes_for :cake, allow_destroy: true
-    
-    has_many :images, as: :attachable, dependent: :destroy
-    has_many :comments, as: :commentable, dependent: :destroy
     has_many :data_files, as: :attachable, dependent: :destroy
     
     FEEDSTOCK_UNITS = Inventory::Feedstock::FEEDSTOCK_UNITS.freeze
@@ -59,8 +59,6 @@ module Experiments
       while root.previous_process.present?
         root = root.previous_process
       end
-
-      return [] if root == self
       
       # Step 2: Traverse forward from root to collect all processes in the chain
       node = root
@@ -69,6 +67,9 @@ module Experiments
         node = node.next_process
       end
       
+      # if the final child is the root, return an empty array denoting standalone batch
+      return [] if node == root
+
       processes
     end
 

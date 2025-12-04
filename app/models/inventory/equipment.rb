@@ -5,11 +5,10 @@ module Inventory
     default_desc :updated_at
 
     include QrLabelable
+    include Imageable
+    include Commentable
 
     belongs_to :equipment_type, class_name: "Admin::EquipmentType", optional: false
-
-    has_many :images, as: :attachable, dependent: :destroy
-    has_many :comments, as: :commentable, dependent: :destroy
 
     has_many :nop_processes, class_name: "Experiments::NopProcess", foreign_key: "reactor_id", dependent: :destroy
     has_one :last_nop_process, -> { order(created_at: :desc) },
