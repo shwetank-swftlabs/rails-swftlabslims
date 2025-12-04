@@ -56,52 +56,50 @@ class QrLabelService
   # PDF BUILDING (NO ROTATION)
   # --------------------------------
   def build_pdf(qr_png)
-    Prawn::Document.new(
+    pdf = Prawn::Document.new(
       page_size: [label_width_pt, label_height_pt],
       margin: 0
-    ) do |pdf|
-
-      pdf.font("Courier", style: :bold)
-
-      # -----------------------------
-      # QR CODE ON LEFT SIDE
-      # -----------------------------
-      pdf.image StringIO.new(qr_png.to_s),
-                at: [0, label_height_pt],
-                width:  qr_box_size_pt,
-                height: qr_box_size_pt
-
-      # -----------------------------
-      # TEXT AREA PLACEMENT
-      # -----------------------------
-      text_box_x     = qr_box_size_pt + (2 * MM_TO_PT) # 2mm padding
-      text_box_width = label_width_pt - text_box_x - (2 * MM_TO_PT)
-
-      pdf.bounding_box(
-        [text_box_x, label_height_pt - (2 * MM_TO_PT)],
-        width: text_box_width,
-        height: label_height_pt - (4 * MM_TO_PT)
-      ) do
-
-        # -----------------------------
-        # TITLE (ALL CAPS, PROMINENT)
-        # -----------------------------
-        if @title.present?
-          pdf.text @title.to_s.upcase,
-                   size: 12,
-                   style: :bold,
-                   leading: 3
-          pdf.move_down 3
-        end
-
-        # -----------------------------
-        # BODY TEXT
-        # -----------------------------
-        @text_lines.each do |line|
-          pdf.text line.to_s, size: 10, leading: 1
-        end
+    )
+  
+    pdf.font("Courier", style: :bold)
+  
+    # -----------------------------
+    # Draw everything EXACTLY as before
+    # -----------------------------
+    pdf.image StringIO.new(qr_png.to_s),
+              at: [0, label_height_pt],
+              width:  qr_box_size_pt,
+              height: qr_box_size_pt
+  
+    text_box_x     = qr_box_size_pt + (2 * MM_TO_PT)
+    text_box_width = label_width_pt - text_box_x - (2 * MM_TO_PT)
+  
+    pdf.bounding_box(
+      [text_box_x, label_height_pt - (2 * MM_TO_PT)],
+      width:  text_box_width,
+      height: label_height_pt - (4 * MM_TO_PT)
+    ) do
+  
+      if @title.present?
+        pdf.text @title.to_s.upcase,
+                 size: 12,
+                 style: :bold,
+                 leading: 3
+        pdf.move_down 3
       end
-
+  
+      @text_lines.each do |line|
+        pdf.text line.to_s, size: 10, leading: 1
+      end
     end
+  
+    # -----------------------------
+    # ROTATE ONLY THE PAGE (NOT content)
+    # -----------------------------
+    pdf.page.dictionary.data[:Rotate] = 90
+  
+    pdf
   end
+  
+  
 end
