@@ -1,24 +1,26 @@
-<table class="table table-striped table-hover align-middle table-compact">
-  <thead class="table-light border-bottom">
-    <tr>
-      <%= capture(:col_headers, &headers) if headers.present? %>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% collection.each do |item| %>
+<div class="table-responsive">
+  <table class="table table-striped table-hover align-middle table-compact">
+    <thead class="table-light border-bottom">
       <tr>
-        <%= capture(item, &row) if row.present? %>
+        <%= capture(:col_headers, &headers) if headers.present? %>
       </tr>
-    <% end %>
+    </thead>
 
-    <% if collection.empty? %>
-      <tr>
-        <td colspan="20" class="text-muted text-center py-3">No records found.</td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+    <tbody>
+      <% collection.each do |item| %>
+        <tr>
+          <%= capture(item, &row) if row.present? %>
+        </tr>
+      <% end %>
+
+      <% if collection.empty? %>
+        <tr>
+          <td colspan="20" class="text-muted text-center py-3">No records found.</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
 
 <% if pagy.present? %>
   <div class="mt-3">

@@ -79,17 +79,18 @@ a:hover {
 }
 
 /* ============================================================
-   NAVBAR ACTIVE LINK (remove bright blue underline)
+   NAVBAR ACTIVE LINK - Mobile: underline only below text
    ============================================================ */
 
-.nav-link.active {
-  color: var(--bs-primary) !important;
-  font-weight: 600;
-  border-bottom: 3px solid var(--bs-primary) !important;
-}
-
-.nav-link:hover {
-  color: var(--bs-primary-hover) !important;
+/* Mobile: Active nav-link underline only below text, not full width */
+@media (max-width: 991.98px) {
+  .navbar-collapse .nav-link.active.border-bottom {
+    border-bottom: none !important;
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 0.3rem;
+    text-decoration-color: var(--bs-dark);
+  }
 }
 
 /* ============================================================
@@ -195,4 +196,37 @@ input[type='number']::-webkit-outer-spin-button {
 /* Hide spinner arrows in Firefox */
 input[type='number'] {
   -moz-appearance: textfield;
+}
+
+/* ============================================================
+   MODAL BACKDROP - More opaque with blur effect
+   ============================================================ */
+
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  opacity: 1 !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ============================================================
+   TABLE HORIZONTAL SCROLL
+   ============================================================ */
+
+/* Ensure tables have horizontal scroll when they overflow */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* For tables not wrapped in table-responsive, add scroll */
+table.table {
+  min-width: 100%;
+}
+
+/* Container for tables - add horizontal scroll */
+.table-container,
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }

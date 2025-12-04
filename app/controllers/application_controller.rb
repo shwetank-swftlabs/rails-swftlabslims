@@ -15,6 +15,9 @@ class ApplicationController < ActionController::Base
     request.path.start_with?("/auth/")
   }
 
+  def index
+  end
+
   private
 
   def current_user
@@ -41,7 +44,7 @@ class ApplicationController < ActionController::Base
   end
 
   def init_breadcrumbs
-    @breadcrumbs = []
+    @breadcrumbs = [{ name: "Home", path: root_path }]
   end
 
   def add_breadcrumb(name, path = nil)

@@ -1,0 +1,50 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Welcome to SWFTLabsLIMS") %>
+
+<div class="row g-5">
+
+<!-- Admin -->
+  <% if current_user.is_admin? %>
+    <%= render "shared/feature_card",
+        icon: "bi-gear",
+        title: "Admin",
+        subtitle: "Manage metadata of different types.",
+        view_label: "View admin dashboard",
+        view_path: admin_path,
+          add_label: nil,
+          add_path: nil
+        %>
+  <% end %>
+
+  <!-- Experiments -->
+  <%= render "shared/feature_card",
+      icon: "bi-funnel",
+      title: "Experiments",
+      subtitle: "Manage experiments and their data.",
+      view_label: "View all experiments",
+      view_path: experiments_path,
+      add_label: nil,
+      add_path: nil
+  %>
+
+  <!-- Inventory -->
+  <%= render "shared/feature_card",
+      icon: "bi-box-seam",
+      title: "Inventory",
+      subtitle: "Manage equipment, chemicals, and feedstock.",
+      view_label: "View inventory dashboard",
+      view_path: inventory_path,
+      add_label: nil,
+      add_path: nil
+  %>
+
+  <!-- Products -->
+  <%= render "shared/feature_card",
+      icon: "bi-box-seam",
+      title: "Products",
+      subtitle: "Manage products and their data.",
+      view_label: "View products dashboard",
+      view_path: products_path,
+      add_label: nil,
+      add_path: nil
+  %>
+</div>

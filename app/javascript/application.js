@@ -4,6 +4,15 @@ import 'controllers';
 // import "./confirmations"
 
 document.addEventListener('turbo:load', () => {
+  // Initialize Bootstrap dropdowns
+  document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach((dropdownToggle) => {
+    // Ensure dropdown is properly initialized
+    if (window.bootstrap && window.bootstrap.Dropdown) {
+      new bootstrap.Dropdown(dropdownToggle);
+    }
+  });
+
+  // Carousel initialization
   document.querySelectorAll('.carousel').forEach((carousel) => {
     const counter = carousel.querySelector('.current-index');
     const label = carousel.querySelector('.carousel-label');

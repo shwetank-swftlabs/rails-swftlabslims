@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   get "/auth/google_oauth2/callback", to: "sessions#create"
   delete "/logout", to: "sessions#destroy", as: :logout
 
-  root "experiments#index"
+  root "application#index"
 
   # Top level routes
   get "/experiments", to: "experiments#index", as: :experiments

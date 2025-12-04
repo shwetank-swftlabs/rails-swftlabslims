@@ -2,7 +2,7 @@
   <div class="container">
 
     <!-- App Name / Logo -->
-    <%= link_to experiments_path, class: "navbar-brand fw-bold" do %>
+    <%= link_to root_path, class: "navbar-brand fw-bold" do %>
       SWFTLabsLIMS
     <% end %>
 
@@ -30,7 +30,8 @@
           <li class="nav-item">
             <%= link_to "Admin",
                         admin_path,
-                        class: "nav-link #{'active' if request.path.start_with?('/admin')}" %>
+                        class: "nav-link #{'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/admin')}",
+                        style: (request.path.start_with?('/admin') ? "border-bottom-width: 3px !important;" : nil) %>
           </li>
         <% end %>
 
@@ -38,34 +39,41 @@
         <li class="nav-item">
           <%= link_to "Experiments",
                       experiments_path,
-                      class: "nav-link #{'active' if current_page?(root_path) || request.path.start_with?('/experiments')}" %>
+                      class: "nav-link #{'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/experiments')}",
+                      style: (request.path.start_with?('/experiments') ? "border-bottom-width: 3px !important;" : nil) %>
         </li>
 
         <!-- Inventory -->
         <li class="nav-item">
           <%= link_to "Inventory",
                       inventory_path,
-                      class: "nav-link #{'active' if request.path.start_with?('/inventory')}" %>
+                      class: "nav-link #{'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/inventory')}",
+                      style: (request.path.start_with?('/inventory') ? "border-bottom-width: 3px !important;" : nil) %>
         </li>
 
         <!-- Products -->
         <li class="nav-item">
           <%= link_to "Products",
                       products_path,
-                      class: "nav-link #{'active' if request.path.start_with?('/products')}" %>
+                      class: "nav-link #{'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/products')}",
+                      style: (request.path.start_with?('/products') ? "border-bottom-width: 3px !important;" : nil) %>
         </li>
 
         <!-- User Menu -->
         <li class="nav-item dropdown ms-2">
-          <a class="nav-link dropdown-toggle"
+          <a class="nav-link dropdown-toggle text-muted small"
              href="#"
+             id="userDropdown"
              role="button"
              data-bs-toggle="dropdown"
-             aria-expanded="false">
-            Logged in as <i><%= current_user.first_name.capitalize %></i>
+             data-bs-auto-close="true"
+             aria-expanded="false"
+             aria-haspopup="true">
+            <span class="text-muted">Logged in as</span> <span class="fw-semibold text-dark"><%= current_user.first_name.capitalize %></span>
           </a>
 
-          <ul class="dropdown-menu dropdown-menu-end">
+          <ul class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="userDropdown">
             <li>
               <%= link_to "Logout",
                           logout_path,
