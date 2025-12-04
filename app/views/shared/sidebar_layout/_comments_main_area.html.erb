@@ -1,66 +1,138 @@
-<!-- Comments Header + Add Comment Button -->
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h3 class="text-muted fw-bold mb-0">Comments</h3>
-
-  <button 
-    class="btn btn-secondary d-flex align-items-center"
-    data-bs-toggle="modal"
-    data-bs-target="#addCommentModal"
-    style="font-size: 0.9rem;"
-  >
-    <i class="bi bi-chat-square-text me-2"></i>
-    Add Comment
-  </button>
-</div>
-
-<% if comments.present? %>
-  <% comments.order(created_at: :desc).each do |comment| %>
-    <div class="border rounded p-3 mb-3 bg-light">
-      <div class="mb-2 text-muted" style="font-size: 0.85rem;">
-        <span><%= comment.created_by %></span>
-        &nbsp;•&nbsp;
-        <%= comment.created_at.strftime("%Y-%m-%d %H:%M") %>
-      </div>
-
-      <div class="comment-body">
-        <%= comment.body %>
-      </div>
-    </div>
-  <% end %>
-<% else %>
-  <div class="text-center py-5">
-    <i class="bi bi-chat-square-text text-muted" style="font-size: 3rem;"></i>
-    <p class="text-muted fst-italic mt-3 mb-0">No comments added yet.</p>
+<!-- Comments Container with Scrollable Area -->
+<div class="d-flex flex-column" style="height: calc(75vh - 2rem); max-height: 75vh;">
+  
+  <!-- Comments Header -->
+  <div class="mb-3">
+    <h3 class="text-muted fw-bold mb-0">Comments</h3>
   </div>
-<% end %>
 
-<!-- Modal -->
-<div class="modal fade" id="addCommentModal" tabindex="-1" aria-labelledby="addCommentModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content p-5">
+  <!-- Scrollable Comments List -->
+  <div class="flex-grow-1 overflow-y-auto pe-2" style="min-height: 0;">
+    <% if comments.present? %>
+      <% comments.order(created_at: :desc).each do |comment| %>
+        <div class="border rounded p-3 mb-3 bg-light" id="comment-<%= comment.id %>">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="text-muted" style="font-size: 0.85rem;">
+              <span><%= comment.created_by %></span>
+              &nbsp;•&nbsp;
+              <%= comment.created_at.strftime("%Y-%m-%d %H:%M") %>
+            </div>
+            <% if comment.created_by == current_user.email %>
+              <button 
+                type="button" 
+                class="btn btn-sm btn-outline-secondary edit-comment-btn" 
+                data-comment-id="<%= comment.id %>"
+                style="font-size: 0.75rem; padding: 0.25rem 0.5rem;"
+              >
+                <i class="bi bi-pencil me-1"></i>Edit
+              </button>
+            <% end %>
+          </div>
 
-      <div class="modal-header p-2 mb-4">
-        <h5 class="modal-title" id="addCommentModalLabel">Add Comment</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+          <!-- Comment Display View -->
+          <div class="comment-body comment-display" id="comment-display-<%= comment.id %>">
+            <%= comment.body %>
+          </div>
 
-      <%= form_with(
-        url: url,
-        scope: :comment,
-        local: true
-      ) do |form| %>
-        <div class="modal-body p-2">
-          <div class="mb-3">
-            <%= form.rich_text_area :body, class: "form-control", style: "min-height: 200px;" %>
+          <!-- Comment Edit Form (hidden by default) -->
+          <div class="comment-edit-form d-none" id="comment-edit-<%= comment.id %>">
+            <%= form_with(
+              model: [comment.commentable, comment],
+              local: true,
+              class: "comment-edit-form-inner"
+            ) do |form| %>
+              <div class="mb-3">
+                <%= form.rich_text_area :body, 
+                    class: "form-control", 
+                    style: "min-height: 120px;",
+                    id: "comment-body-input-#{comment.id}" %>
+              </div>
+              <div class="d-flex justify-content-end gap-2">
+                <button 
+                  type="button" 
+                  class="btn btn-sm btn-light cancel-edit-btn" 
+                  data-comment-id="<%= comment.id %>"
+                >
+                  Cancel
+                </button>
+                <%= form.submit "Save", class: "btn btn-sm btn-secondary" %>
+              </div>
+            <% end %>
           </div>
         </div>
-
-        <div class="modal-footer p-4">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-          <%= form.submit "Add Comment", class: "btn btn-secondary" %>
-        </div>
       <% end %>
-
-    </div>
+    <% else %>
+      <div class="text-center py-5">
+        <i class="bi bi-chat-square-text text-muted" style="font-size: 3rem;"></i>
+        <p class="text-muted fst-italic mt-3 mb-0">No comments added yet.</p>
+      </div>
+    <% end %>
   </div>
+
+  <!-- Inline Comment Form at Bottom -->
+  <div class="border-top pt-3 mt-3">
+    <%= form_with(
+      url: url,
+      scope: :comment,
+      local: true,
+      class: "comment-form"
+    ) do |form| %>
+      <div class="mb-3">
+        <%= form.rich_text_area :body, 
+            class: "form-control", 
+            style: "min-height: 120px;",
+            placeholder: "Add a comment..." %>
+      </div>
+      <div class="d-flex justify-content-end">
+        <%= form.submit "Add Comment", class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </div>
+
 </div>
+
+<script>
+  (function() {
+    function initCommentEditing() {
+      // Handle Edit button clicks
+      document.querySelectorAll('.edit-comment-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          const commentId = this.getAttribute('data-comment-id');
+          const displayDiv = document.getElementById('comment-display-' + commentId);
+          const editForm = document.getElementById('comment-edit-' + commentId);
+          const editBtn = this;
+
+          // Hide display, show edit form
+          if (displayDiv) displayDiv.classList.add('d-none');
+          if (editForm) editForm.classList.remove('d-none');
+          if (editBtn) editBtn.classList.add('d-none');
+        });
+      });
+
+      // Handle Cancel button clicks
+      document.querySelectorAll('.cancel-edit-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          const commentId = this.getAttribute('data-comment-id');
+          const displayDiv = document.getElementById('comment-display-' + commentId);
+          const editForm = document.getElementById('comment-edit-' + commentId);
+          const editBtn = document.querySelector('.edit-comment-btn[data-comment-id="' + commentId + '"]');
+
+          // Show display, hide edit form
+          if (displayDiv) displayDiv.classList.remove('d-none');
+          if (editForm) editForm.classList.add('d-none');
+          if (editBtn) editBtn.classList.remove('d-none');
+        });
+      });
+    }
+
+    // Initialize on page load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCommentEditing);
+    } else {
+      initCommentEditing();
+    }
+
+    // Re-initialize on Turbo navigation
+    document.addEventListener('turbo:load', initCommentEditing);
+  })();
+</script>
