@@ -1,45 +1,54 @@
 <div class="d-flex" style="min-height: 75vh; margin-top: -1.5rem;">
 
   <!-- Sidebar -->
-  <aside class="d-flex flex-column bg-light border-end p-3 rounded" style="width: 260px;">
+  <aside class="border-end bg-light">
 
-    <!-- Tabs -->
-    <div class="list-group mb-4">
-      <% tabs.each do |tab_name| %>
-        <% active_tab = (params[:tab].blank? && tab_name == "details") || params[:tab] == tab_name %>
+    <div id="sidebarNavbar"
+         class="collapse collapse-horizontal d-lg-block"
+         style="transition: width .3s ease; width: 260px;">
 
-        <%= link_to tab_name.humanize,
-          send(tab_path, *path_args, tab: tab_name),
-          class: [
-            "list-group-item",
-            "list-group-item-action",
-            "py-3",
-            "fs-6",
-            "border-0",
-            "border-bottom",
-            "rounded-1",
-            (active_tab ?
-              "active text-dark fw-semibold border-bottom border-dark-subtle bg-body-secondary" :
-              "text-dark"
-            )
-          ],
-          style: (active_tab ? "border-bottom-width: 3px !important;" : nil)
-        %>
-      <% end %>
-    </div>
+      <div class="d-flex flex-column p-3 sidebar-inner" style="width: 260px;">
+        
+        <!-- Tabs -->
+        <div class="list-group mb-4">
+          <% tabs.each do |tab_name| %>
+            <% active_tab = (params[:tab].blank? && tab_name == "details") || params[:tab] == tab_name %>
 
-    <!-- Bottom Action -->
-    <% if local_assigns[:bottom_action].present? %>
-      <div class="mt-auto pt-3 border-top">
-        <div class="d-grid">
-          <%= local_assigns[:bottom_action] %>
+            <%= link_to tab_name.humanize,
+              send(tab_path, *path_args, tab: tab_name),
+              class: [
+                "list-group-item",
+                "list-group-item-action",
+                "py-3",
+                "fs-6",
+                "border-0",
+                "border-bottom",
+                "rounded-1",
+                (active_tab ?
+                  "active text-dark fw-semibold border-bottom border-dark-subtle bg-body-secondary" :
+                  "text-dark"
+                )
+              ],
+              style: (active_tab ? "border-bottom-width: 3px !important;" : nil)
+            %>
+          <% end %>
         </div>
+
+        <!-- Bottom Action -->
+        <% if local_assigns[:bottom_action].present? %>
+          <div class="mt-auto pt-3 border-top">
+            <div class="d-grid">
+              <%= local_assigns[:bottom_action] %>
+            </div>
+          </div>
+        <% end %>
       </div>
-    <% end %>
+
+    </div>
 
   </aside>
 
-  <!-- Main content -->
+  <!-- Main Content -->
   <main class="flex-grow-1 p-4">
     <%= yield %>
   </main>

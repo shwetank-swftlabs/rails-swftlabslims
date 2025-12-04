@@ -8,13 +8,7 @@
 <%= render "shared/sidebar_layout/layout",
     tabs: ["details", "maintenance_records", "operation_manual", "images", "comments"],
     tab_path: :inventory_equipment_path,
-    path_args: [@equipment],
-    bottom_action: tag.button(
-      "Mark Inactive",
-      type: "button",
-      class: "btn btn-outline-danger w-100",
-      onclick: "alert('Marking inactive is Work in Progress.')"
-    ) do %>
+    path_args: [@equipment] do %>
 
   <%= render (params[:tab] || "details"), equipment: @equipment %>
 

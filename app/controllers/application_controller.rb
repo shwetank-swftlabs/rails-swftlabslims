@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
 
   include Pagy::Method
 
-  helper_method :current_user, :logged_in?
+  helper_method :current_user, :logged_in?, :sidebar_layout?
 
   # Require login for all actions except OmniAuth callbacks & request phase
   before_action :require_login, :init_breadcrumbs, :check_session_timeout
@@ -33,6 +33,10 @@ class ApplicationController < ActionController::Base
     url_params = { tab: tab } if tab.present?
 
     redirect_to polymorphic_url(resource, url_params), flash: flash_hash
+  end
+
+  def sidebar_layout?
+    action_name == 'show'
   end
 
   private
