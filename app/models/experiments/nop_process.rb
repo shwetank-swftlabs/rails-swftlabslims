@@ -50,6 +50,28 @@ module Experiments
       end
     end
 
+    def common_nop_processes
+      processes = []
+      
+      # Step 1: Traverse backwards to find the root of the chain
+      root = self
+
+      while root.previous_process.present?
+        root = root.previous_process
+      end
+
+      return [] if root == self
+      
+      # Step 2: Traverse forward from root to collect all processes in the chain
+      node = root
+      while node.present?
+        processes << node
+        node = node.next_process
+      end
+      
+      processes
+    end
+
     # ---------------------------
     # Public API
     # ---------------------------

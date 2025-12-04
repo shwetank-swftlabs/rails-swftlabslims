@@ -1,0 +1,29 @@
+<% common_nop_processes = @nop_process.common_nop_processes %>
+<% if common_nop_processes.any? %>
+  <%= render "shared/tables/default_table",
+    collection: common_nop_processes,
+    headers: ->(_) do %>
+      <th>Batch Number</th>
+      <th><%= field_symbol("V_H") %></th>
+      <th><%= field_symbol("c_H") %></th>
+      <th><%= field_symbol("V_H_prime") %></th>
+      <th><%= field_symbol("c_H_prime") %></th>
+      <th><%= field_symbol("V_H_double_prime") %></th>
+      <th><%= field_symbol("c_H_double_prime") %></th>
+      <th><%= field_symbol("V_cE") %></th>
+      <th><%= field_symbol("pH_cE") %></th>
+    <% end,
+    row: ->(nop_process) do %>
+      <td><%= nop_process.batch_number %></td>
+      <td><%= V_H(nop_process) %></td>
+      <td><%= c_H(nop_process) %></td>
+      <td><%= V_H_prime(nop_process) %></td>
+      <td><%= c_H_prime(nop_process) %></td>
+      <td><%= V_H_double_prime(nop_process) %></td>
+      <td><%= c_H_double_prime(nop_process) %></td>
+      <td><%= V_cE(nop_process) %></td>
+      <td><%= pH_cE(nop_process) %></td>
+    <% end %>
+<% else %>
+  <p>This is a standalone batch. No effluent recycle information is available.</p>
+<% end %>

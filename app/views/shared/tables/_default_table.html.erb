@@ -22,8 +22,8 @@
   </table>
 </div>
 
-<% if pagy.present? %>
+<% if local_assigns[:pagy].present? %>
   <div class="mt-3">
-    <%== pagy.series_nav(:bootstrap) %>
+    <%== local_assigns[:pagy].series_nav(:bootstrap) %>
   </div>
 <% end %>

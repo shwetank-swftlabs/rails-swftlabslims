@@ -31,7 +31,7 @@
     details["Diluted Effluent Generated Amount (#{field_symbol("V_dE")})"] = "#{nop_process.diluted_effluent_generated_amount} #{nop_process.nitric_acid_units.upcase}"
     details["Diluted Effluent Generated pH (#{field_symbol("pH_dE")})"] = "#{nop_process.diluted_effluent_generated_ph}"
   else
-    details["Reaction Completion Data"] = "N/A. Please fill in the completion data ASAP"
+    details["Reaction Completion Data"] = "N/A. Please fill in the final data ASAP"
   end
 
   details["Reaction Date"] = format_date(nop_process.nop_reaction_date)
