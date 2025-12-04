@@ -15,9 +15,10 @@ document.addEventListener('turbo:load', () => {
   // Carousel initialization
   document.querySelectorAll('.carousel').forEach((carousel) => {
     const counter = carousel.querySelector('.current-index');
-    const label = carousel.querySelector('.carousel-label');
+    const nameElement = carousel.querySelector('.carousel-name');
+    const labelElement = carousel.querySelector('.carousel-label');
 
-    // Update counter and label on slide change
+    // Update counter, name, and label on slide change
     const updateCarouselInfo = () => {
       const items = carousel.querySelectorAll('.carousel-item');
       const active = carousel.querySelector('.carousel-item.active');
@@ -27,9 +28,22 @@ document.addEventListener('turbo:load', () => {
         counter.textContent = index;
       }
 
-      if (label && active) {
-        const labelText = active.getAttribute('data-label') || 'No Label';
-        label.textContent = labelText;
+      if (active) {
+        const name = active.getAttribute('data-name') || 'No Name';
+        const label = active.getAttribute('data-label');
+
+        if (nameElement) {
+          nameElement.textContent = name;
+        }
+
+        if (labelElement) {
+          if (label && label.trim() !== '') {
+            labelElement.textContent = label;
+            labelElement.style.display = 'block';
+          } else {
+            labelElement.style.display = 'none';
+          }
+        }
       }
     };
 

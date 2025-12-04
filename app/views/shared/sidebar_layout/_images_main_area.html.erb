@@ -2,7 +2,78 @@
       url: url
 %>
 
-<%= render "shared/sidebar_layout/image_carousel",
+<!-- Grid View (Default) -->
+<div id="imagesGridView" class="images-view">
+  <%= render "shared/sidebar_layout/images_grid",
+      images: images
+  %>
+</div>
+
+<!-- Carousel View -->
+<div id="imagesCarouselView" class="images-view d-none">
+  <%= render "shared/sidebar_layout/image_carousel",
       images: images,
       carousel_id: "equipmentImagesCarousel"
-%>
+  %>
+</div>
+
+<script>
+  (function() {
+    function initImageViewToggle() {
+      const gridToggle = document.getElementById('gridViewToggle');
+      const carouselToggle = document.getElementById('carouselViewToggle');
+      const gridView = document.getElementById('imagesGridView');
+      const carouselView = document.getElementById('imagesCarouselView');
+
+      if (!gridToggle || !carouselToggle || !gridView || !carouselView) {
+        return;
+      }
+
+      function switchView(view) {
+        if (view === 'grid') {
+          gridView.classList.remove('d-none');
+          carouselView.classList.add('d-none');
+          // Pause carousel when switching away
+          const carousel = document.querySelector('#equipmentImagesCarousel');
+          if (carousel && window.bootstrap && window.bootstrap.Carousel) {
+            const bsCarousel = window.bootstrap.Carousel.getInstance(carousel);
+            if (bsCarousel) {
+              bsCarousel.pause();
+            }
+          }
+        } else {
+          gridView.classList.add('d-none');
+          carouselView.classList.remove('d-none');
+          // Reinitialize carousel when switching to it
+          const carousel = document.querySelector('#equipmentImagesCarousel');
+          if (carousel && window.bootstrap && window.bootstrap.Carousel) {
+            const bsCarousel = window.bootstrap.Carousel.getOrCreateInstance(carousel);
+            bsCarousel.cycle();
+          }
+        }
+      }
+
+      gridToggle.addEventListener('change', function() {
+        if (this.checked) {
+          switchView('grid');
+        }
+      });
+
+      carouselToggle.addEventListener('change', function() {
+        if (this.checked) {
+          switchView('carousel');
+        }
+      });
+    }
+
+    // Initialize on page load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initImageViewToggle);
+    } else {
+      initImageViewToggle();
+    }
+
+    // Re-initialize on Turbo navigation
+    document.addEventListener('turbo:load', initImageViewToggle);
+  })();
+</script>
