@@ -1,18 +1,42 @@
-<%= render "shared/sidebar_layout/details_list_main_area", details: {
-  "Batch Number" => nop_process.batch_number,
-  "Reactor" => nop_process.reactor.name,
-  "Feedstock Type" => nop_process.feedstock_type.name.humanize,
-  "Feedstock Amount" => "#{nop_process.feedstock_amount} #{nop_process.feedstock_unit.upcase}",
-  "Feedstock Moisture Percentage" => "#{nop_process.feedstock_moisture_percentage}%",
-  "Nitric Acid Units" => nop_process.nitric_acid_units.titleize,
-  "Final Nitric Acid Amount" => nop_process.final_nitric_acid_amount,
-  "Final Nitric Acid Molarity" => nop_process.final_nitric_acid_molarity,
-  "Additional Nitric Acid Amount" => nop_process.additional_nitric_acid_amount.present? ? nop_process.additional_nitric_acid_amount : "N/A",
-  "Additional Nitric Acid Molarity" => nop_process.additional_nitric_acid_molarity.present? ? nop_process.additional_nitric_acid_molarity : "N/A",
-  "Rotation Rate" => "#{nop_process.rotation_rate} rpm",
-  "Reaction Date" => format_date(nop_process.nop_reaction_date),
-  "Created By" => nop_process.created_by,
-  "Created At" => nop_process.created_at.strftime("%B %d, %Y %I:%M %p")
-}
+<%
+  details = {
+    "Batch Number" => nop_process.batch_number,
+    "Reactor" => nop_process.reactor.name,
+    "Feedstock Type" => nop_process.feedstock_type.name.humanize,
+    "Feedstock Amount (#{field_symbol("m_F")})" => "#{nop_process.feedstock_amount} #{nop_process.feedstock_unit.upcase}",
+    "Feedstock Moisture Percentage (#{field_symbol("u_F")})" => "#{nop_process.feedstock_moisture_percentage}%"
+  }
+
+  if nop_process.previous_process.present?
+    details["Previous Batch Number"] = nop_process.previous_process.batch_number
+    details["Additional Nitric Acid Amount (#{field_symbol("V_H_prime")})"] = "#{nop_process.additional_nitric_acid_amount} #{nop_process.nitric_acid_units.upcase}"
+    details["Additional Nitric Acid Molarity (#{field_symbol("c_H_prime")})"] = "#{nop_process.additional_nitric_acid_molarity} mol/L"
+    details["Final Nitric Acid Amount (#{field_symbol("V_H_double_prime")})"] = "#{nop_process.final_nitric_acid_amount} #{nop_process.nitric_acid_units.upcase}"
+    details["Final Nitric Acid Molarity (#{field_symbol("c_H_double_prime")})"] = "#{nop_process.final_nitric_acid_molarity} mol/L"
+  else
+    details["Final Nitric Acid Amount (#{field_symbol("V_H")})"] = "#{nop_process.final_nitric_acid_amount} #{nop_process.nitric_acid_units.upcase}"
+    details["Final Nitric Acid Molarity (#{field_symbol("c_H")})"] = "#{nop_process.final_nitric_acid_molarity} mol/L"
+  end
+
+  details["Rotation Rate (#{field_symbol("R_M")})"] = "#{nop_process.rotation_rate} rpm"
+
+  if nop_process.completion_data_present?
+    details["Total Reaction Time (#{field_symbol("t_R")})"] = "#{nop_process.total_reaction_time} hours"
+    details["Quenching Water Volume (#{field_symbol("V_Q")})"] = "#{nop_process.quenching_water_volume} #{nop_process.nitric_acid_units.upcase}"
+    details["Solid Cake Mass (#{field_symbol("m_solid")})"] = "#{nop_process.cake.quantity} #{nop_process.cake.unit.upcase}"
+    details["Solid Cake Moisture Percentage (#{field_symbol("u_solid")})"] = "#{nop_process.cake.moisture_percentage}%"
+    details["Solid Cake pH (#{field_symbol("pH_solid")})"] = "#{nop_process.cake.ph}"
+    details["Concentrated Effluent Generated Amount (#{field_symbol("V_cE")})"] = "#{nop_process.concentrated_effluent_generated_amount} #{nop_process.nitric_acid_units.upcase}"
+    details["Concentrated Effluent Generated pH (#{field_symbol("pH_cE")})"] = "#{nop_process.concentrated_effluent_generated_ph}"
+    details["Diluted Effluent Generated Amount (#{field_symbol("V_dE")})"] = "#{nop_process.diluted_effluent_generated_amount} #{nop_process.nitric_acid_units.upcase}"
+    details["Diluted Effluent Generated pH (#{field_symbol("pH_dE")})"] = "#{nop_process.diluted_effluent_generated_ph}"
+  else
+    details["Reaction Completion Data"] = "N/A. Please fill in the completion data ASAP"
+  end
+
+  details["Reaction Date"] = format_date(nop_process.nop_reaction_date)
+  details["Created At"] = nop_process.created_at.strftime("%B %d, %Y %I:%M %p")
 %>
+
+<%= render "shared/sidebar_layout/details_list_main_area", details: details %>
 

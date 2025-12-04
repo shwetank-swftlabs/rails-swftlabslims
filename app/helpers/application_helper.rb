@@ -3,7 +3,7 @@ module ApplicationHelper
   # Converts base, sub, sup into HTML-safe formatted variable notation
   #
   def var(base, sub = nil, sup = nil)
-    html = +"<span class='var-symbol'>#{ERB::Util.html_escape(base)}"
+    html = +"<span class='var-symbol' style='text-transform: none;'>#{ERB::Util.html_escape(base)}"
     html << "<sub>#{ERB::Util.html_escape(sub)}</sub>" if sub.present?
     html << "<sup>#{ERB::Util.html_escape(sup)}</sup>" if sup.present?
     html << "</span>"
@@ -22,7 +22,16 @@ module ApplicationHelper
     "V_H_prime"          => ["V", "H", "'"],
     "c_H_double_prime"   => ["c", "H", "''"],
     "V_H_double_prime"   => ["V", "H", "''"],
-    "R_M"                => ["R", "M"]
+    "R_M"                => ["R", "M"],
+    "V_Q"                => ["V", "Q"],
+    "V_cE"               => ["V", "cE"],
+    "pH_cE"              => ["pH", "cE"],
+    "V_dE"               => ["V", "dE"],
+    "pH_dE"              => ["pH", "dE"],
+    "m_solid"            => ["m", "solid"],
+    "u_solid"            => ["u", "solid"],
+    "pH_solid"           => ["pH", "solid"],
+    "t_R"                => ["t", "R"]
   }.freeze
 
   #

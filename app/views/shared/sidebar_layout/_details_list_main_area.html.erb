@@ -2,8 +2,8 @@
   <dl class="details-list mb-0">
     <% if details.is_a?(Hash) %>
       <% details.each do |key, value| %>
-        <dt class="text-muted small fw-semibold text-uppercase mt-3" style="letter-spacing: 0.5px;">
-          <%= key.to_s.humanize %>
+        <dt class="text-muted small fw-semibold mt-3 text-uppercase" style="letter-spacing: 0.5px;">
+          <%= key.html_safe %>
         </dt>
         <dd class="text-dark fs-6 border-bottom pb-3 mb-3">
           <%= value.presence || content_tag(:span, "—", class: "text-muted fst-italic") %>

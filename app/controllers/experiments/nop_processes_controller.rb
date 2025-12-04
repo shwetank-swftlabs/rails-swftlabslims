@@ -172,7 +172,7 @@ module Experiments
     end
 
     def edit_nop_process_params
-      params.require(:experiment_nop_process).permit(
+      params.require(:edit_nop_process).permit(
         :total_reaction_time,
         :quenching_water_volume,
         :concentrated_effluent_generated_amount,

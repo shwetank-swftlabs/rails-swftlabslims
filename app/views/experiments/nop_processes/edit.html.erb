@@ -26,6 +26,7 @@
 
     <%= form_with(model: @nop_process,
                   local: true,
+                  scope: :edit_nop_process,
                   url: experiments_nop_process_path(@nop_process),
                   html: { class: "nop-process-form" }) do |f| %>
 
@@ -33,17 +34,17 @@
 
       <%= render "shared/forms/sop_step",
           number: "5",
-          text: "Record the total reaction time, #{var('t', 'R')}." do %>
+          text: "Record the total reaction time, #{field_symbol("t_R")}." do %>
         <%= render "shared/forms/sop_input_row",
             form: f,
             field: :total_reaction_time,
-            label_html: var("t","R"),
+            label_html: field_symbol("t_R"),
             unit: "hours" %>
       <% end %>
 
       <%= render "shared/forms/sop_step",
           number: "6",
-          text: "Quench the system; Record the quenching water volume, #{var('V', 'Q')}." do %>
+          text: "Quench the system; Record the quenching water volume, #{field_symbol("V_Q")}." do %>
         <%= render "shared/forms/sop_input_row",
             form: f,
             field: :quenching_water_volume,
@@ -53,23 +54,23 @@
 
       <%= render "shared/forms/sop_step",
           number: "7",
-          text: "Dump the concentrated effluent; filter the solid; Record the concentrated effluent generated amount, #{var('V', 'cE')}; and pH, #{var('pH', 'cE')}." do %>
+          text: "Dump the concentrated effluent; filter the solid; Record the concentrated effluent generated amount, #{field_symbol("V_cE")}; and pH, #{field_symbol("pH_cE")}." do %>
         <%= render "shared/forms/sop_input_row",
             form: f,
             field: :concentrated_effluent_generated_amount,
-            label_html: var("V","cE"),
+            label_html: field_symbol("V_cE"),
             unit: "#{nitric_acid_units}" %>
                 
         <%= render "shared/forms/sop_input_row",
             form: f,
             field: :concentrated_effluent_generated_ph,
-            label_html: var("pH","cE"),
+            label_html: field_symbol("pH_cE"),
             unit: "" %>
       <% end %>
 
             <%= render "shared/forms/sop_step",
           number: "8",
-          text: "Wash the press filter solid; record the mass (#{var('m', 'solid')}); moisture percentage (#{var('u', 'solid')}); and pH (#{var('pH', 'solid')})." do %>
+          text: "Wash the press filter solid; record the mass (#{field_symbol("m_solid")}); moisture percentage (#{field_symbol("u_solid")}); and pH (#{field_symbol("pH_solid")})." do %>
 
         <%= f.fields_for :cake do |cake_form| %>
           <%= render "shared/forms/sop_input_row",
@@ -83,13 +84,13 @@
           <%= render "shared/forms/sop_input_row",
               form: cake_form,
               field: :moisture_percentage,
-              label_html: var("u","solid"),
+              label_html: field_symbol("u_solid"),
               unit: "%" %>
 
           <%= render "shared/forms/sop_input_row",
               form: cake_form,
               field: :ph,
-              label_html: var("pH","solid"),
+              label_html: field_symbol("pH_solid"),
               unit: "" %>
         <% end %>
       <% end %>
@@ -100,7 +101,7 @@
         <%= render "shared/forms/sop_input_row",
             form: f,
             field: :diluted_effluent_generated_amount,
-            label_html: var("V","dE"),
+            label_html: field_symbol("V_dE"),
             unit: "#{nitric_acid_units}" %>
                 
         <%= render "shared/forms/sop_input_row",
