@@ -31,7 +31,7 @@ class SessionsController < ApplicationController
     session[:user_id] = user.id
     Rails.logger.info "AUTH: User #{email} logged in with session[:user_id] = #{session[:user_id]}"
   
-    redirect_to session.delete(:return_to) || experiments_path
+    redirect_to session.delete(:return_to) || root_path
   end
 
   def destroy

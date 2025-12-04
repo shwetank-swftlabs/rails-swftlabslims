@@ -83,19 +83,19 @@
 
       <%= render "shared/forms/sop_step",
           number: 1,
-          text: "Weigh the feedstock, #{var('m','F')}; measure the moisture, #{var('u','F')}." do %>
+          text: "Weigh the feedstock, #{field_symbol("m_F")}; measure the moisture, #{field_symbol("u_F")}." do %>
 
         <%= render "shared/forms/sop_input_row",
             form: f,
             field: :feedstock_amount,
-            label_html: var("m","F"),
+            label_html: field_symbol("m_F"),
             unit_field: :feedstock_unit,
             unit_options: Experiments::NopProcess::FEEDSTOCK_UNITS %>
 
         <%= render "shared/forms/sop_input_row",
             form: f,
             field: :feedstock_moisture_percentage,
-            label_html: var("u","F"),
+            label_html: field_symbol("u_F"),
             unit: "%" %>
 
       <% end %>
@@ -104,11 +104,11 @@
            style="display: block;">
         <%= render "shared/forms/sop_step",
             number: "2A",
-            text: "Measure the volume of 50 wt% HNO<sub>3</sub>, #{var('V', 'H')}; also record the molarity, #{var('c', 'H')}." do %>
+            text: "Measure the volume of 50 wt% HNO<sub>3</sub>, #{field_symbol("V_H")}; also record the molarity, #{field_symbol("c_H")}." do %>
             <%= render "shared/forms/sop_input_row",
                 form: f,
                 field: :final_nitric_acid_amount,
-                label_html: var("V","H"),
+                label_html: field_symbol("V_H"),
                 unit_field: :nitric_acid_units,
                 selected_unit: "litres",
                 unit_options: Experiments::NopProcess::NITRIC_ACID_UNITS
@@ -117,7 +117,7 @@
             <%= render "shared/forms/sop_input_row",
                 form: f,
                 field: :final_nitric_acid_molarity,
-                label_html: var("c","H"),
+                label_html: field_symbol("c_H"),
                 unit: "mol/L" %>
         <% end %>
       </div>
@@ -126,11 +126,11 @@
 
       <%= render "shared/forms/sop_step",
           number: "3",
-          text: "Put the feedstock in the reactor; put HNO<sub>3</sub> solution in the reactor; start the motor; record the rotation rate, #{var('R', 'M')}." do %>
+          text: "Put the feedstock in the reactor; put HNO<sub>3</sub> solution in the reactor; start the motor; record the rotation rate, #{field_symbol("R_M")}." do %>
           <%= render "shared/forms/sop_input_row",
               form: f,
               field: :rotation_rate,
-              label_html: var("R","M"),
+              label_html: field_symbol("R_M"),
               unit: "rpm" %>
       <% end %>
 

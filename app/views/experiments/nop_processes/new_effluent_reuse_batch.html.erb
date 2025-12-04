@@ -1,4 +1,4 @@
-<% content_for :page_title, render("shared/page_title", subtitle: "Add a new NOP process.") %>
+<% content_for :page_title, render("shared/page_title", subtitle: "Add a effluent reuse NOP process.") %>
 
 <div class="row" style="height: 100vh; overflow: hidden;">
 
@@ -20,16 +20,16 @@
   <div class="col-md-6 p-4"
        style="height: 100vh; overflow-y: auto;"
        data-controller="nop-process-form"
-       data-nop-process-form-reactors-value="<%= Inventory::Equipment.reactors.filter { |r| r.last_nop_process.present? }.to_json %>"
+       data-nop-process-form-reactors-value="<%= Inventory::Equipment.reactors.to_json %>"
        data-nop-process-form-is-standalone-batch-value="false">
 
 
     <!-- FORM ERRORS -->
     <%= render "shared/form_errors", object: @nop_process %>
 
-    <%= form_with(scope: :standalone_batch, model: @nop_process,
+    <%= form_with(scope: :effluent_reuse_batch, model: @nop_process,
                   local: true,
-                  url: create_standalone_batch_experiments_nop_processes_path,
+                  url: create_effluent_reuse_batch_experiments_nop_processes_path,
                   html: { class: "nop-process-form" }) do |f| %>
 
 
@@ -38,7 +38,7 @@
       <div class="mb-4">
         <%= default_form_field(f, :reactor_id, label_text: "Reactor", required: true) do |req| %>
           <%= f.select :reactor_id,
-              Inventory::Equipment.reactor.map { |r| [r.name, r.id] },
+              Inventory::Equipment.reactor.filter { |r| r.last_nop_process.present? }.map { |r| [r.name, r.id] },
               { prompt: "Please select a reactor" },
               { class: "form-control",
                 data: { 
@@ -50,10 +50,21 @@
         <% end %>
       </div>
 
+      <div class="mb-4 alert alert-info border-start border-4 border-info" id="previous-batch-info" data-nop-process-form-target="previousBatchInfo" style="display: none;">
+        <div class="d-flex align-items-center mb-2">
+          <i class="bi bi-info-circle me-2"></i>
+          <strong>Previous Batch Information</strong>
+        </div>
+        <ul class="mb-0">
+          <li>Previous Batch Number: <span id="previous-batch-number" class="fw-semibold"></span></li>
+          <li>Concentrated Effluent From Previous Batch: <span id="concentrated-effluent-from-previous-batch" class="fw-semibold"></span></li>
+        </ul>
+      </div>
+
       <div class="mb-4">
-        <%= default_form_field(f, :reaction_type, label_text: "Reaction Type", required: true) do |req| %>
-          <%= f.select :reaction_type,
-              Experiments::NopProcess::REACTION_TYPES.map { |k, v| [v, k] },
+        <%= default_form_field(f, :nop_reaction_type_id, label_text: "Reaction Type", required: true) do |req| %>
+          <%= f.select :nop_reaction_type_id,
+              Admin::NopReactionType.all.filter { |rt| rt.is_active? }.map { |rt| [rt.name.humanize, rt.id] },
               { prompt: "Please select a reaction type" },
               { class: "form-control",
                 data: { "nop-process-form-target": "reactionTypeSelect" }
@@ -63,9 +74,9 @@
       </div>
 
       <div class="mb-4">
-        <%= default_form_field(f, :feedstock_type, label_text: "Select Feedstock Type", required: true) do |req| %>
-          <%= f.select :feedstock_type,
-              Inventory::Feedstock::FEEDSTOCK_TYPES.map { |k| [k.titleize, k] },
+        <%= default_form_field(f, :feedstock_type_id, label_text: "Select Feedstock Type", required: true) do |req| %>
+          <%= f.select :feedstock_type_id,
+              Admin::FeedstockType.all.filter { |ft| ft.is_active? }.map { |ft| [ft.name.humanize, ft.id] },
               { prompt: "Please select a feedstock type" },
               {
                 class: "form-control",
@@ -75,54 +86,66 @@
         <% end %>
       </div>
 
+      <small class="text-muted">
+        The above fields for feedstock types, NOP reaction types, and reactors are only show types which are marked as active. Please contact support if this is incorrect.
+      </small>
+
       <%= render "shared/forms/sop_section_header", title: "Standard Operating Procedure", icon: "bi bi-clipboard-check" %>
 
       <%= render "shared/forms/sop_step",
           number: 1,
-          text: "Weigh the feedstock, #{var('m','F')}; measure the moisture, #{var('u','F')}." do %>
+          text: "Weigh the feedstock, #{field_symbol("m_F")}; measure the moisture, #{field_symbol("u_F")}." do %>
 
         <%= render "shared/forms/sop_input_row",
             form: f,
             field: :feedstock_amount,
-            label_html: var("m","F"),
+            label_html: field_symbol("m_F"),
             unit_field: :feedstock_unit,
             unit_options: Experiments::NopProcess::FEEDSTOCK_UNITS %>
 
         <%= render "shared/forms/sop_input_row",
             form: f,
             field: :feedstock_moisture_percentage,
-            label_html: var("u","F"),
+            label_html: field_symbol("u_F"),
             unit: "%" %>
 
       <% end %>
 
-      <div id="standalone-batch-fields" 
-           style="display: block;">
-        <%= render "shared/forms/sop_step",
-            number: "2A",
-            text: "Measure the volume of 50 wt% HNO<sub>3</sub>, #{var('V', 'H')}; also record the molarity, #{var('c', 'H')}." do %>
+         <%= render "shared/forms/sop_step",
+            number: "2B",
+            text: "Add and record the proper amount(#{field_symbol("V_H_prime")}) and molarity(#{field_symbol("c_H_prime")}) of 70 wt% HNO<sub>3</sub>: Record the volume (#{field_symbol("V_H_double_prime")}) and concentration (#{field_symbol("c_H_double_prime")}) of the effluent reused." do %>
             <%= render "shared/forms/sop_input_row",
                 form: f,
-                field: :final_nitric_acid_amount,
-                label_html: var("V","H"),
-                unit_field: :nitric_acid_units,
-                selected_unit: "litres",
-                unit_options: Experiments::NopProcess::NITRIC_ACID_UNITS
+                field: :additional_nitric_acid_amount,
+                label_html: field_symbol("V_H_prime"),
+                unit: "litres"
               %>
                 
             <%= render "shared/forms/sop_input_row",
                 form: f,
+                field: :additional_nitric_acid_molarity,
+                label_html: field_symbol("c_H_prime"),
+                unit: "mol/L" %>
+              
+            <%= render "shared/forms/sop_input_row",
+                form: f,
+                field: :final_nitric_acid_amount,
+                label_html: field_symbol("V_H_double_prime"),
+                unit_field: :nitric_acid_units,
+                selected_unit: "litres",
+                unit_options: Experiments::NopProcess::NITRIC_ACID_UNITS
+              %>
+
+            <%= render "shared/forms/sop_input_row",
+                form: f,
                 field: :final_nitric_acid_molarity,
-                label_html: var("c","H"),
+                label_html: field_symbol("c_H_double_prime"),
                 unit: "mol/L" %>
         <% end %>
-      </div>
-
-
 
       <%= render "shared/forms/sop_step",
           number: "3",
-          text: "Put the feedstock in the reactor; put HNO<sub>3</sub> solution in the reactor; start the motor; record the rotation rate, #{var('R', 'M')}." do %>
+          text: "Put the feedstock in the reactor; put HNO<sub>3</sub> solution in the reactor; start the motor; record the rotation rate, #{field_symbol("R_M")}." do %>
           <%= render "shared/forms/sop_input_row",
               form: f,
               field: :rotation_rate,

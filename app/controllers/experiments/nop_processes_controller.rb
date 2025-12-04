@@ -40,13 +40,13 @@ module Experiments
     end
 
     def batch_number
-      feedstock_type         = params[:feedstock_type]
+      feedstock_type_id         = params[:feedstock_type_id]
       reactor_id             = params[:reactor_id]
       is_standalone_batch    = params[:is_standalone_batch] == "true"
       nop_reaction_date      = params[:nop_reaction_date].present? ? Date.parse(params[:nop_reaction_date]) : Date.today
 
       batch_number = Experiments::NopProcess.next_batch_number(
-        feedstock_type,
+        feedstock_type_id,
         reactor_id,
         is_standalone_batch,
         nop_reaction_date
@@ -108,6 +108,23 @@ module Experiments
       end
     end
 
+    def new_effluent_reuse_batch
+      add_breadcrumb "Add New Effluent Reuse Batch", new_effluent_reuse_batch_experiments_nop_processes_path
+      @nop_process = Experiments::NopProcess.new
+    end
+
+    def create_effluent_reuse_batch
+      @nop_process = Experiments::NopProcess.new(create_effluent_reuse_batch_params)
+      @nop_process.created_by = current_user.email
+      @nop_process.set_previous_process
+
+      if @nop_process.save
+        redirect_to experiments_nop_processes_path, notice: "NOP process created successfully."
+      else
+        render :new_effluent_reuse_batch, status: :unprocessable_entity
+      end
+    end
+
     private
 
     def set_nop_breadcrumbs_root
@@ -120,6 +137,7 @@ module Experiments
 
     def create_standalone_batch_params
       params.require(:standalone_batch).permit(
+        :reactor_id,
         :nop_reaction_type_id,
         :feedstock_type_id,
         :feedstock_amount,
@@ -129,7 +147,25 @@ module Experiments
         :final_nitric_acid_amount,
         :final_nitric_acid_molarity,
         :rotation_rate,
+        :batch_number,
+        :nop_reaction_date
+      )
+    end
+
+    def create_effluent_reuse_batch_params
+      params.require(:effluent_reuse_batch).permit(
         :reactor_id,
+        :nop_reaction_type_id,
+        :feedstock_type_id,
+        :feedstock_amount,
+        :feedstock_unit,
+        :feedstock_moisture_percentage,
+        :nitric_acid_units,
+        :additional_nitric_acid_amount,
+        :additional_nitric_acid_molarity,
+        :final_nitric_acid_amount,
+        :final_nitric_acid_molarity,
+        :rotation_rate,
         :batch_number,
         :nop_reaction_date
       )

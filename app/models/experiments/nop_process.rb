@@ -41,12 +41,21 @@ module Experiments
       total_reaction_time.present?
     end
 
+    def set_previous_process
+      previous_process = Inventory::Equipment.find(self.reactor_id).last_nop_process
+      if previous_process.present?
+        self.previous_process = previous_process
+      else
+        raise "No previous process found for reactor #{self.reactor_id}"
+      end
+    end
+
     # ---------------------------
     # Public API
     # ---------------------------
 
-    def self.next_batch_number(feedstock_type, reactor_id, is_standalone_batch, nop_reaction_date)
-      base = base_batch_number(feedstock_type, reactor_id, nop_reaction_date)
+    def self.next_batch_number(feedstock_type_id, reactor_id, is_standalone_batch, nop_reaction_date)
+      base = base_batch_number(feedstock_type_id, reactor_id, nop_reaction_date)
       return base if is_standalone_batch
 
       chain_count = current_chain_count(reactor_id)
@@ -86,16 +95,16 @@ module Experiments
     private
 
     # Build the batch number prefix (feedstock + reactor + date + count)
-    def self.base_batch_number(feedstock_type, reactor_id, nop_reaction_date)
-      prefix = batch_prefix(feedstock_type, reactor_id, nop_reaction_date)
+    def self.base_batch_number(feedstock_type_id, reactor_id, nop_reaction_date)
+      prefix = batch_prefix(feedstock_type_id, reactor_id, nop_reaction_date)
       suffix_count = where("batch_number LIKE ?", "#{prefix}%").count
 
       suffix_count.zero? ? prefix : "#{prefix}-#{suffix_count + 1}"
     end
 
     # Base string used for batch construction
-    def self.batch_prefix(feedstock_type, reactor_id, nop_reaction_date)
-      feedstock_code = feedstock_type.to_s.upcase[0, 3]
+    def self.batch_prefix(feedstock_type_id, reactor_id, nop_reaction_date)
+      feedstock_code = Admin::FeedstockType.find(feedstock_type_id).name.to_s.upcase.first(3)
       reactor_code   = Inventory::Equipment.find(reactor_id).code.to_s.upcase
       date_code      = nop_reaction_date.strftime("%y%m%d")
 

@@ -12,14 +12,15 @@ export default class extends Controller {
     'nopReactionDateInput',
     'reactorSelect',
     'reactionTypeSelect',
+    'previousBatchInfo',
   ];
 
   connect() {
-    console.log('NopProcessFormController connected');
-    console.log(this.reactorsValue);
+    this.selectedReactorId = null;
 
     if (this.reactorSelectTarget.value) {
       this.setSelectedReactorId(parseInt(this.reactorSelectTarget.value, 10));
+      this.showPreviousBatchInfo();
     }
     // Initialize the previous date value with the current value
     if (this.hasNopReactionDateInputTarget) {
@@ -58,7 +59,8 @@ export default class extends Controller {
 
     if (!reactorId) {
       // user selected "Please select a reactor"
-      this.selectedReactor = null;
+      this.selectedReactorId = null;
+      this.hidePreviousBatchInfo();
       return;
     }
 
@@ -70,6 +72,7 @@ export default class extends Controller {
     }
 
     this.setSelectedReactorId(reactorId);
+    this.showPreviousBatchInfo();
   }
 
   handleNopReactionDateChange(event) {
@@ -84,6 +87,7 @@ export default class extends Controller {
   }
 
   feedstockTypeChanged(event) {
+    console.log(this.feedstockTypeSelectTarget.value);
     this.resetBatchNumber();
 
     if (!this.selectedReactorId) {
@@ -99,15 +103,46 @@ export default class extends Controller {
     this.setBatchNumber();
   }
 
+  showPreviousBatchInfo() {
+    if (this.isStandaloneBatchValue === 'true') {
+      return;
+    }
+    this.previousBatchInfoTarget.style.display = 'block';
+    const lastNopProcess = this.reactorsValue.find(
+      (r) => r.id === this.selectedReactorId
+    ).last_nop_process;
+    const previousBatchNumber = lastNopProcess.batch_number;
+    const concentratedEffluentInfo =
+      lastNopProcess.concentrated_effluent_generated_amount
+        ? `${lastNopProcess.concentrated_effluent_generated_amount} ${lastNopProcess.nitric_acid_units} | ph: ${lastNopProcess.concentrated_effluent_generated_ph}`
+        : 'N/A. Please fill in the completion data ASAP';
+
+    const previousBatchNumberSpan = document.getElementById(
+      'previous-batch-number'
+    );
+    const concentratedEffluentInfoSpan = document.getElementById(
+      'concentrated-effluent-from-previous-batch'
+    );
+    previousBatchNumberSpan.textContent = previousBatchNumber;
+    concentratedEffluentInfoSpan.textContent = concentratedEffluentInfo;
+  }
+
+  hidePreviousBatchInfo() {
+    if (this.isStandaloneBatchValue === 'true') {
+      return;
+    }
+    this.previousBatchInfoTarget.style.display = 'none';
+  }
+
   async setBatchNumber() {
-    const feedstockType = this.feedstockTypeSelectTarget.value;
+    const feedstockTypeId = this.feedstockTypeSelectTarget.value;
     const reactorId = this.selectedReactorId;
     const isStandaloneBatch = this.isStandaloneBatchValue === 'true';
 
     const url =
       `/experiments/nop_processes/batch_number?` +
       new URLSearchParams({
-        feedstock_type: feedstockType,
+        feedstock_type_id: feedstockTypeId,
         reactor_id: reactorId,
         is_standalone_batch: isStandaloneBatch,
         nop_reaction_date: this.nopReactionDateInputTarget.value,

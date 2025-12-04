@@ -14,10 +14,15 @@ module ApplicationHelper
   # Store symbol *components*, not lambdas or HTML
   #
   FIELD_SYMBOLS = {
+    "m_F"                => ["m", "F"],
+    "u_F"                => ["u", "F"],
+    "V_H"                => ["V", "H"],
+    "c_H"                => ["c", "H"],
     "c_H_prime"          => ["c", "H", "'"],
     "V_H_prime"          => ["V", "H", "'"],
     "c_H_double_prime"   => ["c", "H", "''"],
-    "V_H_double_prime"   => ["V", "H", "''"]
+    "V_H_double_prime"   => ["V", "H", "''"],
+    "R_M"                => ["R", "M"]
   }.freeze
 
   #
