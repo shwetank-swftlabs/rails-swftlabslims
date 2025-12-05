@@ -15,47 +15,35 @@
     data-bs-target="#addUsageModal"
     style="font-size: 0.9rem;"
   >
-    <i class="bi bi-plus-circle me-2"></i>
+    <i class="bi bi-journal-text me-2"></i>
     Add Use Record
   </button>
 </div>
 
-<% if usages.present? %>
-  <table class="table table-sm table-bordered align-middle" style="font-size: 0.85rem;">
-    <thead class="table-light">
-      <tr>
-        <th class="py-2 ps-3">Created By</th>
-        <th class="py-2 ps-3">Date</th>
-        <th class="py-2 ps-3">Amount</th>
-        <th class="py-2 ps-3">Purpose</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% usages.each do |usage| %>
-        <tr>
-          <td class="py-2 ps-3"><%= usage.created_by %></td>
-          <td class="py-2 ps-3"><%= format_date(usage.created_at) %></td>
-          <td class="py-2 ps-3"><%= usage.amount %> <%= usage_unit.upcase %></td>
-          <td class="py-2 ps-3"><%= usage.purpose %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <div class="text-center py-4">
-    <i class="bi bi-clipboard-data text-muted" style="font-size: 2.5rem;"></i>
-    <p class="text-muted fst-italic mt-2 mb-0">No usage records added yet.</p>
-  </div>
-<% end %>
+<%= render "shared/tables/default_table",
+    collection: usages || [],
+    pagy: pagy,
+    headers: ->(_) do %>
+      <th>Created By</th>
+      <th>Date</th>
+      <th>Amount</th>
+      <th>Purpose</th>
+    <% end,
+    row: ->(usage) do %>
+      <td><%= email_to_name(usage.created_by) %></td>
+      <td><%= format_date(usage.created_at) %></td>
+      <td><%= usage.amount %> <%= usage_unit.upcase %></td>
+      <td><%= usage.purpose %></td>
+    <% end %>
 
 
 <!-- Modal -->
 <div class="modal fade" id="addUsageModal" tabindex="-1" aria-labelledby="addUsageModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content p-5">
+  <div class="modal-dialog modal-dialog-centered modal-fullscreen-lg-down">
+    <div class="modal-content">
 
-      <div class="modal-header p-2 mb-4">
-        <h5 class="modal-title" id="addUsageModalLabel">Add Use Record</h5>
+      <div class="modal-header">
+        <h5 class="modal-title" id="addUsageModalLabel">Add Use Record for <%= resource.name %></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
@@ -64,8 +52,7 @@
         scope: :use_record,
         local: true
       ) do |form| %>
-        <div class="modal-body p-2">
-
+        <div class="modal-body">
           <% if resource.present? && resource.respond_to?(:remaining_amount) %>
             <div class="alert alert-info mb-3" style="font-size: 0.9rem;">
               <strong>Amount Remaining:</strong> <%= number_with_precision(resource.remaining_amount, precision: 2, strip_insignificant_zeros: true) %> <%= usage_unit.upcase %>
@@ -92,9 +79,12 @@
           <%= render "shared/forms/creator_fields", f: form %>
         </div>
 
-        <div class="modal-footer p-4">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-          <%= form.submit "Add Use Record", class: "btn btn-secondary" %>
+        <div class="modal-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
+          <%= form.button type: "submit", class: "btn btn-primary d-flex align-items-center" do %>
+            <i class="bi bi-journal-text me-2"></i>
+            Add Use Record
+          <% end %>
         </div>
       <% end %>
 

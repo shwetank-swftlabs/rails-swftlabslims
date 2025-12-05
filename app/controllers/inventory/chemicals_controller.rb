@@ -18,7 +18,7 @@ module Inventory
         scope = scope.where(is_active: is_active_value)
       end
     
-      @pagy, @chemicals = pagy(scope.order(:name), items: 15)
+      @pagy, @chemicals = pagy(scope.order(:name), limit: 15)
     end
 
     def new
@@ -28,6 +28,10 @@ module Inventory
 
     def show
       add_breadcrumb "#{@chemical.chemical_type.name.humanize} #{@chemical.name} Details", inventory_chemical_path(@chemical)
+      # Paginate usages if on use_records tab
+      if params[:tab] == 'use_records'
+        @pagy_usages, @usages = pagy(@chemical.usages.order(updated_at: :desc), limit: 15)
+      end
     end 
 
     def create
@@ -37,7 +41,7 @@ module Inventory
       if @chemical.save
         redirect_to inventory_chemicals_path, notice: "Chemical created successfully"
       else
-        render :new
+        render :new, status: :unprocessable_entity
       end
     end
 

@@ -42,4 +42,8 @@ module ApplicationHelper
     return unless base
     var(base, sub, sup)
   end
+
+  def email_to_name(email)
+    email.split("@").first.humanize || email
+  end
 end

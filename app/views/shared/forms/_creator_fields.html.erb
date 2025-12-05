@@ -8,7 +8,9 @@
     <%= f.label :created_by, class: "form-label fw-bold mb-1" %>
     <%= f.text_field :created_by,
           class: "form-control",
+          type: "email",
           value: current_user.email,
+          required: true,
           data: created_by_data %>
   </div>
 

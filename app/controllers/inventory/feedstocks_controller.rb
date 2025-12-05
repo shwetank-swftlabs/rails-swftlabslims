@@ -28,6 +28,14 @@ module Inventory
 
     def show
       add_breadcrumb "#{@feedstock.feedstock_type.name.humanize} #{@feedstock.name} Details", inventory_feedstock_path(@feedstock)
+      
+      # Paginate usages if on use_records tab
+      if params[:tab].to_s == 'use_records'
+        @pagy, @usages = pagy(@feedstock.usages.order(updated_at: :desc), items: 15)
+      else
+        @usages = []
+        @pagy = nil
+      end
     end 
 
     def create
