@@ -39,14 +39,14 @@
   <% end %>
 
   <!-- Larger space before buttons -->
-  <div class="mt-4">
+  <div class="mt-4 d-flex justify-content-between">
     <!-- CONFIRM SUBMIT -->
     <%= f.submit "Update Chemical", 
           class: "btn btn-primary px-4 mt-3",
           data: { turbo_confirm: "Are you sure you want to update this chemical?" } %>
     
     <%= link_to "Cancel", inventory_chemical_path(@chemical), 
-          class: "btn btn-outline-secondary px-4 mt-3 ms-2" %>
+          class: "btn btn-outline-danger px-4 mt-3 ms-2" %>
   </div>
 
 <% end %>

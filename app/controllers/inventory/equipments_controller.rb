@@ -18,7 +18,7 @@ module Inventory
         scope = scope.where(is_active: is_active_value)
       end
     
-      @pagy, @equipments = pagy(scope.order(:name), items: 15)
+      @pagy, @equipments = pagy(scope.order(:name), limit: 15)
     end
 
     def new

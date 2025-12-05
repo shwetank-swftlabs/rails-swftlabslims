@@ -1,14 +1,15 @@
 <% content_for :page_title,
    render("shared/page_title",
      subtitle: "View and manage equipment information.",
-     actions: render("shared/edit_button", label: "Edit Equipment", path: edit_inventory_equipment_path(@equipment))
+     actions: render("shared/print_qr_button", qr_code_path: qr_code_inventory_equipment_path(@equipment))
    )
 %>
 
 <%= render "shared/sidebar_layout/layout",
     tabs: ["details", "maintenance_records", "operation_manual", "images", "comments"],
     tab_path: :inventory_equipment_path,
-    path_args: [@equipment] do %>
+    path_args: [@equipment],
+    bottom_action: render("shared/edit_button", label: "Edit Equipment", path: edit_inventory_equipment_path(@equipment)) do %>
 
   <%= render (params[:tab] || "details"), equipment: @equipment %>
 

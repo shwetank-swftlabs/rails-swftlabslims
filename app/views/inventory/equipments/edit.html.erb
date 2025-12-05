@@ -53,14 +53,14 @@
   <% end %>
 
   <!-- Larger space before buttons -->
-  <div class="mt-4">
+  <div class="mt-4 d-flex justify-content-between">
     <!-- CONFIRM SUBMIT -->
     <%= f.submit "Update Equipment", 
           class: "btn btn-primary px-4 mt-3",
           data: { turbo_confirm: "Are you sure you want to update this equipment?" } %>
     
     <%= link_to "Cancel", inventory_equipment_path(@equipment), 
-          class: "btn btn-outline-secondary px-4 mt-3 ms-2" %>
+          class: "btn btn-outline-danger px-4 mt-3 ms-2" %>
   </div>
 
 <% end %>

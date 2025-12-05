@@ -1,18 +1,13 @@
 <% content_for :page_title, render("shared/page_title", 
   subtitle: "View chemical details.",
-  actions: render("shared/edit_button", label: "Edit Chemical", path: edit_inventory_chemical_path(@chemical))
+  actions: render("shared/print_qr_button", qr_code_path: qr_code_inventory_chemical_path(@chemical))
 ) %>
 
 <%= render "shared/sidebar_layout/layout",
     tabs: ["details", "use_records", "comments"],
     tab_path: :inventory_chemical_path,
     path_args: [@chemical],
-    bottom_action: tag.button(
-      "Mark Inactive",
-      type: "button",
-      class: "btn btn-outline-danger w-100",
-      onclick: "alert('Marking inactive is Work in Progress.')"
-    ) do %>
+    bottom_action: render("shared/edit_button", label: "Edit Chemical", path: edit_inventory_chemical_path(@chemical)) do %>
 
   <%= render (params[:tab] || "details"), chemical: @chemical %>
 

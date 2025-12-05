@@ -16,7 +16,7 @@ module Inventory
     validates :chemical_type, presence: true
 
     def default_label_title
-      "#{chemical_type.humanize}"
+      "CHEMICAL: #{chemical_type.name.humanize}"
     end
 
     def default_label_text

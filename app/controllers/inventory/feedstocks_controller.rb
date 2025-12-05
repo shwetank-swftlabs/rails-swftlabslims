@@ -18,7 +18,7 @@ module Inventory
         scope = scope.where(is_active: is_active_value)
       end
     
-      @pagy, @feedstocks = pagy(scope.order(:name), items: 15)
+      @pagy, @feedstocks = pagy(scope.order(:name), limit: 15)
     end
 
     def new
@@ -30,11 +30,8 @@ module Inventory
       add_breadcrumb "#{@feedstock.feedstock_type.name.humanize} #{@feedstock.name} Details", inventory_feedstock_path(@feedstock)
       
       # Paginate usages if on use_records tab
-      if params[:tab].to_s == 'use_records'
-        @pagy, @usages = pagy(@feedstock.usages.order(updated_at: :desc), items: 15)
-      else
-        @usages = []
-        @pagy = nil
+      if params[:tab] == 'use_records'
+        @pagy_usages, @usages = pagy(@feedstock.usages.order(updated_at: :desc), limit: 15)
       end
     end 
 

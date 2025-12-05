@@ -1,4 +1,7 @@
-<%= link_to qr_code_path, 
+<%
+  qr_path = local_assigns[:qr_code_path]
+%>
+<%= link_to qr_path, 
             class: "btn btn-sm btn-outline-primary", 
             target: "_blank" do %>
   <i class="bi bi-printer"></i> Print QR
