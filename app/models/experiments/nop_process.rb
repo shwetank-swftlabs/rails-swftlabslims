@@ -52,14 +52,8 @@ module Experiments
 
     def common_nop_processes
       processes = []
-      
-      # Step 1: Traverse backwards to find the root of the chain
-      root = self
+      root = find_root
 
-      while root.previous_process.present?
-        root = root.previous_process
-      end
-      
       # Step 2: Traverse forward from root to collect all processes in the chain
       node = root
       while node.present?
@@ -67,10 +61,11 @@ module Experiments
         node = node.next_process
       end
       
-      # if the final child is the root, return an empty array denoting standalone batch
-      return [] if node == root
-
       processes
+    end
+
+    def standalone_batch?
+      return true if previous_process.blank? && next_process.blank?
     end
 
     # ---------------------------
@@ -132,6 +127,14 @@ module Experiments
       date_code      = nop_reaction_date.strftime("%y%m%d")
 
       "#{feedstock_code}#{reactor_code}#{date_code}"
+    end
+
+    def find_root
+      node = self
+      while node.previous_process_id.present?
+        node = node.previous_process
+      end
+      node
     end
   end
 end
