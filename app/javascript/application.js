@@ -3,6 +3,42 @@ import '@hotwired/turbo-rails';
 import 'controllers';
 // import "./confirmations"
 
+// Fix modal backdrop stacking issue - only remove duplicates
+document.addEventListener('shown.bs.modal', function(event) {
+  // After modal is shown, check for duplicate backdrops and remove extras
+  // Keep only the first backdrop (Bootstrap's default)
+  const backdrops = document.querySelectorAll('.modal-backdrop');
+  if (backdrops.length > 1) {
+    // Remove all but the first backdrop
+    for (let i = 1; i < backdrops.length; i++) {
+      backdrops[i].remove();
+    }
+  }
+});
+
+document.addEventListener('hidden.bs.modal', function(event) {
+  // Only clean up if this was the last modal
+  const openModals = document.querySelectorAll('.modal.show');
+  if (openModals.length === 0) {
+    // Remove all backdrops when no modals are open
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(backdrop => backdrop.remove());
+    
+    // Clean up body classes
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+  } else {
+    // If other modals are still open, just remove duplicate backdrops
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    if (backdrops.length > 1) {
+      for (let i = 1; i < backdrops.length; i++) {
+        backdrops[i].remove();
+      }
+    }
+  }
+});
+
 document.addEventListener('turbo:load', () => {
   // Initialize Bootstrap dropdowns
   document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach((dropdownToggle) => {

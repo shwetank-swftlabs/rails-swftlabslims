@@ -91,6 +91,40 @@ a:hover {
     text-underline-offset: 0.3rem;
     text-decoration-color: var(--bs-dark);
   }
+
+  /* Ensure mobile nav toggler is on the right */
+  .navbar .container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .navbar .navbar-toggler[data-bs-target="#mainNavbar"] {
+    margin-left: auto !important;
+  }
+  
+  /* Right-align mobile dropdown menu content */
+  .navbar-collapse {
+    text-align: right;
+  }
+  
+  .navbar-collapse .navbar-nav {
+    align-items: flex-end;
+  }
+  
+  .navbar-collapse .nav-item {
+    text-align: right;
+  }
+  
+  .navbar-collapse .nav-link {
+    text-align: right;
+    justify-content: flex-end;
+  }
+  
+  /* Ensure dropdown menu is right-aligned */
+  .navbar-collapse .dropdown-menu {
+    right: 0;
+    left: auto;
+  }
 }
 
 /* ============================================================
@@ -227,6 +261,28 @@ table.table {
 /* Container for tables - add horizontal scroll */
 .table-container,
 .table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ============================================================
+   SIDEBAR LAYOUT HORIZONTAL SCROLL
+   ============================================================ */
+
+/* Ensure sidebar layout allows horizontal scroll when content overflows */
+.sidebar-layout-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent sidebar from shrinking */
+.sidebar-layout-container > aside {
+  flex-shrink: 0;
+}
+
+/* Allow main content to scroll horizontally */
+.sidebar-layout-container > main {
+  min-width: 0;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }

@@ -8,19 +8,18 @@
 
 <!-- Upload Data File Modal -->
 <div class="modal fade" id="genericAddDataFileModal" tabindex="-1" aria-labelledby="genericAddDataFileModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+  <div class="modal-dialog modal-dialog-centered modal-fullscreen-lg-down" style="max-width: 70vh">
+    <div class="modal-content p-4">
 
       <div class="modal-header">
         <h5 class="modal-title" id="genericAddDataFileModalLabel">Upload Data File</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <div class="modal-body">
-        <%= form_with url: url, local: true, multipart: true, id: "uploadDataFileForm" do |f| %>
-
+      <%= form_with url: url, local: true, multipart: true, id: "uploadDataFileForm" do |f| %>
+        <div class="modal-body">
           <div class="mb-3">
-            <%= f.label :file, class: "form-label fw-bold mb-1" do %>
+            <%= f.label :file, class: "form-label" do %>
               Choose a file
               <span class="text-danger">*</span>
             <% end %>
@@ -33,7 +32,7 @@
           </div>
 
           <div class="mb-3">
-            <%= f.label :data_type, class: "form-label fw-bold mb-1" do %>
+            <%= f.label :data_type, class: "form-label" do %>
               Data Type
               <span class="text-danger">*</span>
             <% end %>
@@ -52,15 +51,18 @@
 
           <div class="mb-3">
             <%= f.label :label, "Label (optional)", class: "form-label" %>
-            <%= f.text_field :label, class: "form-control" %>
+            <%= f.text_field :label, class: "form-control", placeholder: "e.g., Batch 001" %>
           </div>
+        </div>
 
-          <div class="text-end">
-            <%= f.submit "Upload", class: "btn btn-primary", id: "uploadDataFileSubmit" %>
-          </div>
-
-        <% end %>
-      </div>
+        <div class="modal-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
+          <%= f.button type: "submit", class: "btn btn-primary d-flex align-items-center", id: "uploadDataFileSubmit" do %>
+            <i class="bi bi-upload me-2"></i>
+            Upload
+          <% end %>
+        </div>
+      <% end %>
 
     </div>
   </div>
