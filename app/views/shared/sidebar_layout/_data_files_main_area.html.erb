@@ -17,7 +17,7 @@
       </div>
 
       <div class="modal-body">
-        <%= form_with url: url, local: true, multipart: true do |f| %>
+        <%= form_with url: url, local: true, multipart: true, id: "uploadDataFileForm" do |f| %>
 
           <div class="mb-3">
             <%= f.label :file, class: "form-label fw-bold mb-1" do %>
@@ -27,8 +27,9 @@
             <%= f.file_field :file, 
                 class: "form-control", 
                 required: true,
-                accept: ".csv,.xls,.xlsx,.xlsm,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12" %>
-            <small class="form-text text-muted">Only CSV and Excel files (.csv, .xls, .xlsx, .xlsm) are allowed.</small>
+                id: "dataFileInput",
+                accept: ".csv,.xls,.xlsx,.xlsm,.pdf,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12,application/pdf" %>
+            <small class="form-text text-muted">CSV, Excel files (.csv, .xls, .xlsx, .xlsm), and PDF files (.pdf) are allowed.</small>
           </div>
 
           <div class="mb-3">
@@ -55,7 +56,7 @@
           </div>
 
           <div class="text-end">
-            <%= f.submit "Upload", class: "btn btn-primary" %>
+            <%= f.submit "Upload", class: "btn btn-primary", id: "uploadDataFileSubmit" %>
           </div>
 
         <% end %>
@@ -75,7 +76,7 @@
         <th class="py-2 ps-3">Data Type</th>
         <th class="py-2 ps-3">Uploaded By</th>
         <th class="py-2 ps-3">Date</th>
-        <!-- <th class="py-2 ps-3">View Data</th> -->
+        <th class="py-2 ps-3">View Data</th>
         <th class="py-2 ps-3">Open File</th>
       </tr>
     </thead>
@@ -91,18 +92,22 @@
           <td class="py-2 ps-3"><%= data_file.data_type.humanize %></td>
           <td class="py-2 ps-3"><%= data_file.created_by %></td>
           <td class="py-2 ps-3"><%= format_date(data_file.created_at) %></td>
-          <%# <td class="py-2 ps-3">
-            <button 
-              class="btn btn-sm btn-outline-primary" 
-              data-bs-toggle="modal" 
-              data-bs-target="#viewFileDataModal"
-              data-data-file-id="<%= data_file.id %>"
-              data-data-file-url="<%= polymorphic_path([data_file.attachable, data_file]) %>"
-              data-data-file-name="<%= data_file.file_name %>"
-              onclick="loadFileData(this)">
-              <i class="bi bi-eye me-1"></i> View Data
-            </button>
-          </td> %>
+          <td class="py-2 ps-3">
+            <% if data_file.parsed_data.present? %>
+              <button 
+                class="btn btn-sm btn-outline-primary" 
+                data-bs-toggle="modal" 
+                data-bs-target="#viewFileDataModal"
+                data-data-file-id="<%= data_file.id %>"
+                data-data-file-url="<%= polymorphic_path([data_file.attachable, data_file]) %>"
+                data-data-file-name="<%= data_file.file_name %>"
+                onclick="loadFileData(this)">
+                <i class="bi bi-eye me-1"></i> View Data
+              </button>
+            <% else %>
+              <span class="text-muted">NA</span>
+            <% end %>
+          </td>
           <td class="py-2 ps-3">
             <a href="<%= data_file.drive_file_url %>" target="_blank" class="text-decoration-none">
               <i class="bi bi-box-arrow-up-right"></i>
@@ -140,6 +145,38 @@
 </div>
 
 <script>
+  // Attach confirmation dialog when modal is shown
+  document.addEventListener('DOMContentLoaded', function() {
+    const addDataFileModal = document.getElementById('genericAddDataFileModal');
+    if (addDataFileModal) {
+      addDataFileModal.addEventListener('shown.bs.modal', function() {
+        const uploadForm = document.getElementById('uploadDataFileForm');
+        if (uploadForm) {
+          uploadForm.onsubmit = function(e) {
+            const fileInput = document.getElementById('dataFileInput');
+            const dataTypeInput = document.getElementById('dataTypeInput');
+            
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+              return true; // Let browser validation handle this
+            }
+            
+            if (!dataTypeInput || !dataTypeInput.value.trim()) {
+              return true; // Let browser validation handle this
+            }
+            
+            const fileName = fileInput.files[0].name;
+            const dataType = dataTypeInput.value.trim();
+            
+            // Show confirmation alert
+            const confirmed = confirm(`Are you sure you want to upload "${fileName}" with data type "${dataType}"?`);
+            
+            return confirmed;
+          };
+        }
+      });
+    }
+  });
+
   function handleDataTypeSelect(select) {
     const dataTypeInput = document.getElementById('dataTypeInput');
     const selectedOption = select.options[select.selectedIndex];
@@ -164,6 +201,17 @@
     const modalBody = document.getElementById('viewFileDataModalBody');
     const modalTitle = document.getElementById('viewFileDataModalLabel');
     
+    if (!modalBody || !modalTitle) {
+      console.error('Modal elements not found');
+      return;
+    }
+    
+    if (!dataFileUrl) {
+      console.error('Data file URL not found');
+      modalBody.innerHTML = '<div class="alert alert-danger">Error: Data file URL not found.</div>';
+      return;
+    }
+    
     // Update modal title with file name
     if (dataFileName) {
       modalTitle.textContent = 'View File Data: ' + dataFileName;
@@ -179,20 +227,34 @@
         'X-Requested-With': 'XMLHttpRequest'
       }
     })
-    .then(response => response.text())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.text();
+    })
     .then(html => {
       modalBody.innerHTML = html;
     })
     .catch(error => {
       console.error('Error loading file data:', error);
-      modalBody.innerHTML = '<div class="alert alert-danger">Error loading file data. Please try again.</div>';
+      modalBody.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>Error loading file data. Please try again.</div>';
     });
   }
 
   // Clear modal content when it's closed
-  document.getElementById('viewFileDataModal').addEventListener('hidden.bs.modal', function () {
-    document.getElementById('viewFileDataModalBody').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
-    document.getElementById('viewFileDataModalLabel').textContent = 'View File Data';
-  });
+  const viewFileDataModal = document.getElementById('viewFileDataModal');
+  if (viewFileDataModal) {
+    viewFileDataModal.addEventListener('hidden.bs.modal', function () {
+      const modalBody = document.getElementById('viewFileDataModalBody');
+      const modalTitle = document.getElementById('viewFileDataModalLabel');
+      if (modalBody) {
+        modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+      }
+      if (modalTitle) {
+        modalTitle.textContent = 'View File Data';
+      }
+    });
+  }
 </script>
 

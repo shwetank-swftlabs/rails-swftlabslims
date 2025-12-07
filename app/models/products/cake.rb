@@ -2,11 +2,18 @@ module Products
   class Cake < ApplicationRecord
     include DefaultDescOrder
     default_desc :created_at
+
+    include QrLabelable
+    include Usageable
+    include Commentable
+
     
     CAKE_UNITS = {
       "kg" => "kg (Kilograms)",
       "g" => "g (Grams)",
     }.freeze
+    CAKE_DATA_FILE_TYPES = %w[rheometry icp other].freeze
+    USAGE_PURPOSES = %w[homogenization grow_trial other].freeze
 
     belongs_to :nop_process, class_name: "Experiments::NopProcess"
 

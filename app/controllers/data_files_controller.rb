@@ -2,22 +2,22 @@ require "open-uri"
 
 class DataFilesController < ApplicationController
   def create
-    @attachable = find_attachable
+    @attachable = find_polymorphic_parent
 
     uploaded_file = params[:file]
     label = params[:label]
     data_type = params[:data_type]
 
     if uploaded_file.blank?
-      return redirect_to_attachable(alert: "No file selected.")
+      return redirect_to_polymorphic_parent(@attachable, tab: :data_files, flash_hash: { alert: "No file selected." })
     end
 
     if data_type.blank?
-      return redirect_to_attachable(alert: "Data type is required.")
+      return redirect_to_polymorphic_parent(@attachable, tab: :data_files, flash_hash: { alert: "Data type is required." })
     end
 
     unless valid_file_type?(uploaded_file)
-      return redirect_to_attachable(alert: "Only CSV and Excel files (.csv, .xls, .xlsx, .xlsm) are allowed.")
+      return redirect_to_polymorphic_parent(@attachable, tab: :data_files, flash_hash: { alert: "Only CSV, Excel files (.csv, .xls, .xlsx, .xlsm), and PDF files (.pdf) are allowed." })
     end
 
     begin
@@ -35,16 +35,16 @@ class DataFilesController < ApplicationController
       
       parse_and_store_data(data_file)
 
-      redirect_to_attachable(notice: "Data file uploaded successfully.")
+      return redirect_to_polymorphic_parent(@attachable, tab: :data_files, flash_hash: { notice: "Data file uploaded successfully." })
 
     rescue => e
       Rails.logger.error("Data file upload failed: #{e.message}")
-      return redirect_to_attachable(alert: "Data file upload failed. Please try again.")
+      return redirect_to_polymorphic_parent(@attachable, tab: :data_files, flash_hash: { alert: "Data file upload failed. Please try again." })
     end
   end
 
   def show
-    @attachable = find_attachable
+    @attachable = find_polymorphic_parent
     @data_file = @attachable.data_files.find(params[:id])
     
     respond_to do |format|
@@ -56,6 +56,8 @@ class DataFilesController < ApplicationController
   private
 
   def parse_and_store_data(data_file)
+    return if data_file.mime_type == 'application/pdf' # PDFs are not parsed
+
     # 1. Download file from Google Drive into a Tempfile with correct extension
     # Roo needs the correct extension to properly detect Excel file types
     file_extension = File.extname(data_file.file_name).presence || ".bin"
@@ -79,39 +81,12 @@ class DataFilesController < ApplicationController
     tempfile&.unlink
   end
 
-  def find_attachable
-    params.each do |key, value|
-      next unless key.to_s =~ /(.+)_id$/
-  
-      basename = $1.classify  # "Equipment"
-  
-      # Try top-level first (User, Product, etc.)
-      klass = basename.safe_constantize
-  
-      # Try namespaced versions (e.g., Inventory::Equipment)
-      if klass.nil?
-        # Search loaded constants for matches ending in ::Equipment
-        klass = ObjectSpace.each_object(Class).find do |c|
-          c.name&.end_with?("::#{basename}")
-        end
-      end
-  
-      # If we found it, load the record
-      return klass.find(value) if klass
-    end
-  
-    raise "Attachable not found"
-  end
-
-  def redirect_to_attachable(flash_hash = {})
-    redirect_to polymorphic_url(@attachable, { tab: :data_files }), flash: flash_hash
-  end
-
   def valid_file_type?(file)
     return false if file.blank?
 
+    puts "file: #{file.inspect}"
     filename = file.original_filename.to_s.downcase
-    allowed_extensions = ['.csv', '.xls', '.xlsx', '.xlsm']
+    allowed_extensions = ['.csv', '.xls', '.xlsx', '.xlsm', '.pdf']
     
     allowed_extensions.any? { |ext| filename.end_with?(ext) }
   end

@@ -12,10 +12,10 @@ module Experiments
 
     include Imageable
     include Commentable
+    include Datafileable
 
     has_one :cake, class_name: "Products::Cake", dependent: :destroy
     accepts_nested_attributes_for :cake, allow_destroy: true
-    has_many :data_files, as: :attachable, dependent: :destroy
     
     FEEDSTOCK_UNITS = Inventory::Feedstock::FEEDSTOCK_UNITS.freeze
     NITRIC_ACID_UNITS = {

@@ -5,8 +5,9 @@ module Inventory
     include Usageable
     include Imageable
     include Commentable
+    include Datafileable
+    
     default_desc :updated_at
-    has_many :data_files, as: :attachable, dependent: :destroy
     belongs_to :feedstock_type, class_name: "Admin::FeedstockType"
 
     FEEDSTOCK_UNITS = {

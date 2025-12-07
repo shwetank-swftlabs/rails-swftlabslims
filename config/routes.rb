@@ -73,4 +73,17 @@ Rails.application.routes.draw do
       resources :data_files, only: [:create, :show], controller: "/data_files"
     end
   end
+
+  # Products routes
+  namespace :products do
+    resources :cakes, only: [:index, :new, :create, :show, :edit, :update] do
+      member do
+        get :qr_code
+      end
+
+      resources :images, only: [:create, :show], controller: "/images"
+      resources :comments, only: [:create, :update], controller: "/comments"
+      resources :data_files, only: [:create, :show], controller: "/data_files"
+    end
+  end
 end
