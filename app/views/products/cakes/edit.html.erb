@@ -1,0 +1,47 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Edit cake details in the products.") %>
+
+<%= render "shared/form_errors", object: @cake %>
+
+<%= form_with(model: @cake, local: false, url: products_cake_path(@cake), method: :patch, html: { class: "cake-form" }) do |f| %>
+
+  <%= default_form_field(f, :name, label_text: "Cake Name (unique)", required: true) do |req| %>
+    <%= f.text_field :name,
+                    { class: "form-control",
+                      placeholder: "Please enter a unique cake name",
+                      value: @cake.name }.merge(req) %>
+  <% end %>
+
+  <%= inline_quantity_field(f, :quantity, "Quantity", unit_field: :unit, unit_options: Products::Cake::CAKE_UNITS, required: true) %>
+
+  <%= default_form_field(f, :moisture_percentage, label_text: "Moisture Percentage", required: true) do |req| %>
+    <%= f.number_field :moisture_percentage,
+                    { class: "form-control",
+                      placeholder: "Enter moisture percentage",
+                      step: 0.01,
+                      min: 0,
+                      max: 100,
+                      value: @cake.moisture_percentage }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :ph, label_text: "pH", required: true) do |req| %>
+    <%= f.number_field :ph,
+                    { class: "form-control",
+                      placeholder: "Enter pH value",
+                      step: 0.01,
+                      min: 0,
+                      value: @cake.ph }.merge(req) %>
+  <% end %>
+
+  <!-- Larger space before buttons -->
+  <div class="mt-4 d-flex justify-content-between">
+    <!-- CONFIRM SUBMIT -->
+    <%= f.submit "Update Cake", 
+          class: "btn btn-primary px-4 mt-3",
+          data: { turbo_confirm: "Are you sure you want to update this cake?" } %>
+    
+    <%= link_to "Cancel", products_cake_path(@cake), 
+          class: "btn btn-outline-danger px-4 mt-3 ms-2" %>
+  </div>
+
+<% end %>
+

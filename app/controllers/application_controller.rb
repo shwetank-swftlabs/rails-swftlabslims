@@ -22,7 +22,7 @@ class ApplicationController < ActionController::Base
     params.each do |key, value|
       next unless key.to_s =~ /(.+)_id$/
       basename = $1.classify
-      klass = [basename, "Inventory::#{basename}", "Experiments::#{basename}"].map(&:safe_constantize).compact.first
+      klass = [basename, "Inventory::#{basename}", "Experiments::#{basename}", "Products::#{basename}"].map(&:safe_constantize).compact.first
       return klass.find(value) if klass
     end
     raise "Polymorphic parent not found"

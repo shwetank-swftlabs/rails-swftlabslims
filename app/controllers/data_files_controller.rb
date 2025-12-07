@@ -84,7 +84,6 @@ class DataFilesController < ApplicationController
   def valid_file_type?(file)
     return false if file.blank?
 
-    puts "file: #{file.inspect}"
     filename = file.original_filename.to_s.downcase
     allowed_extensions = ['.csv', '.xls', '.xlsx', '.xlsm', '.pdf']
     

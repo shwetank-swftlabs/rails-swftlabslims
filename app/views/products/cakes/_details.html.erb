@@ -1,0 +1,12 @@
+<%= render "shared/sidebar_layout/details_list_main_area", details: {
+  "Amount Remaining" => "#{cake.remaining_amount} #{cake.unit.upcase}",
+  "Name" => cake.name,
+  "Quantity Added" => "#{cake.quantity} #{cake.unit.upcase}",
+  "Moisture Percentage" => "#{cake.moisture_percentage}%",
+  "pH" => cake.ph,
+  "Batch Number" => cake.batch_number.present? ? cake.batch_number : "N/A",
+  "Created By" => cake.created_by,
+  "Created At" => cake.created_at.strftime("%B %d, %Y %I:%M %p")
+}
+%>
+

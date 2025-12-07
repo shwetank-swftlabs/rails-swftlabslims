@@ -1,0 +1,34 @@
+<% content_for :page_title, render("shared/page_title",
+  subtitle: "Manage cakes and their data.",
+  actions: render("shared/add_button", label: "Add New Cake", path: new_products_cake_path)
+) %>
+
+<!-- UNIFIED FILTER BAR -->
+<%= render "shared/tables/default_filter_bar",
+      url: products_cakes_path,
+      search_placeholder: "Search by name…" %>
+
+<!-- CAKE TABLE -->
+<%= render "shared/tables/default_table",
+      collection: @cakes,
+      pagy: @pagy,
+      headers: ->(_) do %>
+        <th>Name</th>
+        <th>Quantity</th>
+        <th>Moisture %</th>
+        <th>pH</th>
+        <th>Batch Number</th>
+        <th>Print QR</th>
+      <% end,
+      row: ->(cake) do %>
+        <td><%= link_to cake.name, products_cake_path(cake), class: "text-decoration-underline fw-semibold" %></td>
+        <td><%= "#{cake.quantity} #{cake.unit.upcase}" %></td>
+        <td><%= "#{cake.moisture_percentage}%" %></td>
+        <td><%= cake.ph %></td>
+        <td><%= cake.batch_number.present? ? cake.batch_number : "N/A" %></td>
+        <td><%= render "shared/print_qr_button", 
+                        qr_code_path: qr_code_products_cake_path(cake),
+                        label: "Print QR" %>
+        </td>
+      <% end %>
+

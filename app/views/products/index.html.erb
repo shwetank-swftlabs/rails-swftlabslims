@@ -1,2 +1,16 @@
 <% content_for :title, "Products" %>
-<% content_for :page_title, render("shared/page_title", title: "Products (Work in Progress)", subtitle: "Manage products and their data.") %>
+<% content_for :page_title, render("shared/page_title", title: "Products", subtitle: "Manage products and their data.") %>
+
+<!-- MAIN CONTENT -->
+<div class="row g-5">
+
+  <%= render "shared/feature_card",
+      icon: "bi-box-seam",
+      title: "Cakes",
+      subtitle: "Cake products from NOP processes",
+      view_label: "View all cakes",
+      view_path: products_cakes_path,
+      add_label: "Add cake",
+      add_path: new_products_cake_path %>
+
+</div>

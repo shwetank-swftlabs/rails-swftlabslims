@@ -1,0 +1,6 @@
+<%= render "shared/sidebar_layout/data_files_main_area",
+      url: products_cake_data_files_path(@cake),
+      data_files: @cake.data_files,
+      data_types: Products::Cake::CAKE_DATA_FILE_TYPES
+%>
+

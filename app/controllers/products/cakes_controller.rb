@@ -1,0 +1,81 @@
+module Products
+  class CakesController < BaseProductsController
+    before_action :set_cakes_breadcrumbs_root
+    before_action :set_cake, only: [:show, :edit, :update, :qr_code]
+
+    def index
+      scope = Products::Cake.all
+
+      # Search by name
+      scope = scope.where("name ILIKE ?", "%#{params[:q]}%") if params[:q].present?
+
+      @pagy, @cakes = pagy(scope.order(:name), limit: 15)
+    end
+
+    def new
+      add_breadcrumb "Add New Cake", new_products_cake_path
+      @cake = Products::Cake.new
+    end
+
+    def show
+      add_breadcrumb "Cake #{@cake.name} Details", products_cake_path(@cake)
+      
+      # Paginate usages if on use_records tab
+      if params[:tab] == 'use_records'
+        @pagy, @usages = pagy(@cake.usages.order(updated_at: :desc), items: 15)
+      end
+    end
+
+    def create
+      @cake = Products::Cake.new(cake_params)
+      @cake.created_by = current_user.email
+
+      if @cake.save
+        redirect_to products_cakes_path, notice: "Cake created successfully"
+      else
+        add_breadcrumb "Add New Cake", new_products_cake_path
+        render :new, status: :unprocessable_entity
+      end
+    end
+
+    def edit
+      add_breadcrumb "Edit Cake #{@cake.name}", edit_products_cake_path(@cake)
+    end
+
+    def update
+      if @cake.update(update_cake_params)
+        redirect_to products_cake_path(@cake), notice: "Cake updated successfully"
+      else
+        add_breadcrumb "Edit Cake #{@cake.name}", edit_products_cake_path(@cake)
+        render :edit, status: :unprocessable_entity
+      end
+    end
+
+    def qr_code
+      pdf = @cake.qr_label_pdf(url: products_cake_url(@cake))
+
+      send_data pdf,
+        filename: "#{@cake.name}_qr_code.pdf",
+        type: "application/pdf",
+        disposition: "inline"
+    end
+
+    private
+
+    def set_cakes_breadcrumbs_root
+      add_breadcrumb "Cakes", products_cakes_path
+    end
+
+    def set_cake
+      @cake = Products::Cake.find(params[:id])
+    end
+
+    def cake_params
+      params.require(:products_cake).permit(:name, :quantity, :unit, :moisture_percentage, :ph, :batch_number)
+    end
+
+    def update_cake_params
+      params.require(:products_cake).permit(:name, :quantity, :unit, :moisture_percentage, :ph)
+    end
+  end
+end

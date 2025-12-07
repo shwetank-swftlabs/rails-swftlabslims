@@ -14,6 +14,6 @@
   <% end %>
 
   <!-- CUSTOM FILTERS (dynamic!) -->
-  <%= capture(f, &filter_fields) if filter_fields.present? %>
+  <%= capture(f, &filter_fields) if local_assigns[:filter_fields].present? %>
 
 <% end %>

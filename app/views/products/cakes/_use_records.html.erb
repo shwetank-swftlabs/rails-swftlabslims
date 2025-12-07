@@ -1,0 +1,9 @@
+<%= render "shared/sidebar_layout/use_records_main_area",
+      url: products_cake_usages_path(@cake),
+      usages: @usages || @cake.usages,
+      pagy: @pagy,
+      usage_unit: @cake.unit,
+      usage_purposes: Products::Cake::USAGE_PURPOSES,
+      resource: @cake
+%>
+
