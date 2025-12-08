@@ -48,17 +48,17 @@
         <% end %>
 
         <!-- Experiments Dropdown -->
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" data-controller="dropdown">
           <a class="nav-link dropdown-toggle <%= 'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/experiments') %>"
              href="#"
              id="experimentsDropdown"
-             data-bs-toggle="dropdown"
+             data-action="click->dropdown#toggle"
              aria-expanded="false"
              style="<%= request.path.start_with?('/experiments') ? 'border-bottom-width: 3px !important;' : '' %>">
             Experiments
           </a>
 
-          <ul class="dropdown-menu" aria-labelledby="experimentsDropdown">
+          <ul class="dropdown-menu" aria-labelledby="experimentsDropdown" data-dropdown-target="menu">
             <li><%= link_to "NOP Processes", experiments_nop_processes_path, class: "dropdown-item #{'active' if request.path.start_with?('/experiments/nop_processes')}" %></li>
             <li><hr class="dropdown-divider"></li>
             <li><%= link_to "All Experiments", experiments_path, class: "dropdown-item #{'active' if request.path == '/experiments'}" %></li>
@@ -66,17 +66,17 @@
         </li>
 
         <!-- Inventory Dropdown -->
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" data-controller="dropdown">
           <a class="nav-link dropdown-toggle <%= 'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/inventory') %>"
              href="#"
              id="inventoryDropdown"
-             data-bs-toggle="dropdown"
+             data-action="click->dropdown#toggle"
              aria-expanded="false"
              style="<%= request.path.start_with?('/inventory') ? 'border-bottom-width: 3px !important;' : '' %>">
             Inventory
           </a>
 
-          <ul class="dropdown-menu" aria-labelledby="inventoryDropdown">
+          <ul class="dropdown-menu" aria-labelledby="inventoryDropdown" data-dropdown-target="menu">
             <li><%= link_to "Equipments", inventory_equipments_path, class: "dropdown-item #{'active' if request.path.start_with?('/inventory/equipments')}" %></li>
             <li><%= link_to "Chemicals", inventory_chemicals_path, class: "dropdown-item #{'active' if request.path.start_with?('/inventory/chemicals')}" %></li>
             <li><%= link_to "Feedstock", inventory_feedstocks_path, class: "dropdown-item #{'active' if request.path.start_with?('/inventory/feedstocks')}" %></li>
@@ -86,17 +86,17 @@
         </li>
 
         <!-- Products Dropdown -->
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" data-controller="dropdown">
           <a class="nav-link dropdown-toggle <%= 'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/products') %>"
              href="#"
              id="productsDropdown"
-             data-bs-toggle="dropdown"
+             data-action="click->dropdown#toggle"
              aria-expanded="false"
              style="<%= request.path.start_with?('/products') ? 'border-bottom-width: 3px !important;' : '' %>">
             Products
           </a>
 
-          <ul class="dropdown-menu" aria-labelledby="productsDropdown">
+          <ul class="dropdown-menu" aria-labelledby="productsDropdown" data-dropdown-target="menu">
             <li><%= link_to "Cakes", products_cakes_path, class: "dropdown-item #{'active' if request.path.start_with?('/products/cakes')}" %></li>
             <li><hr class="dropdown-divider"></li>
             <li><%= link_to "All Products", products_path, class: "dropdown-item #{'active' if request.path == '/products'}" %></li>
@@ -104,17 +104,17 @@
         </li>
 
         <!-- User Dropdown -->
-        <li class="nav-item dropdown ms-2">
+        <li class="nav-item dropdown ms-2" data-controller="dropdown">
           <a class="nav-link dropdown-toggle text-muted small"
              href="#"
              id="userDropdown"
-             data-bs-toggle="dropdown"
+             data-action="click->dropdown#toggle"
              aria-expanded="false">
             <span class="text-muted">Logged in as</span>
             <span class="fw-semibold text-dark"><%= current_user.first_name.capitalize %></span>
           </a>
 
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown" data-dropdown-target="menu">
             <li>
               <%= button_to "Logout",
                 logout_path,

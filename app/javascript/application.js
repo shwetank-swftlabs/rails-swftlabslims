@@ -39,53 +39,21 @@ document.addEventListener('hidden.bs.modal', function (event) {
   }
 });
 
-// Clean up dropdowns before Turbo caches the page
+// Clean up dropdowns before Turbo caches the page (close open ones)
+// Stimulus controllers handle their own cleanup, but we'll close open dropdowns for visual consistency
 document.addEventListener('turbo:before-cache', () => {
-  if (window.bootstrap && window.bootstrap.Dropdown) {
-    const menus = document.querySelectorAll('.dropdown-menu.show');
-    const parents = document.querySelectorAll('.dropdown.show');
-
-    menus.forEach((menu) => {
-      menu.classList.remove('show');
-    });
-
-    parents.forEach((drop) => {
-      drop.classList.remove('show');
-    });
-
-    document
-      .querySelectorAll('[data-bs-toggle="dropdown"]')
-      .forEach((dropdownToggle) => {
-        const instance = bootstrap.Dropdown.getInstance(dropdownToggle);
-        if (instance) {
-          instance.dispose();
-        }
-        dropdownToggle.setAttribute('aria-expanded', 'false');
-      });
-  }
-});
+  document.querySelectorAll('.dropdown.show').forEach(dropdown => {
+    const menu = dropdown.querySelector('.dropdown-menu')
+    if (menu) {
+      menu.classList.remove('show')
+      dropdown.classList.remove('show')
+      const toggle = dropdown.querySelector('[data-action*="dropdown#toggle"]') || dropdown
+      toggle.setAttribute('aria-expanded', 'false')
+    }
+  })
+})
 
 document.addEventListener('turbo:load', () => {
-  // Initialize Bootstrap dropdowns
-  document
-    .querySelectorAll('[data-bs-toggle="dropdown"]')
-    .forEach((dropdownToggle) => {
-      // Ensure dropdown is properly initialized
-      if (window.bootstrap && window.bootstrap.Dropdown) {
-        // Dispose of existing instance if it exists to prevent conflicts
-        const existingInstance = bootstrap.Dropdown.getInstance(dropdownToggle);
-        if (existingInstance) {
-          existingInstance.dispose();
-        }
-
-        // Reset aria-expanded state before creating new instance
-        dropdownToggle.setAttribute('aria-expanded', 'false');
-
-        // Create new dropdown instance
-        new bootstrap.Dropdown(dropdownToggle);
-      }
-    });
-
   // Carousel initialization
   document.querySelectorAll('.carousel').forEach((carousel) => {
     const counter = carousel.querySelector('.current-index');
