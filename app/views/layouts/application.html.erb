@@ -37,7 +37,7 @@
   <body data-controller="na-formatter">
     <%= logged_in? ? render("shared/navbar") : nil %>
 
-    <div class="container-lg mt-3">
+    <div class="container mt-3">
       <%= render "shared/breadcrumb" %>
       <%= yield :page_title %>
       <%= render "shared/notice" if flash.present? %>
