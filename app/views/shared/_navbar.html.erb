@@ -1,14 +1,15 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom" data-turbo="false">
   <div class="container">
+
     <% if sidebar_layout? %>
       <button class="navbar-toggler d-lg-none"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#sidebarNavbar"
-            aria-controls="sidebarNavbar"
-            aria-expanded="true"
-            aria-label="Toggle sidebar">
-            <span><i class="bi bi-layout-sidebar-inset fs-3"></i></span>
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#sidebarNavbar"
+              aria-controls="sidebarNavbar"
+              aria-expanded="false"
+              aria-label="Toggle sidebar">
+        <span><i class="bi bi-layout-sidebar-inset fs-3"></i></span>
       </button>
     <% end %>
 
@@ -17,7 +18,7 @@
       SWFTLabsLIMS
     <% end %>
 
-    <!-- Mobile Toggler -->
+    <!-- Mobile Navbar Toggler -->
     <button class="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
@@ -28,11 +29,10 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Collapsible Content -->
+    <!-- Collapsible Navbar Content -->
     <div class="collapse navbar-collapse" id="mainNavbar">
-      <ul class="navbar-nav me-auto">
-        <!-- Left side empty -->
-      </ul>
+
+      <ul class="navbar-nav me-auto"></ul>
 
       <ul class="navbar-nav ms-auto">
 
@@ -40,91 +40,80 @@
         <% if current_user.is_admin? %>
           <li class="nav-item">
             <%= link_to "Admin",
-                        admin_path,
-                        class: "nav-link #{'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/admin')}",
-                        style: (request.path.start_with?('/admin') ? "border-bottom-width: 3px !important;" : nil) %>
+              admin_path,
+              class: "nav-link #{'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/admin')}",
+              style: (request.path.start_with?('/admin') ? 'border-bottom-width: 3px !important;' : nil)
+            %>
           </li>
         <% end %>
 
         <!-- Experiments -->
         <li class="nav-item">
           <%= link_to "Experiments",
-                      experiments_path,
-                      class: "nav-link #{'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/experiments')}",
-                      style: (request.path.start_with?('/experiments') ? "border-bottom-width: 3px !important;" : nil) %>
+            experiments_path,
+            class: "nav-link #{'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/experiments')}",
+            style: (request.path.start_with?('/experiments') ? 'border-bottom-width: 3px !important;' : nil)
+          %>
         </li>
 
-        <!-- Inventory -->
+        <!-- Inventory Dropdown -->
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle <%= 'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/inventory') %>"
              href="#"
              id="inventoryDropdown"
-             role="button"
              data-bs-toggle="dropdown"
-             data-bs-auto-close="true"
              aria-expanded="false"
-             aria-haspopup="true"
-             style: (request.path.start_with?('/inventory') ? "border-bottom-width: 3px !important;" : nil)>
+             style="<%= request.path.start_with?('/inventory') ? 'border-bottom-width: 3px !important;' : '' %>">
             Inventory
           </a>
 
-          <ul class="dropdown-menu"
-              aria-labelledby="inventoryDropdown">
-            <li>
-              <%= link_to "Equipments",
-                          inventory_equipments_path,
-                          class: "dropdown-item #{'active' if request.path.start_with?('/inventory/equipments')}" %>
-            </li>
-            <li>
-              <%= link_to "Chemicals",
-                          inventory_chemicals_path,
-                          class: "dropdown-item #{'active' if request.path.start_with?('/inventory/chemicals')}" %>
-            </li>
-            <li>
-              <%= link_to "Feedstock",
-                          inventory_feedstocks_path,
-                          class: "dropdown-item #{'active' if request.path.start_with?('/inventory/feedstocks')}" %>
-            </li>
+          <ul class="dropdown-menu" aria-labelledby="inventoryDropdown">
+            <li><%= link_to "Equipments", inventory_equipments_path, class: "dropdown-item #{'active' if request.path.start_with?('/inventory/equipments')}" %></li>
+            <li><%= link_to "Chemicals", inventory_chemicals_path, class: "dropdown-item #{'active' if request.path.start_with?('/inventory/chemicals')}" %></li>
+            <li><%= link_to "Feedstock", inventory_feedstocks_path, class: "dropdown-item #{'active' if request.path.start_with?('/inventory/feedstocks')}" %></li>
             <li><hr class="dropdown-divider"></li>
-            <li>
-              <%= link_to "All Inventory",
-                          inventory_path,
-                          class: "dropdown-item #{'active' if request.path == '/inventory'}" %>
-            </li>
+            <li><%= link_to "All Inventory", inventory_path, class: "dropdown-item #{'active' if request.path == '/inventory'}" %></li>
           </ul>
         </li>
 
-        <!-- Products -->
-        <li class="nav-item">
-          <%= link_to "Products",
-                      products_path,
-                      class: "nav-link #{'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/products')}",
-                      style: (request.path.start_with?('/products') ? "border-bottom-width: 3px !important;" : nil) %>
+        <!-- Products Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle <%= 'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/products') %>"
+             href="#"
+             id="productsDropdown"
+             data-bs-toggle="dropdown"
+             aria-expanded="false"
+             style="<%= request.path.start_with?('/products') ? 'border-bottom-width: 3px !important;' : '' %>">
+            Products
+          </a>
+
+          <ul class="dropdown-menu" aria-labelledby="productsDropdown">
+            <li><%= link_to "Cakes", products_cakes_path, class: "dropdown-item #{'active' if request.path.start_with?('/products/cakes')}" %></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><%= link_to "All Products", products_path, class: "dropdown-item #{'active' if request.path == '/products'}" %></li>
+          </ul>
         </li>
 
-        <!-- User Menu -->
+        <!-- User Dropdown -->
         <li class="nav-item dropdown ms-2">
           <a class="nav-link dropdown-toggle text-muted small"
              href="#"
              id="userDropdown"
-             role="button"
              data-bs-toggle="dropdown"
-             data-bs-auto-close="true"
-             aria-expanded="false"
-             aria-haspopup="true">
-            <span class="text-muted">Logged in as</span> <span class="fw-semibold text-dark"><%= current_user.first_name.capitalize %></span>
+             aria-expanded="false">
+            <span class="text-muted">Logged in as</span>
+            <span class="fw-semibold text-dark"><%= current_user.first_name.capitalize %></span>
           </a>
 
-          <ul class="dropdown-menu dropdown-menu-end"
-              aria-labelledby="userDropdown">
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
             <li>
-              <%= link_to "Logout",
-                          logout_path,
-                          class: "dropdown-item text-danger",
-                          data: {
-                            turbo_method: :delete,
-                            turbo_confirm: "Are you sure you want to log out?"
-                          } %>
+              <%= button_to "Logout",
+                logout_path,
+                method: :delete,
+                class: "dropdown-item text-danger fw-semibold border-0 bg-transparent w-100 text-start",
+                style: "color: #dc3545 !important;",
+                onclick: "return confirm('Are you sure you want to log out?');"
+              %>
             </li>
           </ul>
         </li>

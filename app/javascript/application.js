@@ -4,7 +4,7 @@ import 'controllers';
 // import "./confirmations"
 
 // Fix modal backdrop stacking issue - only remove duplicates
-document.addEventListener('shown.bs.modal', function(event) {
+document.addEventListener('shown.bs.modal', function (event) {
   // After modal is shown, check for duplicate backdrops and remove extras
   // Keep only the first backdrop (Bootstrap's default)
   const backdrops = document.querySelectorAll('.modal-backdrop');
@@ -16,14 +16,14 @@ document.addEventListener('shown.bs.modal', function(event) {
   }
 });
 
-document.addEventListener('hidden.bs.modal', function(event) {
+document.addEventListener('hidden.bs.modal', function (event) {
   // Only clean up if this was the last modal
   const openModals = document.querySelectorAll('.modal.show');
   if (openModals.length === 0) {
     // Remove all backdrops when no modals are open
     const backdrops = document.querySelectorAll('.modal-backdrop');
-    backdrops.forEach(backdrop => backdrop.remove());
-    
+    backdrops.forEach((backdrop) => backdrop.remove());
+
     // Clean up body classes
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
@@ -42,35 +42,49 @@ document.addEventListener('hidden.bs.modal', function(event) {
 // Clean up dropdowns before Turbo caches the page
 document.addEventListener('turbo:before-cache', () => {
   if (window.bootstrap && window.bootstrap.Dropdown) {
-    document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach((dropdownToggle) => {
-      const instance = bootstrap.Dropdown.getInstance(dropdownToggle);
-      if (instance) {
-        instance.dispose();
-      }
-      dropdownToggle.setAttribute('aria-expanded', 'false');
+    const menus = document.querySelectorAll('.dropdown-menu.show');
+    const parents = document.querySelectorAll('.dropdown.show');
+
+    menus.forEach((menu) => {
+      menu.classList.remove('show');
     });
+
+    parents.forEach((drop) => {
+      drop.classList.remove('show');
+    });
+
+    document
+      .querySelectorAll('[data-bs-toggle="dropdown"]')
+      .forEach((dropdownToggle) => {
+        const instance = bootstrap.Dropdown.getInstance(dropdownToggle);
+        if (instance) {
+          instance.dispose();
+        }
+        dropdownToggle.setAttribute('aria-expanded', 'false');
+      });
   }
 });
 
 document.addEventListener('turbo:load', () => {
   // Initialize Bootstrap dropdowns
-  document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach((dropdownToggle) => {
-    // Ensure dropdown is properly initialized
-    if (window.bootstrap && window.bootstrap.Dropdown) {
-      // Dispose of existing instance if it exists to prevent conflicts
-      const existingInstance = bootstrap.Dropdown.getInstance(dropdownToggle);
-      if (existingInstance) {
-        existingInstance.dispose();
+  document
+    .querySelectorAll('[data-bs-toggle="dropdown"]')
+    .forEach((dropdownToggle) => {
+      // Ensure dropdown is properly initialized
+      if (window.bootstrap && window.bootstrap.Dropdown) {
+        // Dispose of existing instance if it exists to prevent conflicts
+        const existingInstance = bootstrap.Dropdown.getInstance(dropdownToggle);
+        if (existingInstance) {
+          existingInstance.dispose();
+        }
+
+        // Reset aria-expanded state before creating new instance
+        dropdownToggle.setAttribute('aria-expanded', 'false');
+
+        // Create new dropdown instance
+        new bootstrap.Dropdown(dropdownToggle);
       }
-      
-      // Reset aria-expanded state before creating new instance
-      dropdownToggle.setAttribute('aria-expanded', 'false');
-      
-      // Create new dropdown instance
-      new bootstrap.Dropdown(dropdownToggle);
-    }
-  });
-});
+    });
 
   // Carousel initialization
   document.querySelectorAll('.carousel').forEach((carousel) => {
