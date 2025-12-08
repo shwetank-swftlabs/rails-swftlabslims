@@ -10,7 +10,8 @@
   # Build input options
   input_options = {
     class: "form-control form-control-sm w-auto",
-    style: "min-width: 80px;"
+    style: "min-width: 80px;",
+    step: :any
   }
   input_options[:required] = true if required
   # Only set value if explicitly provided (don't override model binding)
