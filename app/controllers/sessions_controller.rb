@@ -23,7 +23,7 @@ class SessionsController < ApplicationController
   
     # Login
     session[:user_id] = user.id
-    redirect_to session.delete(:return_to) || root_path, notice: "Welcome #{user.first_name.humanize}! You are now logged in."
+    redirect_to session.delete(:return_to) || root_path, notice: "Welcome #{user.first_name.humanize}! You are now logged in.", status: :see_other
   end
 
   def destroy

@@ -28,7 +28,7 @@
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
 
     <!-- Your custom muted scientific theme overrides (MUST BE LAST) -->
-    <link href="<%= asset_path('defaults.css') %>" rel="stylesheet">
+    <link href="<%= asset_path('defaults.css') %>" rel="stylesheet" data-turbo-track="reload">
 
     <!-- JS importmap -->
     <%= javascript_importmap_tags %>

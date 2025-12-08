@@ -1,4 +1,7 @@
 <% content_for :page_title, render("shared/page_title", subtitle: "Welcome to SWFTLabsLIMS") %>
+<% content_for :head do %>
+  <meta name="turbo-cache-control" content="no-cache">
+<% end %>
 
 <div class="row g-5">
 
