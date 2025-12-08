@@ -34,7 +34,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body data-controller="na-formatter">
     <%= logged_in? ? render("shared/navbar") : nil %>
 
     <div class="container-lg mt-3">
