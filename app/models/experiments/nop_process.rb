@@ -20,7 +20,8 @@ module Experiments
     FEEDSTOCK_UNITS = Inventory::Feedstock::FEEDSTOCK_UNITS.freeze
     NITRIC_ACID_UNITS = {
       "ml" => "mL (Milliliters)",
-      "litres" => "L (Litres)"
+      "litres" => "L (Litres)",
+      "pounds" => "lb (Pounds)"
     }.freeze
     DATA_FILE_TYPES = %w[pressure_and_temp_evolution other].freeze
 
@@ -132,7 +133,7 @@ module Experiments
       reactor_code   = Inventory::Equipment.find(reactor_id).code.to_s.upcase
       date_code      = nop_reaction_date.strftime("%y%m%d")
 
-      "#{feedstock_code}#{reactor_code}#{date_code}"
+      "#{reactor_code}#{feedstock_code}#{date_code}"
     end
 
     def find_root
