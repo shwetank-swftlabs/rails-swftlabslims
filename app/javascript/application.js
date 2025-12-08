@@ -51,9 +51,42 @@ document.addEventListener('turbo:before-cache', () => {
       toggle.setAttribute('aria-expanded', 'false')
     }
   })
+  
+  // Clean up modal state before Turbo caches the page
+  // This prevents modal backdrops and body styles from persisting after navigation
+  const backdrops = document.querySelectorAll('.modal-backdrop');
+  backdrops.forEach(backdrop => backdrop.remove());
+  
+  // Remove modal-related body classes and styles
+  document.body.classList.remove('modal-open');
+  document.body.style.overflow = '';
+  document.body.style.paddingRight = '';
+  
+  // Hide any open modals
+  document.querySelectorAll('.modal.show').forEach(modal => {
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+    modal.style.display = '';
+  });
 })
 
 document.addEventListener('turbo:load', () => {
+  // Clean up any leftover modal state after Turbo loads a new page
+  // This ensures body styles are reset even if cleanup didn't happen before navigation
+  const backdrops = document.querySelectorAll('.modal-backdrop');
+  backdrops.forEach(backdrop => backdrop.remove());
+  
+  document.body.classList.remove('modal-open');
+  document.body.style.overflow = '';
+  document.body.style.paddingRight = '';
+  
+  // Hide any modals that might still be marked as shown
+  document.querySelectorAll('.modal.show').forEach(modal => {
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+    modal.style.display = '';
+  });
+  
   // Carousel initialization
   document.querySelectorAll('.carousel').forEach((carousel) => {
     const counter = carousel.querySelector('.current-index');
