@@ -82,7 +82,7 @@
 
         <div class="modal-footer d-flex justify-content-between">
           <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
-          <%= form.button type: "submit", class: "btn btn-primary d-flex align-items-center", data: { turbo: false }, onclick: "return handleUseRecordSubmit(event)" do %>
+          <%= form.button type: "submit", class: "btn btn-primary d-flex align-items-center", onclick: "return handleUseRecordSubmit(event)" do %>
             <i class="bi bi-journal-text me-2"></i>
             Add Use Record
           <% end %>
