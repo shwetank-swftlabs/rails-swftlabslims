@@ -1,6 +1,15 @@
+<% 
+  actions_array = [render("experiments/nop_processes/update_final_data_button", nop_process: @nop_process)]
+  if @nop_process.google_drive_folder_id.present?
+    actions_array << link_to(@nop_process.google_drive_folder_url, target: "_blank", class: "btn btn-outline-primary", title: "Open Google Drive folder") do
+      '<i class="bi bi-folder me-2"></i>Google Drive'.html_safe
+    end
+  end
+  actions_content = safe_join(actions_array)
+%>
 <% content_for :page_title, render("shared/page_title",
   subtitle: "View NOP process details.",
-  actions: render("experiments/nop_processes/update_final_data_button", nop_process: @nop_process)
+  actions: actions_content
 ) %>
 
 <%= render "shared/sidebar_layout/layout",

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_03_220314) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_08_184722) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -186,6 +186,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_03_220314) do
     t.string "feedstock_unit", null: false
     t.decimal "final_nitric_acid_amount", null: false
     t.decimal "final_nitric_acid_molarity", null: false
+    t.string "google_drive_folder_id"
     t.string "nitric_acid_units", null: false
     t.date "nop_reaction_date", null: false
     t.bigint "nop_reaction_type_id", null: false

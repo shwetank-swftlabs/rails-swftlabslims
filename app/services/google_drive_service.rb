@@ -44,6 +44,16 @@ class GoogleDriveService
     tempfile
   end
 
+  def create_folder(folder_name)
+    metadata = {
+      name: folder_name,
+      parents: [root_folder_id],
+      mime_type: "application/vnd.google-apps.folder"
+    }
+  
+    @drive.create_file(metadata, fields: "id")
+  end
+  
   private
 
   def root_folder_id

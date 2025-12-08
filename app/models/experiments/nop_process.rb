@@ -3,6 +3,8 @@ module Experiments
     include DefaultDescOrder
     default_desc :created_at
 
+    before_create :create_google_drive_folder
+
     belongs_to :reactor, class_name: "Inventory::Equipment"
     belongs_to :feedstock_type, class_name: "Admin::FeedstockType"
     belongs_to :nop_reaction_type, class_name: "Admin::NopReactionType"
@@ -75,6 +77,11 @@ module Experiments
       cakes.find_by('created_by': 'system')
     end
 
+    def google_drive_folder_url
+      return nil unless google_drive_folder_id.present?
+      "https://drive.google.com/drive/folders/#{google_drive_folder_id}"
+    end
+
     # ---------------------------
     # Public API
     # ---------------------------
@@ -143,6 +150,17 @@ module Experiments
       end
       node
     end
+
+    def create_google_drive_folder
+      begin
+        folder = GoogleDriveService.new.create_folder(batch_number)
+        self.google_drive_folder_id = folder.id
+      rescue => e
+        errors.add(:base, "Error creating Google Drive folder: #{e.message}. Please try again or contact support.")
+        throw :abort   # prevents the record from being created
+      end
+    end
+    
   end
 end
 
