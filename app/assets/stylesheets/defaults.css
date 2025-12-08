@@ -217,6 +217,33 @@ a:hover {
 }
 
 /* ============================================================
+   DROPDOWN MENU STYLING - Theme-consistent hover
+   ============================================================ */
+
+/* Remove Bootstrap's default blue hover and use theme colors */
+.dropdown-item {
+  color: var(--bs-body-color) !important;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: rgba(96, 125, 139, 0.2) !important; /* prominent scientific tint */
+  color: var(--bs-primary) !important;
+}
+
+.dropdown-item.active {
+  background-color: var(--bs-primary) !important;
+  color: #fff !important;
+}
+
+.dropdown-item.active:hover,
+.dropdown-item.active:focus {
+  background-color: var(--bs-primary-hover) !important;
+  color: #fff !important;
+}
+
+/* ============================================================
    REMOVE SPINNER ARROWS FROM NUMBER INPUTS
    ============================================================ */
 

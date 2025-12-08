@@ -55,11 +55,43 @@
         </li>
 
         <!-- Inventory -->
-        <li class="nav-item">
-          <%= link_to "Inventory",
-                      inventory_path,
-                      class: "nav-link #{'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/inventory')}",
-                      style: (request.path.start_with?('/inventory') ? "border-bottom-width: 3px !important;" : nil) %>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle <%= 'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/inventory') %>"
+             href="#"
+             id="inventoryDropdown"
+             role="button"
+             data-bs-toggle="dropdown"
+             data-bs-auto-close="true"
+             aria-expanded="false"
+             aria-haspopup="true"
+             style: (request.path.start_with?('/inventory') ? "border-bottom-width: 3px !important;" : nil)>
+            Inventory
+          </a>
+
+          <ul class="dropdown-menu"
+              aria-labelledby="inventoryDropdown">
+            <li>
+              <%= link_to "Equipments",
+                          inventory_equipments_path,
+                          class: "dropdown-item #{'active' if request.path.start_with?('/inventory/equipments')}" %>
+            </li>
+            <li>
+              <%= link_to "Chemicals",
+                          inventory_chemicals_path,
+                          class: "dropdown-item #{'active' if request.path.start_with?('/inventory/chemicals')}" %>
+            </li>
+            <li>
+              <%= link_to "Feedstock",
+                          inventory_feedstocks_path,
+                          class: "dropdown-item #{'active' if request.path.start_with?('/inventory/feedstocks')}" %>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <%= link_to "All Inventory",
+                          inventory_path,
+                          class: "dropdown-item #{'active' if request.path == '/inventory'}" %>
+            </li>
+          </ul>
         </li>
 
         <!-- Products -->

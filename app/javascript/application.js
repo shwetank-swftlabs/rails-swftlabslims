@@ -39,14 +39,38 @@ document.addEventListener('hidden.bs.modal', function(event) {
   }
 });
 
+// Clean up dropdowns before Turbo caches the page
+document.addEventListener('turbo:before-cache', () => {
+  if (window.bootstrap && window.bootstrap.Dropdown) {
+    document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach((dropdownToggle) => {
+      const instance = bootstrap.Dropdown.getInstance(dropdownToggle);
+      if (instance) {
+        instance.dispose();
+      }
+      dropdownToggle.setAttribute('aria-expanded', 'false');
+    });
+  }
+});
+
 document.addEventListener('turbo:load', () => {
   // Initialize Bootstrap dropdowns
   document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach((dropdownToggle) => {
     // Ensure dropdown is properly initialized
     if (window.bootstrap && window.bootstrap.Dropdown) {
+      // Dispose of existing instance if it exists to prevent conflicts
+      const existingInstance = bootstrap.Dropdown.getInstance(dropdownToggle);
+      if (existingInstance) {
+        existingInstance.dispose();
+      }
+      
+      // Reset aria-expanded state before creating new instance
+      dropdownToggle.setAttribute('aria-expanded', 'false');
+      
+      // Create new dropdown instance
       new bootstrap.Dropdown(dropdownToggle);
     }
   });
+});
 
   // Carousel initialization
   document.querySelectorAll('.carousel').forEach((carousel) => {
