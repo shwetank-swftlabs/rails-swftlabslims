@@ -57,7 +57,9 @@ module Experiments
 
     def edit
       add_breadcrumb "Update #{@nop_process.batch_number}", edit_experiments_nop_process_path(@nop_process)
-      @nop_process.build_cake unless @nop_process.cake.present?
+    
+      # Always start with a fresh new cake and do NOT duplicate
+      @nop_process.cakes.build if @nop_process.cakes.none?(&:new_record?)
     end
 
     def update
@@ -69,7 +71,9 @@ module Experiments
       params_hash = edit_nop_process_params
 
       # Set cake name internally based on batch number
-      params_hash[:cake_attributes][:name] = "#{@nop_process.batch_number}-Cake"
+      params_hash[:cakes_attributes].each do |_, cake|
+        cake[:name] = "#{@nop_process.batch_number}_Cake"
+      end
       
       if @nop_process.update(params_hash)
         redirect_to experiments_nop_process_path(@nop_process), notice: "NOP process updated successfully."
@@ -179,8 +183,7 @@ module Experiments
         :concentrated_effluent_generated_ph,
         :diluted_effluent_generated_amount,
         :diluted_effluent_generated_ph,
-        cake_attributes: [
-          :id,
+        cakes_attributes: [
           :quantity,
           :unit,
           :moisture_percentage,

@@ -1,14 +1,18 @@
 <dl class="details-list mb-0">
   <dt class="text-muted small fw-semibold mt-3 text-uppercase" style="letter-spacing: 0.5px;">
-    Cake
+    Cakes
   </dt>
-  <% if nop_process.cake.present? %>
+  <% if nop_process.cakes.any? %>
     <dd class="text-dark fs-6 border-bottom pb-3 mb-3">
-      <%= link_to nop_process.cake.name, products_cake_path(nop_process.cake) %>
+      <ul class="mb-0 ps-3 mt-2">
+      <% nop_process.cakes.each do |cake| %>
+          <li class="mb-2"><%= link_to cake.name, products_cake_path(cake) %></li>
+        <% end %>
+      </ul>
     </dd>
   <% else %>
     <dd class="text-dark fs-6 border-bottom pb-3 mb-3">
-      <%= content_tag(:span, "—", class: "text-muted fst-italic") %>
+      <%= content_tag(:span, "No cake created yet", class: "text-muted fst-italic") %>
     </dd>
   <% end %>
 </dl>

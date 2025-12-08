@@ -9,6 +9,12 @@ module Products
       # Search by name
       scope = scope.where("name ILIKE ?", "%#{params[:q]}%") if params[:q].present?
 
+      # Search by batch_number
+      if params[:batch_number].present?
+        scope = scope.left_joins(:nop_process)
+                     .where("nop_processes.batch_number ILIKE ?", "%#{params[:batch_number]}%")
+      end
+
       @pagy, @cakes = pagy(scope.order(:name), limit: 15)
     end
 

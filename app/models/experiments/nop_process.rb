@@ -14,8 +14,8 @@ module Experiments
     include Commentable
     include Datafileable
 
-    has_one :cake, class_name: "Products::Cake", dependent: :destroy
-    accepts_nested_attributes_for :cake, allow_destroy: true
+    has_many :cakes, class_name: "Products::Cake", dependent: :destroy
+    accepts_nested_attributes_for :cakes
     
     FEEDSTOCK_UNITS = Inventory::Feedstock::FEEDSTOCK_UNITS.freeze
     NITRIC_ACID_UNITS = {
@@ -66,6 +66,12 @@ module Experiments
 
     def standalone_batch?
       return true if previous_process.blank? && next_process.blank?
+    end
+
+    def main_cake
+      # Main cake is the one automatically created by the system
+      # When final data is added
+      cakes.find_by('created_by': 'system')
     end
 
     # ---------------------------

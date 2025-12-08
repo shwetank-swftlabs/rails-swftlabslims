@@ -72,7 +72,7 @@
           number: "8",
           text: "Wash the press filter solid; record the mass (#{field_symbol("m_solid")}); moisture percentage (#{field_symbol("u_solid")}); and pH (#{field_symbol("pH_solid")})." do %>
 
-        <%= f.fields_for :cake do |cake_form| %>
+        <%= f.fields_for :cakes, @nop_process.cakes.select(&:new_record?) do |cake_form| %>
           <%= render "shared/forms/sop_input_row",
               form: cake_form,
               field: :quantity,
@@ -96,7 +96,7 @@
       <% end %>
 
       <%= render "shared/forms/sop_step",
-          number: "8",
+          number: "9",
           text: "Record the diluted effluent generated amount, #{var('V', 'DE')}; and pH, #{var('pH', 'dE')}." do %>
         <%= render "shared/forms/sop_input_row",
             form: f,

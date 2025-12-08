@@ -6,7 +6,21 @@
 <!-- UNIFIED FILTER BAR -->
 <%= render "shared/tables/default_filter_bar",
       url: products_cakes_path,
-      search_placeholder: "Search by name…" %>
+      search_placeholder: "Search by name…",
+      filter_fields: ->(f) do %>
+
+  <!-- Batch Number Search -->
+  <div class="col-md-4">
+    <div class="input-group">
+      <%= f.text_field :batch_number,
+            value: params[:batch_number],
+            placeholder: "Search by batch number…",
+            class: "form-control" %>
+      <%= f.submit "Search", class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+<% end %>
 
 <!-- CAKE TABLE -->
 <%= render "shared/tables/default_table",
@@ -14,18 +28,18 @@
       pagy: @pagy,
       headers: ->(_) do %>
         <th>Name</th>
-        <th>Quantity</th>
-        <th>Moisture %</th>
-        <th>pH</th>
         <th>Batch Number</th>
+        <th>Quantity</th>
+        <th>Created By</th>
+        <th>Created At</th>
         <th>Print QR</th>
       <% end,
       row: ->(cake) do %>
         <td><%= link_to cake.name, products_cake_path(cake), class: "text-decoration-underline fw-semibold" %></td>
-        <td><%= "#{cake.quantity} #{cake.unit.upcase}" %></td>
-        <td><%= "#{cake.moisture_percentage}%" %></td>
-        <td><%= cake.ph %></td>
         <td><%= cake.batch_number.present? ? cake.batch_number : "N/A" %></td>
+        <td><%= "#{cake.quantity} #{cake.unit.upcase}" %></td>
+        <td><%= cake.created_by %></td>
+        <td><%= format_date(cake.created_at) %></td>
         <td><%= render "shared/print_qr_button", 
                         qr_code_path: qr_code_products_cake_path(cake),
                         label: "Print QR" %>
