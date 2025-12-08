@@ -57,7 +57,7 @@
 
         <div class="modal-footer d-flex justify-content-between">
           <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
-          <%= f.button type: "submit", class: "btn btn-primary d-flex align-items-center", id: "uploadDataFileSubmit" do %>
+          <%= f.button type: "submit", class: "btn btn-primary d-flex align-items-center", id: "uploadDataFileSubmit", onclick: "const fileInput = document.getElementById('dataFileInput'); const dataTypeInput = document.getElementById('dataTypeInput'); const fileName = fileInput?.files?.[0]?.name || 'this file'; const dataType = dataTypeInput?.value?.trim() || 'the selected data type'; return confirm(`Are you sure you want to upload \"${fileName}\" with data type \"${dataType}\"?`);" do %>
             <i class="bi bi-upload me-2"></i>
             Upload
           <% end %>
@@ -147,38 +147,6 @@
 </div>
 
 <script>
-  // Attach confirmation dialog when modal is shown
-  document.addEventListener('DOMContentLoaded', function() {
-    const addDataFileModal = document.getElementById('genericAddDataFileModal');
-    if (addDataFileModal) {
-      addDataFileModal.addEventListener('shown.bs.modal', function() {
-        const uploadForm = document.getElementById('uploadDataFileForm');
-        if (uploadForm) {
-          uploadForm.onsubmit = function(e) {
-            const fileInput = document.getElementById('dataFileInput');
-            const dataTypeInput = document.getElementById('dataTypeInput');
-            
-            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-              return true; // Let browser validation handle this
-            }
-            
-            if (!dataTypeInput || !dataTypeInput.value.trim()) {
-              return true; // Let browser validation handle this
-            }
-            
-            const fileName = fileInput.files[0].name;
-            const dataType = dataTypeInput.value.trim();
-            
-            // Show confirmation alert
-            const confirmed = confirm(`Are you sure you want to upload "${fileName}" with data type "${dataType}"?`);
-            
-            return confirmed;
-          };
-        }
-      });
-    }
-  });
-
   function handleDataTypeSelect(select) {
     const dataTypeInput = document.getElementById('dataTypeInput');
     const selectedOption = select.options[select.selectedIndex];

@@ -9,4 +9,9 @@ class ApplicationRecord < ActiveRecord::Base
     "pounds" => "lb (Pounds)",
     "other" => "Other"
   }.freeze
+
+  def google_drive_folder_url
+    return nil unless has_attribute?(:google_drive_folder_id) && google_drive_folder_id.present?
+    "https://drive.google.com/drive/folders/#{google_drive_folder_id}"
+  end
 end

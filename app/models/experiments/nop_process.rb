@@ -77,9 +77,8 @@ module Experiments
       cakes.find_by('created_by': 'system')
     end
 
-    def google_drive_folder_url
-      return nil unless google_drive_folder_id.present?
-      "https://drive.google.com/drive/folders/#{google_drive_folder_id}"
+    def default_upload_folder_id
+      google_drive_folder_id.presence
     end
 
     # ---------------------------

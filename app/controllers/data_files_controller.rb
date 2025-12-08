@@ -21,7 +21,8 @@ class DataFilesController < ApplicationController
     end
 
     begin
-      upload_result = GoogleDriveService.new.upload(uploaded_file)
+      folder_id = @attachable.default_upload_folder_id
+      upload_result = GoogleDriveService.new.upload(uploaded_file, folder_id)
 
       data_file = @attachable.data_files.create!(
         file_name: uploaded_file.original_filename,
