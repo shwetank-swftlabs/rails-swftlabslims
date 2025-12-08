@@ -50,7 +50,8 @@
       <%= form_with(
         url: url,
         scope: :use_record,
-        local: true
+        local: true,
+        data: { turbo: false }
       ) do |form| %>
         <div class="modal-body">
           <% if resource.present? && resource.respond_to?(:remaining_amount) %>
@@ -81,7 +82,7 @@
 
         <div class="modal-footer d-flex justify-content-between">
           <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
-          <%= form.button type: "submit", class: "btn btn-primary d-flex align-items-center", onclick: "return confirm('Are you sure you want to add this use record?')" do %>
+          <%= form.button type: "submit", class: "btn btn-primary d-flex align-items-center", onclick: "return handleUseRecordSubmit(event)" do %>
             <i class="bi bi-journal-text me-2"></i>
             Add Use Record
           <% end %>
@@ -109,6 +110,36 @@
       // Clear when no selection
       purposeInput.value = '';
     }
+  }
+
+  function handleUseRecordSubmit(event) {
+    // Confirm before submitting
+    if (!confirm('Are you sure you want to add this use record?')) {
+      event.preventDefault();
+      return false;
+    }
+
+    // Clean up modal state before form submission to prevent layout issues
+    // This is especially important in production where Turbo might intercept redirects
+    const modal = document.getElementById('addUsageModal');
+    if (modal) {
+      // Remove modal backdrop
+      const backdrops = document.querySelectorAll('.modal-backdrop');
+      backdrops.forEach(backdrop => backdrop.remove());
+      
+      // Reset body styles
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      
+      // Hide modal
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden', 'true');
+      modal.style.display = '';
+    }
+
+    // Allow form to submit normally
+    return true;
   }
 </script>
 

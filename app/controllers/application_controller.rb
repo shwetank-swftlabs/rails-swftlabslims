@@ -28,11 +28,11 @@ class ApplicationController < ActionController::Base
     raise "Polymorphic parent not found"
   end
 
-  def redirect_to_polymorphic_parent(resource, tab: nil, flash_hash: {})
+  def redirect_to_polymorphic_parent(resource, tab: nil, flash_hash: {}, status: :see_other)
     url_params = {}
     url_params = { tab: tab } if tab.present?
 
-    redirect_to polymorphic_url(resource, url_params), flash: flash_hash
+    redirect_to polymorphic_url(resource, url_params), flash: flash_hash, status: status
   end
 
   def sidebar_layout?
