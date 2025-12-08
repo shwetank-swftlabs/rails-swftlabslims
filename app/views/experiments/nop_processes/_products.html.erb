@@ -1,0 +1,14 @@
+<dl class="details-list mb-0">
+  <dt class="text-muted small fw-semibold mt-3 text-uppercase" style="letter-spacing: 0.5px;">
+    Cake
+  </dt>
+  <% if nop_process.cake.present? %>
+    <dd class="text-dark fs-6 border-bottom pb-3 mb-3">
+      <%= link_to nop_process.cake.name, products_cake_path(nop_process.cake) %>
+    </dd>
+  <% else %>
+    <dd class="text-dark fs-6 border-bottom pb-3 mb-3">
+      <%= content_tag(:span, "—", class: "text-muted fst-italic") %>
+    </dd>
+  <% end %>
+</dl>

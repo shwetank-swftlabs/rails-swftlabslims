@@ -160,7 +160,7 @@
       </div>
 
       <!-- SUBMIT BUTTON -->
-      <%= f.submit "Add NOP Process", class: "btn btn-primary mt-3 w-100" %>
+      <%= f.submit "Add NOP Process", class: "btn btn-primary mt-3 w-100", onclick: "return confirm('Are you sure you want to add this NOP process?')" %>
 
     <% end %>
 

@@ -111,7 +111,7 @@
             unit: "" %>
       <% end %>
       <!-- SUBMIT BUTTON -->
-      <%= f.submit "Done", class: "btn btn-primary mt-3 w-100" %>
+      <%= f.submit "Done", class: "btn btn-primary mt-3 w-100", onclick: "return confirm('Are you sure you want to add the post-reaction data for this NOP process?')" %>
 
     <% end %>
 

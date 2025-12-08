@@ -47,13 +47,22 @@
           </li>
         <% end %>
 
-        <!-- Experiments -->
-        <li class="nav-item">
-          <%= link_to "Experiments",
-            experiments_path,
-            class: "nav-link #{'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/experiments')}",
-            style: (request.path.start_with?('/experiments') ? 'border-bottom-width: 3px !important;' : nil)
-          %>
+        <!-- Experiments Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle <%= 'active text-dark fw-semibold border-bottom border-dark-subtle' if request.path.start_with?('/experiments') %>"
+             href="#"
+             id="experimentsDropdown"
+             data-bs-toggle="dropdown"
+             aria-expanded="false"
+             style="<%= request.path.start_with?('/experiments') ? 'border-bottom-width: 3px !important;' : '' %>">
+            Experiments
+          </a>
+
+          <ul class="dropdown-menu" aria-labelledby="experimentsDropdown">
+            <li><%= link_to "NOP Processes", experiments_nop_processes_path, class: "dropdown-item #{'active' if request.path.start_with?('/experiments/nop_processes')}" %></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><%= link_to "All Experiments", experiments_path, class: "dropdown-item #{'active' if request.path == '/experiments'}" %></li>
+          </ul>
         </li>
 
         <!-- Inventory Dropdown -->
