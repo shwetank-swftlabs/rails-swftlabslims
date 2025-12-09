@@ -54,6 +54,9 @@ Rails.application.configure do
   # config.solid_queue.connects_to = { database: { writing: :queue } }
   config.active_job.queue_adapter = :async
 
+  # Configure solid_cable to use the cable database connection
+  config.solid_cable.connects_to = { database: { writing: :cable } }
+
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
