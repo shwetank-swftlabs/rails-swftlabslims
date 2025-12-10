@@ -24,17 +24,17 @@
     collection: usages || [],
     pagy: pagy,
     headers: ->(_) do %>
-      <th>Created By</th>
-      <th>Date</th>
       <th>Amount</th>
       <th>Purpose</th>
+      <th>Date</th>
+      <th>Created By</th>
       <th>Actions</th>
     <% end,
     row: ->(usage) do %>
-      <td><%= email_to_name(usage.created_by) %></td>
-      <td><%= format_date(usage.created_at) %></td>
       <td><%= usage.amount %> <%= usage_unit.upcase %></td>
       <td><%= usage.purpose %></td>
+      <td><%= format_date(usage.created_at) %></td>
+      <td><%= email_to_name(usage.created_by) %></td>
       <td>
         <button 
           class="btn btn-sm btn-outline-primary edit-usage-btn"

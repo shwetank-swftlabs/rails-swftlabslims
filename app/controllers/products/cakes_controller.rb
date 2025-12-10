@@ -66,6 +66,10 @@ module Products
         disposition: "inline"
     end
 
+    def redirect_to_index
+      redirect_to products_cakes_path, alert: "The old QRs are no longer valid. Please print a new QR."
+    end
+
     private
 
     def set_cakes_breadcrumbs_root

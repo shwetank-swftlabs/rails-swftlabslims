@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   get "/inventory", to: "inventory#index", as: :inventory
   get "/products", to: "products#index", as: :products
   get "/admin", to: "admin#index", as: :admin
+  get "/inventory/cakes/:id", to: "products/cakes#redirect_to_index"
 
 
   # Admin routes
