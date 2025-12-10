@@ -1,4 +1,6 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom" data-turbo="false">
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom" 
+     data-turbo="false"
+     style="<%= 'background-color: #fffacd !important;' unless Rails.env.production? %>">
   <div class="container">
 
     <% if sidebar_layout? %>
