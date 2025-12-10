@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_08_184722) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_10_153438) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -214,6 +214,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_08_184722) do
     t.decimal "amount", null: false
     t.datetime "created_at", null: false
     t.string "created_by", default: "system", null: false
+    t.boolean "is_active", default: true
     t.string "purpose", null: false
     t.bigint "resource_id", null: false
     t.string "resource_type", null: false
