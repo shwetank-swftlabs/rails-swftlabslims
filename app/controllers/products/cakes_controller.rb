@@ -28,7 +28,7 @@ module Products
       
       # Paginate usages if on use_records tab
       if params[:tab] == 'use_records'
-        @pagy, @usages = pagy(@cake.usages.order(:created_at: :desc))
+        @pagy, @usages = pagy(@cake.usages.order(created_at: :desc))
       end
     end
 
