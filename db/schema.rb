@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_10_153438) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_10_192453) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -168,6 +168,19 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_10_153438) do
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["attachable_type", "attachable_id"], name: "index_images_on_attachable"
+  end
+
+  create_table "library_samples", force: :cascade do |t|
+    t.string "amount"
+    t.datetime "created_at", null: false
+    t.string "created_by", default: "system"
+    t.boolean "is_active", default: true
+    t.bigint "library_sampleable_id", null: false
+    t.string "library_sampleable_type", null: false
+    t.string "location"
+    t.string "name"
+    t.datetime "updated_at", null: false
+    t.index ["library_sampleable_type", "library_sampleable_id"], name: "index_library_samples_on_library_sampleable"
   end
 
   create_table "nop_processes", force: :cascade do |t|
