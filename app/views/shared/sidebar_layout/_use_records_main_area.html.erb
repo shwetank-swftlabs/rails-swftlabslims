@@ -242,9 +242,11 @@
 
 <script>
   // Populate edit modal when edit button is clicked
-  document.addEventListener('DOMContentLoaded', function() {
+  function initEditUsageModal() {
     const editModal = document.getElementById('editUsageModal');
     if (editModal) {
+      // Use event delegation on document to avoid duplicate listeners
+      // This will work even after Turbo navigation replaces the modal
       editModal.addEventListener('show.bs.modal', function(event) {
         const button = event.relatedTarget;
         if (button && button.classList.contains('edit-usage-btn')) {
@@ -291,17 +293,17 @@
           // Populate form fields
           const amountField = document.getElementById('editUsageAmount');
           if (amountField) {
-            amountField.value = usageAmount;
+            amountField.value = usageAmount || '';
           }
 
           const purposeInput = document.getElementById('editPurposeInput');
           if (purposeInput) {
-            purposeInput.value = usagePurpose;
+            purposeInput.value = usagePurpose || '';
           }
 
           const createdAtField = document.getElementById('editUsageCreatedAt');
           if (createdAtField) {
-            createdAtField.value = usageCreatedAt;
+            createdAtField.value = usageCreatedAt || '';
           }
 
           const isActiveCheckbox = document.getElementById('editUsageIsActive');
@@ -321,7 +323,17 @@
         }
       });
     }
-  });
+  }
+
+  // Initialize on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEditUsageModal);
+  } else {
+    initEditUsageModal();
+  }
+
+  // Re-initialize on Turbo navigation
+  document.addEventListener('turbo:load', initEditUsageModal);
 
   function updateStatusLabels(isActive, statusLabel, statusHint) {
     if (statusLabel) {
