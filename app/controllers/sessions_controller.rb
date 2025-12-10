@@ -1,11 +1,12 @@
 class SessionsController < ApplicationController
   skip_before_action :require_login, only: [:new, :create]
-  before_action :reset_session, only: [:create, :destroy, :new]
+  before_action :reset_session, only: [:destroy, :new]
 
   def new
   end
 
   def create
+    return_to = session[:return_to] || root_path
     auth  = request.env["omniauth.auth"]
     email = auth.info.email
   
@@ -22,8 +23,9 @@ class SessionsController < ApplicationController
     end
   
     # Login
+    reset_session
     session[:user_id] = user.id
-    redirect_to session.delete(:return_to) || root_path, notice: "Welcome #{user.first_name.humanize}! You are now logged in.", status: :see_other
+    redirect_to return_to, notice: "Welcome #{user.first_name.humanize}! You are now logged in.", status: :see_other
   end
 
   def destroy
