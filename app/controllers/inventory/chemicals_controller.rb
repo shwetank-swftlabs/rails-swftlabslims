@@ -18,7 +18,7 @@ module Inventory
         scope = scope.where(is_active: is_active_value)
       end
     
-      @pagy, @chemicals = pagy(scope.order(:name), limit: 15)
+      @pagy, @chemicals = pagy(scope.order(:name))
     end
 
     def new
@@ -30,7 +30,7 @@ module Inventory
       add_breadcrumb "#{@chemical.chemical_type.name.humanize} #{@chemical.name} Details", inventory_chemical_path(@chemical)
       # Paginate usages if on use_records tab
       if params[:tab] == 'use_records'
-        @pagy_usages, @usages = pagy(@chemical.usages.order(updated_at: :desc), limit: 15)
+        @pagy_usages, @usages = pagy(@chemical.usages.order(updated_at: :desc))
       end
     end 
 

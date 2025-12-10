@@ -27,7 +27,7 @@ module Experiments
       # Filter by feedstock_type
       scope = scope.where(feedstock_type: params[:feedstock_type]) if params[:feedstock_type].present?
 
-      @pagy, @nop_processes = pagy(scope.order(created_at: :desc), items: 15)
+      @pagy, @nop_processes = pagy(scope.order(created_at: :desc))
     end
 
     def show

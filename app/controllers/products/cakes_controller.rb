@@ -15,7 +15,7 @@ module Products
                      .where("nop_processes.batch_number ILIKE ?", "%#{params[:batch_number]}%")
       end
 
-      @pagy, @cakes = pagy(scope.order(:name), limit: 15)
+      @pagy, @cakes = pagy(scope.order(:name))
     end
 
     def new
@@ -28,7 +28,7 @@ module Products
       
       # Paginate usages if on use_records tab
       if params[:tab] == 'use_records'
-        @pagy, @usages = pagy(@cake.usages.order(updated_at: :desc), items: 15)
+        @pagy, @usages = pagy(@cake.usages.order(:created_at: :desc))
       end
     end
 

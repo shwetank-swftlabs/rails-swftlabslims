@@ -1,7 +1,7 @@
 class UsagesController < ApplicationController
   def index
     @usageable = find_polymorphic_parent
-    @pagy, @usages = pagy(@usageable.usages.order(updated_at: :desc), items: 5)
+    @pagy, @usages = pagy(@usageable.usages.order(updated_at: :desc))
   end
 
   def create

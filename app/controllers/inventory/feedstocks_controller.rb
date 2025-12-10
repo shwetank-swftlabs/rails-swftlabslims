@@ -18,7 +18,7 @@ module Inventory
         scope = scope.where(is_active: is_active_value)
       end
     
-      @pagy, @feedstocks = pagy(scope.order(:name), limit: 15)
+      @pagy, @feedstocks = pagy(scope.order(:name))
     end
 
     def new
@@ -31,7 +31,7 @@ module Inventory
       
       # Paginate usages if on use_records tab
       if params[:tab] == 'use_records'
-        @pagy_usages, @usages = pagy(@feedstock.usages.order(updated_at: :desc), limit: 15)
+        @pagy_usages, @usages = pagy(@feedstock.usages.order(updated_at: :desc))
       end
     end 
 
