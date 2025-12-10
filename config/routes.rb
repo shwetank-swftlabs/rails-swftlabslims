@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   get "/products", to: "products#index", as: :products
   get "/admin", to: "admin#index", as: :admin
 
+
   # Admin routes
   namespace :admin do
     resources :equipment_types, only: [:index, :new, :create, :edit, :update] 
@@ -59,7 +60,7 @@ Rails.application.routes.draw do
       end
 
       resources :comments, only: [:create, :update], controller: "/comments"
-      resources :usages, only: [:create, :index], controller: "/usages"
+      resources :usages, only: [:create, :index, :update], controller: "/usages"
     end
 
     resources :feedstocks, only: [:index, :new, :create, :show, :edit, :update] do
@@ -68,8 +69,9 @@ Rails.application.routes.draw do
       end
 
       resources :images, only: [:create, :show], controller: "/images"
+      resources :images, only: [:create, :show], controller: "/images"
       resources :comments, only: [:create, :update], controller: "/comments"
-      resources :usages, only: [:create, :index], controller: "/usages"
+      resources :usages, only: [:create, :index, :update], controller: "/usages"
       resources :data_files, only: [:create, :show], controller: "/data_files"
     end
   end
@@ -84,7 +86,7 @@ Rails.application.routes.draw do
       resources :images, only: [:create, :show], controller: "/images"
       resources :comments, only: [:create, :update], controller: "/comments"
       resources :data_files, only: [:create, :show], controller: "/data_files"
-      resources :usages, only: [:create, :index, :update, :destroy], controller: "/usages"
+      resources :usages, only: [:create, :index, :update], controller: "/usages"
     end
   end
 end

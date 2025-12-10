@@ -28,12 +28,29 @@
       <th>Date</th>
       <th>Amount</th>
       <th>Purpose</th>
+      <th>Actions</th>
     <% end,
     row: ->(usage) do %>
       <td><%= email_to_name(usage.created_by) %></td>
       <td><%= format_date(usage.created_at) %></td>
       <td><%= usage.amount %> <%= usage_unit.upcase %></td>
       <td><%= usage.purpose %></td>
+      <td>
+        <button 
+          class="btn btn-sm btn-outline-primary edit-usage-btn"
+          data-bs-toggle="modal"
+          data-bs-target="#editUsageModal"
+          data-usage-id="<%= usage.id %>"
+          data-usage-amount="<%= usage.amount %>"
+          data-usage-purpose="<%= usage.purpose %>"
+          data-usage-created-at="<%= usage.created_at&.strftime('%Y-%m-%d') %>"
+          data-usage-is-active="<%= usage.is_active? %>"
+          data-update-url="<%= polymorphic_path([resource, usage]) %>"
+          style="font-size: 0.85rem;"
+        >
+          <i class="bi bi-pencil"></i> Edit
+        </button>
+      </td>
     <% end %>
 
 
@@ -122,6 +139,209 @@
     // Clean up modal state before form submission to prevent layout issues
     // This is especially important in production where Turbo might intercept redirects
     const modal = document.getElementById('addUsageModal');
+    if (modal) {
+      // Remove modal backdrop
+      const backdrops = document.querySelectorAll('.modal-backdrop');
+      backdrops.forEach(backdrop => backdrop.remove());
+      
+      // Reset body styles
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      
+      // Hide modal
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden', 'true');
+      modal.style.display = '';
+    }
+
+    // Allow form to submit normally
+    return true;
+  }
+</script>
+
+<!-- Edit Usage Modal -->
+<div class="modal fade" id="editUsageModal" tabindex="-1" aria-labelledby="editUsageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-fullscreen-lg-down" style="max-width: 70vh">
+    <div class="modal-content p-4">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="editUsageModalLabel">Edit Use Record for <%= resource.name %></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <%= form_with(
+        url: "#",
+        scope: :usage,
+        local: true,
+        method: :patch,
+        data: { turbo: false },
+        html: { id: "editUsageForm" }
+      ) do |form| %>
+        <div class="modal-body">
+          <%= default_form_field(form, :is_active, label_text: "Status") do |req| %>
+            <div class="d-flex align-items-center gap-3">
+              <div class="form-check form-switch">
+                <%= form.check_box :is_active, { class: "form-check-input", id: "editUsageIsActive" } %>
+                <label class="form-check-label" for="editUsageIsActive">
+                  <span id="editUsageStatusLabel">Active</span>
+                </label>
+              </div>
+              <small class="text-muted">
+                (<span id="editUsageStatusHint">Toggle to change status</span>)
+              </small>
+            </div>
+          <% end %>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold mb-1 d-block">
+              Amount Used <span class="text-danger">*</span>
+            </label>
+            <div class="d-flex gap-2 align-items-center">
+              <%= form.number_field :amount, 
+                  id: "editUsageAmount",
+                  class: "form-control",
+                  step: :any,
+                  min: 0,
+                  required: true,
+                  style: "max-width: 150px" %>
+              <span class="ms-2"><%= usage_unit.upcase %></span>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :purpose, "Purpose", class: "form-label fw-bold mb-1" %>
+            <%= form.text_field :purpose, 
+                id: "editPurposeInput",
+                class: "form-control", 
+                required: true,
+                placeholder: "Enter purpose of usage" %>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :created_at, "Date", class: "form-label fw-bold mb-1" %>
+            <%= form.date_field :created_at,
+                id: "editUsageCreatedAt",
+                class: "form-control",
+                required: true %>
+          </div>
+        </div>
+
+        <div class="modal-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
+          <%= form.button type: "submit", class: "btn btn-primary d-flex align-items-center", onclick: "return handleEditUseRecordSubmit(event)" do %>
+            <i class="bi bi-pencil me-2"></i>
+            Update Use Record
+          <% end %>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // Populate edit modal when edit button is clicked
+  document.addEventListener('DOMContentLoaded', function() {
+    const editModal = document.getElementById('editUsageModal');
+    if (editModal) {
+      editModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        if (button && button.classList.contains('edit-usage-btn')) {
+          const usageId = button.getAttribute('data-usage-id');
+          const usageAmount = button.getAttribute('data-usage-amount');
+          const usagePurpose = button.getAttribute('data-usage-purpose');
+          const usageCreatedAt = button.getAttribute('data-usage-created-at');
+          const usageIsActive = button.getAttribute('data-usage-is-active') === 'true';
+          const updateUrl = button.getAttribute('data-update-url');
+
+          // Set form action URL and ensure all hidden fields are correct
+          const form = document.getElementById('editUsageForm');
+          if (form) {
+            form.action = updateUrl;
+            form.method = 'post'; // Rails uses POST with _method field for PATCH
+            
+            // Ensure _method field is set to 'patch'
+            let methodInput = form.querySelector('input[name="_method"]');
+            if (!methodInput) {
+              methodInput = document.createElement('input');
+              methodInput.type = 'hidden';
+              methodInput.name = '_method';
+              form.appendChild(methodInput);
+            }
+            methodInput.value = 'patch';
+            
+            // Ensure CSRF token is present and up-to-date
+            const metaToken = document.querySelector('meta[name="csrf-token"]');
+            if (metaToken) {
+              let csrfInput = form.querySelector('input[name="authenticity_token"]');
+              if (csrfInput) {
+                csrfInput.value = metaToken.getAttribute('content');
+              } else {
+                // Create CSRF token input if it doesn't exist
+                csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'authenticity_token';
+                csrfInput.value = metaToken.getAttribute('content');
+                form.insertBefore(csrfInput, form.firstChild);
+              }
+            }
+          }
+
+          // Populate form fields
+          const amountField = document.getElementById('editUsageAmount');
+          if (amountField) {
+            amountField.value = usageAmount;
+          }
+
+          const purposeInput = document.getElementById('editPurposeInput');
+          if (purposeInput) {
+            purposeInput.value = usagePurpose;
+          }
+
+          const createdAtField = document.getElementById('editUsageCreatedAt');
+          if (createdAtField) {
+            createdAtField.value = usageCreatedAt;
+          }
+
+          const isActiveCheckbox = document.getElementById('editUsageIsActive');
+          const statusLabel = document.getElementById('editUsageStatusLabel');
+          const statusHint = document.getElementById('editUsageStatusHint');
+          if (isActiveCheckbox) {
+            isActiveCheckbox.checked = usageIsActive;
+            updateStatusLabels(isActiveCheckbox.checked, statusLabel, statusHint);
+            
+            // Update labels when checkbox changes (using onchange to avoid multiple listeners)
+            isActiveCheckbox.onchange = function() {
+              const currentStatusLabel = document.getElementById('editUsageStatusLabel');
+              const currentStatusHint = document.getElementById('editUsageStatusHint');
+              updateStatusLabels(this.checked, currentStatusLabel, currentStatusHint);
+            };
+          }
+        }
+      });
+    }
+  });
+
+  function updateStatusLabels(isActive, statusLabel, statusHint) {
+    if (statusLabel) {
+      statusLabel.textContent = isActive ? 'Active' : 'Delete';
+    }
+    if (statusHint) {
+      statusHint.textContent = isActive ? 'Uncheck to mark as deleted' : 'Check to mark as active';
+    }
+  }
+
+
+  function handleEditUseRecordSubmit(event) {
+    // Confirm before submitting
+    if (!confirm('Are you sure you want to update this use record?')) {
+      event.preventDefault();
+      return false;
+    }
+
+    // Clean up modal state before form submission to prevent layout issues
+    const modal = document.getElementById('editUsageModal');
     if (modal) {
       // Remove modal backdrop
       const backdrops = document.querySelectorAll('.modal-backdrop');

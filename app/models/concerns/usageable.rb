@@ -2,7 +2,7 @@ module Usageable
   extend ActiveSupport::Concern
 
   included do
-    has_many :usages, -> { order(updated_at: :desc) }, as: :resource, dependent: :destroy
+    has_many :usages, -> { where(is_active: true).order(created_at: :desc) }, as: :resource, dependent: :destroy
   end
 
   # Calculate the remaining amount after all usages
