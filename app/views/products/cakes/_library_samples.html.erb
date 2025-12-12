@@ -1,43 +1,8 @@
-<!-- Library Samples Header + Add Library Sample Button -->
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div>
-    <h3 class="text-muted fw-bold mb-0">Library Samples</h3>
-    <p class="text-muted mb-0" style="font-size: 0.85rem;">
-      Library samples for <strong><%= cake.name %></strong>
-    </p>
-  </div>
-
-  <%= link_to new_inventory_library_sample_path(parent_type: "Products::Cake", parent_id: cake.id), 
-      class: "btn btn-secondary d-flex align-items-center",
-      style: "font-size: 0.9rem;" do %>
-    <i class="bi bi-plus-circle me-2"></i>
-    Add Library Sample
-  <% end %>
-</div>
-
-<%= render "shared/tables/default_table",
-    collection: @library_samples || cake.library_samples,
-    pagy: @pagy,
-    headers: ->(_) do %>
-      <th>Name</th>
-      <th>Amount</th>
-      <th>Location</th>
-      <th>Status</th>
-      <th>Created By</th>
-      <th>Created At</th>
-    <% end,
-    row: ->(library_sample) do %>
-      <td><%= library_sample.name.presence || "—" %></td>
-      <td><%= library_sample.amount.presence || "—" %></td>
-      <td><%= library_sample.location.presence || "—" %></td>
-      <td>
-        <% if library_sample.is_active? %>
-          <span class="badge bg-success">Active</span>
-        <% else %>
-          <span class="badge bg-secondary">Inactive</span>
-        <% end %>
-      </td>
-      <td><%= library_sample.created_by %></td>
-      <td><%= format_date(library_sample.created_at) %></td>
-    <% end %>
+<%= render "shared/sidebar_layout/sample_library_main_area",
+    parent_name: cake.name,
+    parent_type: "Products::Cake",
+    parent_id: cake.id,
+    library_samples: @library_samples || cake.library_samples,
+    pagy: @pagy
+%>
 

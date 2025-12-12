@@ -1,0 +1,48 @@
+<!-- Library Samples Header + Add Library Sample Button -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h3 class="text-muted fw-bold mb-0">Library Samples</h3>
+    <p class="text-muted mb-0" style="font-size: 0.85rem;">
+      Library samples for <strong><%= parent_name %></strong>
+    </p>
+  </div>
+
+  <%= link_to new_inventory_library_sample_path(parent_type: parent_type, parent_id: parent_id), 
+      class: "btn btn-secondary d-flex align-items-center",
+      style: "font-size: 0.9rem;" do %>
+    <i class="bi bi-plus-circle me-2"></i>
+    Add Library Sample
+  <% end %>
+</div>
+
+<%= render "shared/tables/default_table",
+    collection: library_samples,
+    pagy: pagy,
+    headers: ->(_) do %>
+      <th>Name</th>
+      <th>Amount</th>
+      <th>Location</th>
+      <th>Status</th>
+      <th>Created By</th>
+      <th>Created At</th>
+      <th>Print QR</th>
+    <% end,
+    row: ->(library_sample) do %>
+      <td><%= link_to library_sample.name.presence || "Unnamed", inventory_library_sample_path(library_sample), class: "text-decoration-underline fw-semibold" %></td>
+      <td><%= library_sample.amount.present? ? "#{library_sample.amount} #{library_sample.unit.present? ? library_sample.unit.upcase : ''}".strip : "—" %></td>
+      <td><%= library_sample.location.presence || "—" %></td>
+      <td>
+        <% if library_sample.is_active? %>
+          <span class="badge bg-success">Active</span>
+        <% else %>
+          <span class="badge bg-secondary">Inactive</span>
+        <% end %>
+      </td>
+      <td><%= email_to_name(library_sample.created_by) %></td>
+      <td><%= format_date(library_sample.created_at) %></td>
+      <td><%= render "shared/print_qr_button", 
+                      qr_code_path: qr_code_inventory_library_sample_path(library_sample),
+                      label: "Print QR" %>
+      </td>
+    <% end %>
+

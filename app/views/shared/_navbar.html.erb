@@ -1,5 +1,4 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom" 
-     data-turbo="false"
      style="<%= 'background-color: #fffacd !important;' unless Rails.env.production? %>">
   <div class="container">
 
@@ -82,6 +81,7 @@
             <li><%= link_to "Equipments", inventory_equipments_path, class: "dropdown-item #{'active' if request.path.start_with?('/inventory/equipments')}" %></li>
             <li><%= link_to "Chemicals", inventory_chemicals_path, class: "dropdown-item #{'active' if request.path.start_with?('/inventory/chemicals')}" %></li>
             <li><%= link_to "Feedstock", inventory_feedstocks_path, class: "dropdown-item #{'active' if request.path.start_with?('/inventory/feedstocks')}" %></li>
+            <li><%= link_to "Library Samples", inventory_library_samples_path, class: "dropdown-item #{'active' if request.path.start_with?('/inventory/library_samples')}" %></li>
             <li><hr class="dropdown-divider"></li>
             <li><%= link_to "All Inventory", inventory_path, class: "dropdown-item #{'active' if request.path == '/inventory'}" %></li>
           </ul>

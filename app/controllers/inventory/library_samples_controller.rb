@@ -9,10 +9,48 @@ module Inventory
       # Search by name
       scope = scope.where("name ILIKE ?", "%#{params[:q]}%") if params[:q].present?
 
-      # Filter by is_active
-      if params[:is_active].present?
-        is_active_value = params[:is_active] == "true"
-        scope = scope.where(is_active: is_active_value)
+      # Filter by location
+      scope = scope.where("location ILIKE ?", "%#{params[:location]}%") if params[:location].present?
+
+      # Filter by is_active - default to active only if no filter specified
+      if params[:is_active] == "true"
+        scope = scope.where(is_active: true)
+      elsif params[:is_active] == "false"
+        scope = scope.where(is_active: false)
+      elsif params[:is_active] == ""
+        # "All" selected - show all records (no filter)
+      else
+        # Default to showing only active records when no filter is specified
+        scope = scope.where(is_active: true)
+      end
+
+      # Filter by parent name (polymorphic association)
+      if params[:parent_name].present?
+        # Use a subquery approach for polymorphic associations
+        # This handles the case where parent might be Products::Cake or other types
+        parent_name_filter = params[:parent_name]
+        
+        # For Products::Cake (the main parent type)
+        cake_ids = Products::Cake.where("name ILIKE ?", "%#{parent_name_filter}%").pluck(:id)
+        
+        # Build conditions for polymorphic association using safe parameterized queries
+        conditions = []
+        args = []
+        
+        if cake_ids.any?
+          placeholders = cake_ids.map { "?" }.join(",")
+          conditions << "(library_sampleable_type = ? AND library_sampleable_id IN (#{placeholders}))"
+          args << "Products::Cake"
+          args.concat(cake_ids)
+        end
+        
+        # If no matches found for any type, scope will be empty
+        if conditions.any?
+          scope = scope.where(conditions.join(" OR "), *args)
+        else
+          # If no matches, return empty result
+          scope = scope.none
+        end
       end
 
       @pagy, @library_samples = pagy(scope.order(created_at: :desc))

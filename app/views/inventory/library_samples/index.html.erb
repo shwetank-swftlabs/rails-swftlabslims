@@ -9,18 +9,83 @@
     search_placeholder: "Search by name…",
     filter_fields: ->(f) do %>
 
+  <!-- Location Filter -->
+  <div class="col-md-3">
+    <div class="input-group">
+      <%= f.text_field :location,
+            value: params[:location],
+            placeholder: "Filter by location…",
+            class: "form-control" %>
+      <%= f.submit "Search", class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+  <!-- Parent Name Filter -->
+  <div class="col-md-3">
+    <div class="input-group">
+      <%= f.text_field :parent_name,
+            value: params[:parent_name],
+            placeholder: "Filter by resource name…",
+            class: "form-control" %>
+      <%= f.submit "Search", class: "btn btn-secondary" %>
+    </div>
+  </div>
+
   <!-- Active Status Filter -->
   <div class="col-md-3">
     <%= f.select :is_active,
-        [["Active", "true"], ["Inactive", "false"]],
+        [["Active", "true"], ["Inactive", "false"], ["All", ""]],
         {
-          include_blank: "Filter by Status",
-          selected: params[:is_active]
+          include_blank: false,
+          selected: params.key?(:is_active) ? params[:is_active] : "true"
         },
         class: "form-select",
         onchange: "this.form.submit();" %>
   </div>
 
+<% end %>
+
+<!-- ACTIVE FILTERS -->
+<% active_filters = [] %>
+<% active_filters << { label: "Name: #{params[:q]}", param: :q } if params[:q].present? %>
+<% active_filters << { label: "Location: #{params[:location]}", param: :location } if params[:location].present? %>
+<% active_filters << { label: "Resource: #{params[:parent_name]}", param: :parent_name } if params[:parent_name].present? %>
+<% 
+  # Only show status filter if it's not the default (Active)
+  # Show if explicitly set to "false" (Inactive) or "" (All)
+  if params[:is_active].present? && params[:is_active] != "true"
+    status_label = params[:is_active] == "false" ? "Inactive" : "All"
+    active_filters << { label: "Status: #{status_label}", param: :is_active }
+  end
+%>
+
+<% if active_filters.any? %>
+  <div class="mb-3">
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <span class="text-muted small fw-bold">Active Filters:</span>
+      <% active_filters.each do |filter| %>
+        <% 
+          # Build URL without this filter, preserving other params
+          filter_params = params.to_unsafe_h.except(filter[:param], :controller, :action)
+          clear_url = inventory_library_samples_path(filter_params)
+        %>
+        <a href="<%= clear_url %>" class="badge bg-secondary text-decoration-none d-flex align-items-center gap-1" style="font-size: 0.875rem;">
+          <%= filter[:label] %>
+          <i class="bi bi-x-circle" style="font-size: 0.75rem;"></i>
+        </a>
+      <% end %>
+      <% if active_filters.length > 1 %>
+        <% 
+          # Clear all but preserve default status
+          clear_all_params = { is_active: "true" }
+          clear_all_url = inventory_library_samples_path(clear_all_params)
+        %>
+        <a href="<%= clear_all_url %>" class="badge bg-danger text-decoration-none" style="font-size: 0.875rem;">
+          Clear All
+        </a>
+      <% end %>
+    </div>
+  </div>
 <% end %>
 
 <!-- LIBRARY SAMPLES TABLE -->
@@ -29,9 +94,9 @@
     pagy: @pagy,
     headers: ->(_) do %>
       <th>Name</th>
+      <th>Resource</th>
       <th>Amount</th>
       <th>Location</th>
-      <th>Parent Resource</th>
       <th>Status</th>
       <th>Created By</th>
       <th>Created At</th>
@@ -39,16 +104,17 @@
     <% end,
     row: ->(library_sample) do %>
       <td><%= link_to library_sample.name.presence || "Unnamed", inventory_library_sample_path(library_sample), class: "text-decoration-underline fw-semibold" %></td>
-      <td><%= library_sample.amount.presence || "—" %></td>
-      <td><%= library_sample.location.presence || "—" %></td>
-      <td>
+        <td>
         <% parent = library_sample.library_sampleable %>
-        <% if parent.respond_to?(:name) %>
+        <% if parent.present? && parent.respond_to?(:name) && parent.name.present? %>
           <%= link_to parent.name, polymorphic_path(parent), class: "text-decoration-underline" %>
         <% else %>
-          <%= parent.class.name.humanize %>
+          —
         <% end %>
-      </td>
+    </td>
+      <td><%= library_sample.amount.present? ? "#{library_sample.amount} #{library_sample.unit.present? ? library_sample.unit.upcase : ''}".strip : "—" %></td>
+      <td><%= library_sample.location.presence || "—" %></td>
+
       <td>
         <% if library_sample.is_active? %>
           <span class="badge bg-success">
@@ -60,7 +126,7 @@
           </span>
         <% end %>
       </td>
-      <td><%= library_sample.created_by %></td>
+      <td><%= email_to_name(library_sample.created_by) %></td>
       <td><%= format_date(library_sample.created_at) %></td>
       <td><%= render "shared/print_qr_button", 
                       qr_code_path: qr_code_inventory_library_sample_path(library_sample),
