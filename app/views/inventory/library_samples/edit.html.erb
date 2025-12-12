@@ -1,0 +1,66 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Edit library sample details in the inventory.") %>
+
+<%= render "shared/form_errors", object: @library_sample %>
+
+<%= form_with(model: @library_sample, local: true, url: inventory_library_sample_path(@library_sample), method: :patch, html: { class: "library-sample-form" }) do |f| %>
+
+  <%= default_form_field(f, :name, label_text: "Name", required: true) do |req| %>
+    <%= f.text_field :name,
+                    { class: "form-control",
+                      placeholder: "Enter sample name",
+                      value: @library_sample.name }.merge(req) %>
+  <% end %>
+
+  <div class="mb-3">
+    <label class="form-label fw-bold mb-1 d-block">
+      Amount <span class="text-danger">*</span>
+    </label>
+    <div class="d-flex gap-2 align-items-center">
+      <%= f.text_field :amount, 
+          class: "form-control",
+          placeholder: "Enter amount",
+          value: @library_sample.amount,
+          required: true,
+          style: "max-width: 200px" %>
+      <%= f.text_field :unit, 
+          class: "form-control",
+          placeholder: "Enter unit",
+          value: @library_sample.unit,
+          required: true,
+          style: "max-width: 150px" %>
+    </div>
+  </div>
+
+  <%= default_form_field(f, :location, label_text: "Location", required: false) do |req| %>
+    <%= f.text_field :location,
+                    { class: "form-control",
+                      placeholder: "Enter location",
+                      value: @library_sample.location }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :is_active, label_text: "Status") do |req| %>
+    <div class="d-flex align-items-center gap-3">
+      <div class="form-check form-switch">
+        <%= f.check_box :is_active, { class: "form-check-input" } %>
+        <label class="form-check-label" for="inventory_library_sample_is_active">
+          <%= @library_sample.is_active? ? "Active" : "Inactive" %>
+        </label>
+      </div>
+      <small class="text-muted">
+        (<%= @library_sample.is_active? ? "Uncheck to mark as inactive" : "Check to mark as active" %>)
+      </small>
+    </div>
+  <% end %>
+
+  <!-- Larger space before buttons -->
+  <div class="mt-4">
+    <div class="d-flex gap-2">
+      <%= link_to "Cancel", inventory_library_sample_path(@library_sample), class: "btn btn-outline-secondary px-4" %>
+      <%= f.submit "Update Library Sample", 
+            class: "btn btn-primary px-4",
+            data: { turbo_confirm: "Are you sure you want to update this library sample?" } %>
+    </div>
+  </div>
+
+<% end %>
+

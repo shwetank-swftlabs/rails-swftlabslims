@@ -1,0 +1,15 @@
+<% content_for :page_title, render("shared/page_title", 
+  subtitle: "View library sample details.",
+  actions: render("shared/print_qr_button", qr_code_path: qr_code_inventory_library_sample_path(@library_sample))
+) %>
+
+<%= render "shared/sidebar_layout/layout",
+    tabs: ["details", "comments"],
+    tab_path: :inventory_library_sample_path,
+    path_args: [@library_sample],
+    bottom_action: render("shared/edit_button", label: "Edit Library Sample", path: edit_inventory_library_sample_path(@library_sample)) do %>
+
+  <%= render (params[:tab] || "details"), library_sample: @library_sample %>
+
+<% end %>
+

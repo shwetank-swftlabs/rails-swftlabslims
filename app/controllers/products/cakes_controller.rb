@@ -30,6 +30,11 @@ module Products
       if params[:tab] == 'use_records'
         @pagy, @usages = pagy(@cake.usages.order(created_at: :desc))
       end
+      
+      # Paginate library samples if on library_samples tab
+      if params[:tab] == 'library_samples'
+        @pagy, @library_samples = pagy(@cake.library_samples.order(created_at: :desc))
+      end
     end
 
     def create

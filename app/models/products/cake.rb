@@ -9,6 +9,7 @@ module Products
     include Usageable
     include Commentable
     include Datafileable
+    include LibrarySampleable
 
     
     CAKE_UNITS = {

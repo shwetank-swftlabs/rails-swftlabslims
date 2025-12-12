@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_10_192453) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_12_171434) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -175,10 +175,11 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_10_192453) do
     t.datetime "created_at", null: false
     t.string "created_by", default: "system"
     t.boolean "is_active", default: true
-    t.bigint "library_sampleable_id", null: false
-    t.string "library_sampleable_type", null: false
+    t.bigint "library_sampleable_id"
+    t.string "library_sampleable_type"
     t.string "location"
     t.string "name"
+    t.string "unit"
     t.datetime "updated_at", null: false
     t.index ["library_sampleable_type", "library_sampleable_id"], name: "index_library_samples_on_library_sampleable"
   end

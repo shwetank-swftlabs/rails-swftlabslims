@@ -75,6 +75,14 @@ Rails.application.routes.draw do
       resources :usages, only: [:create, :index, :update], controller: "/usages"
       resources :data_files, only: [:create, :show], controller: "/data_files"
     end
+
+    resources :library_samples, only: [:index, :new, :create, :show, :edit, :update] do
+      member do
+        get :qr_code
+      end
+
+      resources :comments, only: [:create, :update], controller: "/comments"
+    end
   end
 
   # Products routes

@@ -1,0 +1,70 @@
+<% content_for :page_title, render("shared/page_title",
+  subtitle: "Manage library samples and their data.",
+  actions: render("shared/add_button", label: "Add New Library Sample", path: new_inventory_library_sample_path)
+) %>
+
+<!-- UNIFIED FILTER BAR -->
+<%= render "shared/tables/default_filter_bar",
+    url: inventory_library_samples_path,
+    search_placeholder: "Search by name…",
+    filter_fields: ->(f) do %>
+
+  <!-- Active Status Filter -->
+  <div class="col-md-3">
+    <%= f.select :is_active,
+        [["Active", "true"], ["Inactive", "false"]],
+        {
+          include_blank: "Filter by Status",
+          selected: params[:is_active]
+        },
+        class: "form-select",
+        onchange: "this.form.submit();" %>
+  </div>
+
+<% end %>
+
+<!-- LIBRARY SAMPLES TABLE -->
+<%= render "shared/tables/default_table",
+    collection: @library_samples,
+    pagy: @pagy,
+    headers: ->(_) do %>
+      <th>Name</th>
+      <th>Amount</th>
+      <th>Location</th>
+      <th>Parent Resource</th>
+      <th>Status</th>
+      <th>Created By</th>
+      <th>Created At</th>
+      <th>Print QR</th>
+    <% end,
+    row: ->(library_sample) do %>
+      <td><%= link_to library_sample.name.presence || "Unnamed", inventory_library_sample_path(library_sample), class: "text-decoration-underline fw-semibold" %></td>
+      <td><%= library_sample.amount.presence || "—" %></td>
+      <td><%= library_sample.location.presence || "—" %></td>
+      <td>
+        <% parent = library_sample.library_sampleable %>
+        <% if parent.respond_to?(:name) %>
+          <%= link_to parent.name, polymorphic_path(parent), class: "text-decoration-underline" %>
+        <% else %>
+          <%= parent.class.name.humanize %>
+        <% end %>
+      </td>
+      <td>
+        <% if library_sample.is_active? %>
+          <span class="badge bg-success">
+            <i class="bi bi-check-circle me-1"></i>Active
+          </span>
+        <% else %>
+          <span class="badge bg-danger">
+            <i class="bi bi-x-circle me-1"></i>Inactive
+          </span>
+        <% end %>
+      </td>
+      <td><%= library_sample.created_by %></td>
+      <td><%= format_date(library_sample.created_at) %></td>
+      <td><%= render "shared/print_qr_button", 
+                      qr_code_path: qr_code_inventory_library_sample_path(library_sample),
+                      label: "Print QR" %>
+      </td>
+    <% end %>
+

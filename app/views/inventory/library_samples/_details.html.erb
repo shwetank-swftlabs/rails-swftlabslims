@@ -1,0 +1,13 @@
+<%= render "shared/sidebar_layout/details_list_main_area", details: {
+  "Name" => library_sample.name,
+  "Amount" => library_sample.amount.present? ? "#{library_sample.amount} #{library_sample.unit.present? ? library_sample.unit.upcase : ''}".strip : "N/A",
+  "Unit" => library_sample.unit.present? ? library_sample.unit.upcase : "N/A",
+  "Location" => library_sample.location.present? ? library_sample.location : "N/A",
+  "Status" => (library_sample.is_active? ? 
+    '<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Active</span>'.html_safe :
+    '<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Inactive</span>'.html_safe),
+  "Created By" => library_sample.created_by,
+  "Created At" => library_sample.created_at.strftime("%B %d, %Y %I:%M %p")
+}
+%>
+

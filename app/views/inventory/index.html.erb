@@ -1,6 +1,6 @@
 <!-- PAGE HEADER -->
 <% content_for :page_title, render("shared/page_title", title: "Inventory",
-subtitle: "Manage equipment, chemicals, and feedstock from one place.") %>
+subtitle: "Manage equipment, chemicals, feedstock, and library samples from one place.") %>
 <% content_for :title, "Inventory" %>
 
 <!-- MAIN CONTENT -->
@@ -32,6 +32,15 @@ subtitle: "Manage equipment, chemicals, and feedstock from one place.") %>
       view_path: inventory_feedstocks_path,
       add_label: "Add feedstock",
       add_path: new_inventory_feedstock_path %>
+
+  <%= render "shared/feature_card",
+      icon: "bi-collection",
+      title: "Library Samples",
+      subtitle: "Sample library management",
+      view_label: "View all library samples",
+      view_path: inventory_library_samples_path,
+      add_label: "Add library sample",
+      add_path: new_inventory_library_sample_path %>
 
 </div>
 

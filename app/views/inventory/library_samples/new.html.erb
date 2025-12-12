@@ -1,0 +1,87 @@
+<% 
+  # Determine if this has a parent resource
+  has_parent = @parent.present?
+  if has_parent
+    parent_name = @parent.respond_to?(:name) ? @parent.name : @parent.class.name.humanize
+    page_subtitle = "Add a new library sample for #{parent_name}."
+    cancel_path = polymorphic_path(@parent)
+  else
+    page_subtitle = "Add a new library sample."
+    cancel_path = inventory_library_samples_path
+  end
+%>
+
+<% content_for :page_title, render("shared/page_title", subtitle: page_subtitle) %>
+
+<% if has_parent %>
+  <div class="alert alert-info mb-4">
+    <strong>Resource Name:</strong> 
+    <%= @parent.class.name.split("::").last.humanize %> - 
+    <% if @parent.respond_to?(:name) %>
+      <%= link_to @parent.name.humanize, polymorphic_path(@parent), class: "text-decoration-underline" %>
+    <% else %>
+      ID: <%= @parent.id %>
+    <% end %>
+  </div>
+<% end %>
+
+<%= render "shared/form_errors", object: @library_sample %>
+
+<%= form_with(
+  model: @library_sample,
+  url: inventory_library_samples_path,
+  scope: :library_sample,
+  local: true,
+  html: { class: "library-sample-form" }
+) do |f| %>
+  
+  <% if has_parent %>
+    <%= hidden_field_tag :parent_type, @parent.class.name %>
+    <%= hidden_field_tag :parent_id, @parent.id %>
+  <% end %>
+  
+  <%= default_form_field(f, :name, label_text: "Name", required: true) do |req| %>
+    <%= f.text_field :name,
+                    { class: "form-control",
+                      placeholder: "Enter sample name" }.merge(req) %>
+  <% end %>
+
+  <div class="mb-3">
+    <label class="form-label fw-bold mb-1 d-block">
+      Amount <span class="text-danger">*</span>
+    </label>
+    <div class="d-flex gap-2 align-items-center">
+      <%= f.text_field :amount, 
+          class: "form-control",
+          placeholder: "Enter amount",
+          required: true,
+          style: "max-width: 200px" %>
+      <%= f.text_field :unit, 
+          class: "form-control",
+          placeholder: "Enter unit",
+          required: true,
+          disabled: has_parent,
+          style: "max-width: 150px" %>
+    </div>
+  </div>
+
+  <%= default_form_field(f, :location, label_text: "Location", required: false) do %>
+    <%= f.text_field :location,
+                    { class: "form-control",
+                      placeholder: "Enter location" } %>
+  <% end %>
+
+  <%= render "shared/forms/creator_fields", f: f %>
+
+  <!-- Larger space before buttons -->
+  <div class="mt-4">
+    <div class="d-flex gap-2">
+      <%= link_to "Cancel", cancel_path, class: "btn btn-outline-secondary px-4" %>
+      <%= f.submit "Save Library Sample", 
+            class: "btn btn-primary px-4",
+            data: { turbo_confirm: "Are you sure you want to save this library sample?" } %>
+    </div>
+  </div>
+
+<% end %>
+
