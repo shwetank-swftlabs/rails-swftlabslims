@@ -19,7 +19,7 @@ module Inventory
 
     def default_label_text
       [
-        "Resource: #{self.library_sampleable.present? ? self.library_sampleable.name.humanize : "N/A"}",
+        "Resource: #{self.library_sampleable.present? ? self.library_sampleable.name : "N/A"}",
         "Sample Name: #{name}",
       ]
     end
