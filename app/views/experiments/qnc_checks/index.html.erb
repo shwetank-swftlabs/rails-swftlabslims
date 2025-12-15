@@ -56,10 +56,10 @@
     </div>
   </div>
 
-  <!-- Active Status Filter -->
+  <!-- Status Filter -->
   <div class="col-md-3">
     <%= f.select :is_active,
-        [["Active", "true"], ["Inactive", "false"], ["All", ""]],
+        [["Pending", "true"], ["Completed", "false"], ["All", ""]],
         {
           include_blank: false,
           selected: params.key?(:is_active) ? params[:is_active] : "true"
@@ -80,10 +80,10 @@
   # Always show status filter badge
   is_active_value = params.key?(:is_active) ? params[:is_active] : "true"
   status_label = case is_active_value
-                 when "true" then "Active"
-                 when "false" then "Inactive"
+                 when "true" then "Pending"
+                 when "false" then "Completed"
                  when "" then "All"
-                 else "Active"
+                 else "Pending"
                  end
   active_filters << { label: "Status: #{status_label}", param: :is_active }
 %>
@@ -105,7 +105,7 @@
       <% end %>
       <% if active_filters.length > 1 %>
         <% 
-          # Clear all but preserve default status
+          # Clear all but preserve default status (Pending)
           clear_all_params = { is_active: "true" }
           clear_all_url = experiments_qnc_checks_path(clear_all_params)
         %>
@@ -148,12 +148,12 @@
       <td><%= qnc_check.requested_by.present? ? email_to_name(qnc_check.requested_by) : "—" %></td>
       <td>
         <% if qnc_check.is_active? %>
-          <span class="badge bg-success">
-            <i class="bi bi-check-circle me-1"></i>Active
+          <span class="badge bg-warning text-dark">
+            <i class="bi bi-clock me-1"></i>Pending
           </span>
         <% else %>
-          <span class="badge bg-danger">
-            <i class="bi bi-x-circle me-1"></i>Inactive
+          <span class="badge bg-success">
+            <i class="bi bi-check-circle me-1"></i>Completed
           </span>
         <% end %>
       </td>
@@ -163,5 +163,4 @@
                       label: "Print QR" %>
       </td>
     <% end %>
-
 

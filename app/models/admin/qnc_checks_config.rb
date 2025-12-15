@@ -9,7 +9,7 @@ module Admin
     validates :created_by, presence: true
   
     def self.resource_class_qnc_checks(resource_class)
-      resource_class.constantize.qnc_checks
+      Experiments::QncCheck.where(qnc_checkable_type: resource_class)
     end
   end
 end

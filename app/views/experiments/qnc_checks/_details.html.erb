@@ -6,20 +6,22 @@
   else
     "—"
   end
+
+  details_hash = {}
+
+   # Add Resource if parent exists
+   if parent.present?
+    details_hash["Resource"] = resource_display.html_safe
+  end
   
-  details_hash = {
+  details_hash.merge!({
     "Name" => qnc_check.name,
     "Location" => qnc_check.location.present? ? qnc_check.location : "N/A",
     "Requested By" => qnc_check.requested_by.present? ? qnc_check.requested_by : "N/A",
     "Requested From" => qnc_check.requested_from.present? ? qnc_check.requested_from : "N/A",
     "Expected Completion Date" => (qnc_check.expected_completion_date.present? ? qnc_check.expected_completion_date.strftime("%B %d, %Y") : "N/A"),
     "Created At" => qnc_check.created_at.strftime("%B %d, %Y %I:%M %p")
-  }
-  
-  # Add Resource if parent exists
-  if parent.present?
-    details_hash["Resource"] = resource_display.html_safe
-  end
+  })
   
   # Add Completed At if present
   if qnc_check.completed_at.present?

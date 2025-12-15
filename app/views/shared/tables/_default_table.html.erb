@@ -8,7 +8,11 @@
 
     <tbody>
       <% collection.each do |item| %>
-        <tr>
+        <% 
+          row_class = local_assigns[:row_class].present? ? local_assigns[:row_class].call(item) : nil
+          row_style = local_assigns[:row_style].present? ? local_assigns[:row_style].call(item) : nil
+        %>
+        <tr<% if row_class.present? %> class="<%= row_class %>"<% end %><% if row_style.present? %> style="<%= row_style %>"<% end %>>
           <%= capture(item, &row) if row.present? %>
         </tr>
       <% end %>

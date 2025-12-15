@@ -1,6 +1,23 @@
+<%
+  parent = @qnc_check.qnc_checkable
+  actions_content = []
+  
+  if parent.present?
+    actions_content << link_to(polymorphic_path(parent), 
+                              class: "btn btn-sm btn-outline-secondary",
+                              title: "Go to #{parent.name}") do
+      content_tag(:i, "", class: "bi bi-arrow-left") + " #{parent.name}"
+    end
+  end
+  
+  actions_content << render("shared/print_qr_button", qr_code_path: qr_code_experiments_qnc_check_path(@qnc_check))
+  
+  actions_html = actions_content.join.html_safe
+%>
+
 <% content_for :page_title, render("shared/page_title", 
   subtitle: "View QNC check details.",
-  actions: render("shared/print_qr_button", qr_code_path: qr_code_experiments_qnc_check_path(@qnc_check))
+  actions: actions_html
 ) %>
 
 <%= render "shared/sidebar_layout/layout",
