@@ -40,7 +40,7 @@
     <div class="container mt-3">
       <%= render "shared/breadcrumb" %>
       <%= yield :page_title %>
-      <%= render "shared/notice" if flash.present? %>
+      <%= render "shared/notice" if flash.present? && controller_name != "sessions" %>
       <%= yield %>
     </div>
 

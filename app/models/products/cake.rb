@@ -44,6 +44,23 @@ module Products
       "CAKE: #{name}"
     end
 
+    def self.qnc_checks
+      Experiments::QncCheck.where(qnc_checkable_type: "Products::Cake")
+    end
+
+    def qnc_checks_remaining
+      # Get all active QNC check configs for this resource class
+      active_qnc_check_names = Admin::QncChecksConfig
+        .where(resource_class: self.class.name, is_active: true)
+        .pluck(:name)
+      
+      # Get names of QNC checks that have been created for this cake
+      created_check_names = qnc_checks.pluck(:name)
+      
+      # Return config names that don't have corresponding checks created
+      active_qnc_check_names - created_check_names
+    end
+
     private
 
     def validate_batch_number

@@ -51,12 +51,15 @@
 <% active_filters << { label: "Location: #{params[:location]}", param: :location } if params[:location].present? %>
 <% active_filters << { label: "Resource: #{params[:parent_name]}", param: :parent_name } if params[:parent_name].present? %>
 <% 
-  # Only show status filter if it's not the default (Active)
-  # Show if explicitly set to "false" (Inactive) or "" (All)
-  if params[:is_active].present? && params[:is_active] != "true"
-    status_label = params[:is_active] == "false" ? "Inactive" : "All"
-    active_filters << { label: "Status: #{status_label}", param: :is_active }
-  end
+  # Always show status filter badge
+  is_active_value = params.key?(:is_active) ? params[:is_active] : "true"
+  status_label = case is_active_value
+                 when "true" then "Active"
+                 when "false" then "Inactive"
+                 when "" then "All"
+                 else "Active"
+                 end
+  active_filters << { label: "Status: #{status_label}", param: :is_active }
 %>
 
 <% if active_filters.any? %>

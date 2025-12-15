@@ -22,6 +22,7 @@ Rails.application.routes.draw do
     resources :chemical_types, only: [:index, :new, :create, :edit, :update]
     resources :feedstock_types, only: [:index, :new, :create, :edit, :update]
     resources :nop_reaction_types, only: [:index, :new, :create, :edit, :update]
+    resources :qnc_checks_configs, only: [:index, :new, :create, :edit, :update]
   end
 
   # Experiments routes

@@ -4,13 +4,20 @@ module Experiments
     before_action :set_qnc_check, only: [:show, :edit, :update, :qr_code]
 
     def index
-      scope = Experiments::QncCheck.all
+      scope = Experiments::QncChecks::Query.new(params).call
       @pagy, @qnc_checks = pagy(scope.order(created_at: :desc))
+      @pending_qnc_checks_count = Experiments::QncCheck.where(
+        requested_from: current_user.email,
+        is_active: true
+      ).count
     end
 
     def new
       @parent = load_qnc_checkable
       @qnc_check = build_qnc_check
+      @qnc_check.requested_by = current_user.email
+      @users = User.order(:email)
+      load_qnc_checks_configs if @parent
       add_breadcrumb "Add QNC Check"
     end
 
@@ -23,18 +30,22 @@ module Experiments
       @parent = load_qnc_checkable
       @qnc_check = build_qnc_check_from_create
       @qnc_check.assign_attributes(qnc_check_params)
+      @qnc_check.requested_by = current_user.email
+      load_qnc_checks_configs if @parent
 
       if @qnc_check.save
         redirect_to redirect_path_for(@parent),
                     notice: "QNC check created successfully",
                     status: :see_other
       else
+        @users = User.order(:email)
         add_breadcrumb "Add QNC Check"
         render :new, status: :unprocessable_entity
       end
     end
 
     def edit
+      @users = User.order(:email)
       add_breadcrumb "Edit QNC Check #{@qnc_check.name}",
                      edit_experiments_qnc_check_path(@qnc_check)
     end
@@ -44,6 +55,7 @@ module Experiments
         redirect_to experiments_qnc_check_path(@qnc_check),
                     notice: "QNC check updated successfully"
       else
+        @users = User.order(:email)
         render :edit, status: :unprocessable_entity
       end
     end
@@ -103,12 +115,18 @@ module Experiments
 
     def qnc_check_params
       params.require(:qnc_check)
-            .permit(:name, :location, :requested_by, :requested_from, :expected_completion_date)
+            .permit(:name, :location, :requested_from, :expected_completion_date)
     end
 
     def update_qnc_check_params
       params.require(:experiments_qnc_check)
             .permit(:name, :location, :requested_by, :requested_from, :expected_completion_date)
+    end
+
+    def load_qnc_checks_configs
+      @qnc_checks_configs = Admin::QncChecksConfig
+        .where(resource_class: @parent.class.name, is_active: true)
+        .order(:name)
     end
   end
 end

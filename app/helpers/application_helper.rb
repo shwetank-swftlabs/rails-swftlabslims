@@ -46,4 +46,8 @@ module ApplicationHelper
   def email_to_name(email)
     email.split("@").first.humanize || email
   end
+
+  def resource_class_to_name(resource_class)
+    resource_class.split("::").last.pluralize.humanize
+  end
 end

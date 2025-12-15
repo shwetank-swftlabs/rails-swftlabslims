@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-  INACTIVITY_TIMEOUT = 30.minutes
+  INACTIVITY_TIMEOUT = 30.seconds
   allow_browser versions: :modern
   stale_when_importmap_changes
 

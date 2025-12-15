@@ -1,10 +1,26 @@
 <div class="d-flex justify-content-center align-items-center" style="height: 80vh;">
-  <%= render "shared/notice" if flash.present? %>
   <div class="card shadow-md p-4 rounded-4" style="width: 360px;">
+
+  <% if flash.present? %>
+  <% flash.each do |key, message| %>
+    <% bootstrap_class =
+        case key.to_sym
+        when :notice then "alert-primary"
+        when :alert  then "alert-danger"
+        else "alert-secondary"
+        end
+    %>
+    <div class="alert <%= bootstrap_class %> alert-dismissible fade show mb-4" role="alert">
+      <%= message %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% end %>
+<% end %>
     <div class="card-body text-center">
       <h3 class="card-title mb-5">Welcome to SWFTLabsLIMS</h3>
 
       <p class="text-muted mb-4">Please sign in to continue</p>
+
 
       <%= button_to "/auth/google_oauth2",
       method: :post,

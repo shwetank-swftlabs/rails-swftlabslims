@@ -1,0 +1,33 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Add a new QNC check config.") %>
+
+<%= render "shared/form_errors", object: @qnc_checks_config %>
+
+<%= form_with(model: @qnc_checks_config,
+              url: admin_qnc_checks_configs_path(resource_class: @qnc_checks_config.resource_class),
+              local: true,
+              html: { class: "qnc-check-config-form" }) do |f| %>
+
+  <%= default_form_field(f, :resource_class, label_text: "Resource", required: true) do |req| %>
+    <%= f.select :resource_class,
+                 options_for_select(@resource_classes, @qnc_checks_config.resource_class),
+                 {},
+                 { class: "form-select" }.merge(req) %>
+    <small class="text-muted">
+      This config will apply to the selected resource.
+    </small>
+  <% end %>
+
+  <%= default_form_field(f, :name, label_text: "Check Name", required: true) do |req| %>
+    <%= f.text_field :name,
+                    { class: "form-control",
+                      placeholder: "Please enter a check name" }.merge(req) %>
+  <% end %>
+
+  <!-- CONFIRM SUBMIT -->
+  <%= f.submit "Save QNC Check Config",
+        class: "btn btn-primary px-4 mt-5",
+        data: { turbo_confirm: "Are you sure you want to save this QNC check config?" } %>
+
+<% end %>
+
+

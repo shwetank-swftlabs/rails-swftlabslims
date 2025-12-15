@@ -1,0 +1,48 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Edit QNC check config.") %>
+
+<%= render "shared/form_errors", object: @qnc_checks_config %>
+
+<%= form_with(model: @qnc_checks_config,
+              url: admin_qnc_checks_config_path(@qnc_checks_config, resource_class: @qnc_checks_config.resource_class),
+              method: :patch,
+              local: true,
+              html: { class: "qnc-check-config-form" }) do |f| %>
+
+  <%= default_form_field(f, :resource_class, label_text: "Resource", required: true) do |_req| %>
+    <p class="form-control-plaintext mb-0">
+      <%= resource_class_to_name(@qnc_checks_config.resource_class) %>
+    </p>
+    <small class="text-muted">
+      This config applies to this resource and cannot be changed.
+    </small>
+  <% end %>
+
+  <%= default_form_field(f, :name, label_text: "Check Name", required: true) do |req| %>
+    <%= f.text_field :name,
+                    { class: "form-control",
+                      placeholder: "Please enter a check name" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :is_active, label_text: "Status") do |req| %>
+    <div class="d-flex align-items-center gap-3">
+      <div class="form-check form-switch">
+        <%= f.check_box :is_active, { class: "form-check-input" } %>
+        <label class="form-check-label" for="admin_qnc_checks_config_is_active">
+          <%= @qnc_checks_config.is_active? ? "Active" : "Inactive" %>
+        </label>
+      </div>
+      <small class="text-muted">
+        (<%= @qnc_checks_config.is_active? ? "Toggle to mark as inactive" : "Toggle to mark as active" %>)
+      </small>
+    </div>
+  <% end %>
+
+  <!-- CONFIRM SUBMIT -->
+  <%= f.submit "Update QNC Check Config",
+        class: "btn btn-primary px-4 mt-5",
+        data: { turbo_confirm: "Are you sure you want to update this QNC check config?" } %>
+
+<% end %>
+
+
+

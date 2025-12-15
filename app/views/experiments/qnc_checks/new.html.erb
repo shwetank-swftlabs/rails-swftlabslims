@@ -21,6 +21,19 @@
     <% else %>
       ID: <%= @parent.id %>
     <% end %>
+    <% if @parent.respond_to?(:qnc_checks_remaining) %>
+      <% remaining_checks = @parent.qnc_checks_remaining %>
+      <% if remaining_checks.present? %>
+        <div class="mt-3">
+          <strong>Samples for the following checks are not created:</strong>
+          <ul class="mb-0 mt-2">
+            <% remaining_checks.each do |check_name| %>
+              <li><%= check_name %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    <% end %>
   </div>
 <% end %>
 
@@ -40,27 +53,51 @@
   <% end %>
   
   <%= default_form_field(f, :name, label_text: "Name", required: true) do |req| %>
+    <% if has_parent && @qnc_checks_configs.present? %>
+      <select id="qncCheckNameSelect" class="form-select mb-2" onchange="handleQncCheckNameSelect(this)">
+        <option value="">Select a check name...</option>
+        <% @qnc_checks_configs.each do |config| %>
+          <option value="<%= config.name %>"><%= config.name %></option>
+        <% end %>
+      </select>
+    <% end %>
     <%= f.text_field :name,
                     { class: "form-control",
+                      id: "qncCheckNameInput",
                       placeholder: "Enter QNC check name" }.merge(req) %>
   <% end %>
 
-  <%= default_form_field(f, :location, label_text: "Location", required: true) do |req| %>
+  <%= default_form_field(f, :location, label_text: "Sample Location", required: false) do |req| %>
     <%= f.text_field :location,
                     { class: "form-control",
-                      placeholder: "Enter location" }.merge(req) %>
+                      placeholder: "Enter location (optional)" } %>
   <% end %>
 
-  <%= default_form_field(f, :requested_by, label_text: "Requested By", required: true) do |req| %>
-    <%= f.text_field :requested_by,
-                    { class: "form-control",
-                      placeholder: "Enter requester name" }.merge(req) %>
-  <% end %>
-
-  <%= default_form_field(f, :requested_from, label_text: "Requested From", required: true) do |req| %>
-    <%= f.text_field :requested_from,
-                    { class: "form-control",
-                      placeholder: "Enter source (e.g., team or lab)" }.merge(req) %>
+  <%= default_form_field(f, :requested_from, label_text: "Assigned To", required: true) do |req| %>
+    <div class="position-relative">
+      <%= f.text_field :requested_from,
+          { 
+            class: "form-control",
+            id: "requestedFromInput",
+            placeholder: "Search or type @swftlabs.com email",
+            autocomplete: "off",
+            "data-bs-toggle": "dropdown",
+            "aria-expanded": "false",
+            "aria-haspopup": "true"
+          }.merge(req) %>
+      <ul class="dropdown-menu w-100" id="userEmailsDropdown" style="max-height: 300px; overflow-y: auto;">
+        <% @users.each do |user| %>
+          <li>
+            <a class="dropdown-item user-email-option" href="#" data-email="<%= user.email %>">
+              <%= user.email %>
+            </a>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+    <small class="text-muted">
+      Must be a valid @swftlabs.com email address. You can search and select from the list or type a new email.
+    </small>
   <% end %>
 
   <%= default_form_field(f, :expected_completion_date, label_text: "Expected Completion Date", required: true) do |req| %>
@@ -85,4 +122,98 @@
 
 <% end %>
 
+<% if has_parent && @qnc_checks_configs.present? %>
+<script>
+  function handleQncCheckNameSelect(select) {
+    const nameInput = document.getElementById('qncCheckNameInput');
+    const selectedValue = select.value;
+    
+    if (selectedValue) {
+      // Auto-fill the input with the selected option value
+      nameInput.value = selectedValue;
+    } else {
+      // Clear the input when no selection
+      nameInput.value = '';
+    }
+  }
+</script>
+<% end %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('requestedFromInput');
+    const dropdown = document.getElementById('userEmailsDropdown');
+    const options = dropdown.querySelectorAll('.user-email-option');
+    
+    if (!input || !dropdown) return;
+    
+    // Show dropdown when input is focused or has value
+    function showDropdown() {
+      dropdown.classList.add('show');
+      filterOptions();
+    }
+    
+    // Hide dropdown
+    function hideDropdown() {
+      setTimeout(() => {
+        dropdown.classList.remove('show');
+      }, 200);
+    }
+    
+    // Filter options based on input value
+    function filterOptions() {
+      const searchTerm = input.value.toLowerCase();
+      let hasVisibleOptions = false;
+      
+      options.forEach(option => {
+        const email = option.getAttribute('data-email').toLowerCase();
+        const parent = option.closest('li');
+        
+        if (email.includes(searchTerm)) {
+          parent.style.display = '';
+          hasVisibleOptions = true;
+        } else {
+          parent.style.display = 'none';
+        }
+      });
+      
+      // Show/hide dropdown based on whether there are visible options
+      if (hasVisibleOptions && input.value.length > 0) {
+        dropdown.classList.add('show');
+      } else if (input.value.length === 0) {
+        dropdown.classList.add('show');
+      }
+    }
+    
+    // Handle input events
+    input.addEventListener('input', function() {
+      filterOptions();
+    });
+    
+    input.addEventListener('focus', function() {
+      showDropdown();
+    });
+    
+    input.addEventListener('blur', function() {
+      hideDropdown();
+    });
+    
+    // Handle option clicks
+    options.forEach(option => {
+      option.addEventListener('click', function(e) {
+        e.preventDefault();
+        input.value = this.getAttribute('data-email');
+        dropdown.classList.remove('show');
+        input.focus();
+      });
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+        hideDropdown();
+      }
+    });
+  });
+</script>
 
