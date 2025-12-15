@@ -1,0 +1,52 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Edit QNC check details.") %>
+
+<%= render "shared/form_errors", object: @qnc_check %>
+
+<%= form_with(model: @qnc_check, local: true, url: experiments_qnc_check_path(@qnc_check), method: :patch, html: { class: "qnc-check-form" }) do |f| %>
+
+  <%= default_form_field(f, :name, label_text: "Name", required: true) do |req| %>
+    <%= f.text_field :name,
+                    { class: "form-control",
+                      placeholder: "Enter QNC check name",
+                      value: @qnc_check.name }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :location, label_text: "Location", required: true) do |req| %>
+    <%= f.text_field :location,
+                    { class: "form-control",
+                      placeholder: "Enter location",
+                      value: @qnc_check.location }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :requested_by, label_text: "Requested By", required: true) do |req| %>
+    <%= f.text_field :requested_by,
+                    { class: "form-control",
+                      placeholder: "Enter requester name",
+                      value: @qnc_check.requested_by }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :requested_from, label_text: "Requested From", required: true) do |req| %>
+    <%= f.text_field :requested_from,
+                    { class: "form-control",
+                      placeholder: "Enter source (e.g., team or lab)",
+                      value: @qnc_check.requested_from }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :expected_completion_date, label_text: "Expected Completion Date", required: true) do |req| %>
+    <%= f.date_field :expected_completion_date,
+                    { class: "form-control",
+                      value: @qnc_check.expected_completion_date }.merge(req) %>
+  <% end %>
+
+  <div class="mt-4">
+    <div class="d-flex gap-2">
+      <%= link_to "Cancel", experiments_qnc_check_path(@qnc_check), class: "btn btn-outline-secondary px-4" %>
+      <%= f.submit "Update QNC Check", 
+            class: "btn btn-primary px-4",
+            data: { turbo_confirm: "Are you sure you want to update this QNC check?" } %>
+    </div>
+  </div>
+
+<% end %>
+
+

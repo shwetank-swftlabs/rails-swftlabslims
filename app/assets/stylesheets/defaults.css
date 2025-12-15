@@ -244,6 +244,55 @@ a:hover {
 }
 
 /* ============================================================
+   FILTER BADGE STYLING (Active filter chips)
+   ============================================================ */
+
+/* Standard active filter pill (bg-secondary badge) */
+.badge.bg-secondary {
+  background-color: rgba(96, 125, 139, 0.08) !important;
+  color: var(--bs-dark) !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(96, 125, 139, 0.35);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.6rem;
+  transition:
+    background-color 0.15s ease-in-out,
+    color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out;
+}
+
+.badge.bg-secondary:hover,
+.badge.bg-secondary:focus {
+  background-color: rgba(96, 125, 139, 0.18) !important;
+  color: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+  text-decoration: none;
+}
+
+/* Clear-all filter pill (bg-danger badge) */
+.badge.bg-danger {
+  background-color: rgba(185, 123, 123, 0.08) !important;
+  color: var(--bs-danger) !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(185, 123, 123, 0.4);
+  padding: 0.25rem 0.6rem;
+  transition:
+    background-color 0.15s ease-in-out,
+    color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out;
+}
+
+.badge.bg-danger:hover,
+.badge.bg-danger:focus {
+  background-color: var(--bs-danger) !important;
+  color: #fff !important;
+  border-color: var(--bs-danger) !important;
+  text-decoration: none;
+}
+
+/* ============================================================
    REMOVE SPINNER ARROWS FROM NUMBER INPUTS
    ============================================================ */
 

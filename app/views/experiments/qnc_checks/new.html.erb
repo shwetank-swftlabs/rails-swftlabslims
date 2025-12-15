@@ -1,0 +1,84 @@
+<% 
+  has_parent = @parent.present?
+  if has_parent
+    parent_name = @parent.respond_to?(:name) ? @parent.name : @parent.class.name.humanize
+    page_subtitle = "Add a new QNC check for #{parent_name}."
+    cancel_path = polymorphic_path(@parent)
+  else
+    page_subtitle = "Add a new QNC check."
+    cancel_path = experiments_qnc_checks_path
+  end
+%>
+
+<% content_for :page_title, render("shared/page_title", subtitle: page_subtitle) %>
+
+<% if has_parent %>
+  <div class="alert alert-info mb-4">
+    <strong>Resource Name:</strong> 
+    <%= @parent.class.name.split("::").last.humanize %> - 
+    <% if @parent.respond_to?(:name) %>
+      <%= link_to @parent.name.humanize, polymorphic_path(@parent), class: "text-decoration-underline" %>
+    <% else %>
+      ID: <%= @parent.id %>
+    <% end %>
+  </div>
+<% end %>
+
+<%= render "shared/form_errors", object: @qnc_check %>
+
+<%= form_with(
+  model: @qnc_check,
+  url: experiments_qnc_checks_path,
+  scope: :qnc_check,
+  local: true,
+  html: { class: "qnc-check-form" }
+) do |f| %>
+  
+  <% if has_parent %>
+    <%= hidden_field_tag :parent_type, @parent.class.name %>
+    <%= hidden_field_tag :parent_id, @parent.id %>
+  <% end %>
+  
+  <%= default_form_field(f, :name, label_text: "Name", required: true) do |req| %>
+    <%= f.text_field :name,
+                    { class: "form-control",
+                      placeholder: "Enter QNC check name" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :location, label_text: "Location", required: true) do |req| %>
+    <%= f.text_field :location,
+                    { class: "form-control",
+                      placeholder: "Enter location" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :requested_by, label_text: "Requested By", required: true) do |req| %>
+    <%= f.text_field :requested_by,
+                    { class: "form-control",
+                      placeholder: "Enter requester name" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :requested_from, label_text: "Requested From", required: true) do |req| %>
+    <%= f.text_field :requested_from,
+                    { class: "form-control",
+                      placeholder: "Enter source (e.g., team or lab)" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :expected_completion_date, label_text: "Expected Completion Date", required: true) do |req| %>
+    <%= f.date_field :expected_completion_date,
+                    { class: "form-control" }.merge(req) %>
+  <% end %>
+
+  <%= render "shared/forms/creator_fields", f: f %>
+
+  <div class="mt-4">
+    <div class="d-flex gap-2">
+      <%= link_to "Cancel", cancel_path, class: "btn btn-outline-secondary px-4" %>
+      <%= f.submit "Save QNC Check", 
+            class: "btn btn-primary px-4",
+            data: { turbo_confirm: "Are you sure you want to save this QNC check?" } %>
+    </div>
+  </div>
+
+<% end %>
+
+

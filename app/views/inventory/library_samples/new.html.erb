@@ -65,13 +65,17 @@
     </div>
   </div>
 
-  <%= default_form_field(f, :location, label_text: "Location", required: false) do %>
+  <%= default_form_field(f, :location, label_text: "Location", required: true) do %>
     <%= f.text_field :location,
                     { class: "form-control",
                       placeholder: "Enter location" } %>
   <% end %>
 
-  <%= render "shared/forms/creator_fields", f: f %>
+  <%= default_form_field(f, :created_at, label_text: "Date Added", required: false) do %>
+    <%= f.date_field :created_at,
+                    { class: "form-control",
+                      value: Date.today } %>
+  <% end %>
 
   <!-- Larger space before buttons -->
   <div class="mt-4">

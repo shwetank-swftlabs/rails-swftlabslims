@@ -10,6 +10,7 @@ module Products
     include Commentable
     include Datafileable
     include LibrarySampleable
+    include QncCheckable
 
     
     CAKE_UNITS = {

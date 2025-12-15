@@ -5,67 +5,12 @@ module Inventory
 
     def index
       scope = Inventory::LibrarySample.all
-
-      # Search by name
-      scope = scope.where("name ILIKE ?", "%#{params[:q]}%") if params[:q].present?
-
-      # Filter by location
-      scope = scope.where("location ILIKE ?", "%#{params[:location]}%") if params[:location].present?
-
-      # Filter by is_active - default to active only if no filter specified
-      if params[:is_active] == "true"
-        scope = scope.where(is_active: true)
-      elsif params[:is_active] == "false"
-        scope = scope.where(is_active: false)
-      elsif params[:is_active] == ""
-        # "All" selected - show all records (no filter)
-      else
-        # Default to showing only active records when no filter is specified
-        scope = scope.where(is_active: true)
-      end
-
-      # Filter by parent name (polymorphic association)
-      if params[:parent_name].present?
-        # Use a subquery approach for polymorphic associations
-        # This handles the case where parent might be Products::Cake or other types
-        parent_name_filter = params[:parent_name]
-        
-        # For Products::Cake (the main parent type)
-        cake_ids = Products::Cake.where("name ILIKE ?", "%#{parent_name_filter}%").pluck(:id)
-        
-        # Build conditions for polymorphic association using safe parameterized queries
-        conditions = []
-        args = []
-        
-        if cake_ids.any?
-          placeholders = cake_ids.map { "?" }.join(",")
-          conditions << "(library_sampleable_type = ? AND library_sampleable_id IN (#{placeholders}))"
-          args << "Products::Cake"
-          args.concat(cake_ids)
-        end
-        
-        # If no matches found for any type, scope will be empty
-        if conditions.any?
-          scope = scope.where(conditions.join(" OR "), *args)
-        else
-          # If no matches, return empty result
-          scope = scope.none
-        end
-      end
-
       @pagy, @library_samples = pagy(scope.order(created_at: :desc))
     end
 
     def new
-      @library_sampleable = load_library_sampleable
-      @parent = @library_sampleable # For view compatibility
+      @parent = load_sample_parent
       @library_sample = build_library_sample
-
-      if @library_sampleable
-        add_breadcrumb parent_breadcrumb_name(@library_sampleable),
-                       polymorphic_path(@library_sampleable)
-      end
-
       add_breadcrumb "Add Library Sample"
     end
 
@@ -75,22 +20,16 @@ module Inventory
     end
 
     def create
-      @library_sampleable = load_library_sampleable
+      @parent = load_sample_parent
       @library_sample = build_library_sample_from_create
       @library_sample.assign_attributes(library_sample_params)
       @library_sample.created_by = current_user.email
     
       if @library_sample.save
-        redirect_to redirect_path_for(@library_sampleable),
+        redirect_to redirect_path_for(@parent),
                     notice: "Library sample created successfully",
                     status: :see_other
       else
-        @parent = @library_sampleable # For view compatibility
-        if @library_sampleable
-          add_breadcrumb parent_breadcrumb_name(@library_sampleable),
-                         polymorphic_path(@library_sampleable)
-        end
-    
         add_breadcrumb "Add Library Sample"
         render :new, status: :unprocessable_entity
       end
@@ -132,7 +71,7 @@ module Inventory
       @library_sample = Inventory::LibrarySample.find(params[:id])
     end
 
-    def load_library_sampleable
+    def load_sample_parent
       return unless params[:parent_type].present? && params[:parent_id].present?
 
       params[:parent_type].constantize.find(params[:parent_id])
@@ -141,9 +80,9 @@ module Inventory
     end
 
     def build_library_sample
-      if @library_sampleable
-        library_sample = @library_sampleable.library_samples.build
-        library_sample.unit = @library_sampleable.unit
+      if @parent
+        library_sample = @parent.library_samples.build
+        library_sample.unit = @parent.unit
         library_sample
       else
         Inventory::LibrarySample.new
@@ -151,8 +90,8 @@ module Inventory
     end
 
     def build_library_sample_from_create
-      if @library_sampleable
-        @library_sampleable.library_samples.new
+      if @parent
+        @parent.library_samples.new
       else
         Inventory::LibrarySample.new
       end
@@ -173,21 +112,12 @@ module Inventory
       nil
     end
 
-    def parent_breadcrumb_name(parent)
-      case parent.class.name
-      when "Products::Cake"
-        "Cake #{parent.name}"
-      else
-        "#{parent.class.name.humanize} #{parent.respond_to?(:name) ? parent.name : parent.id}"
-      end
-    end
-
     def library_sample_params
       params.require(:library_sample).permit(:name, :amount, :unit, :location)
     end
 
     def update_library_sample_params
-      params.require(:inventory_library_sample)
+      params.require(:library_sample)
             .permit(:name, :amount, :unit, :location, :is_active)
     end
   end

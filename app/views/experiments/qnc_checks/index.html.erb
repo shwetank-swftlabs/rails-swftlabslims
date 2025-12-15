@@ -1,0 +1,113 @@
+<% content_for :page_title, render("shared/page_title",
+  subtitle: "Manage QNC checks and their data.",
+  actions: render("shared/add_button", label: "Add New QNC Check", path: new_experiments_qnc_check_path)
+) %>
+
+<%= render "shared/tables/default_filter_bar",
+    url: experiments_qnc_checks_path,
+    search_placeholder: "Search by name…",
+    filter_fields: ->(f) do %>
+
+  <!-- Location Filter -->
+  <div class="col-md-3">
+    <div class="input-group">
+      <%= f.text_field :location,
+            value: params[:location],
+            placeholder: "Filter by location…",
+            class: "form-control" %>
+      <%= f.submit "Search", class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+  <!-- Requested By Filter -->
+  <div class="col-md-3">
+    <div class="input-group">
+      <%= f.text_field :requested_by,
+            value: params[:requested_by],
+            placeholder: "Filter by requested by…",
+            class: "form-control" %>
+      <%= f.submit "Search", class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+  <!-- Parent Name Filter -->
+  <div class="col-md-3">
+    <div class="input-group">
+      <%= f.text_field :parent_name,
+            value: params[:parent_name],
+            placeholder: "Filter by resource name…",
+            class: "form-control" %>
+      <%= f.submit "Search", class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+<% end %>
+
+<% active_filters = [] %>
+<% active_filters << { label: "Name: #{params[:q]}", param: :q } if params[:q].present? %>
+<% active_filters << { label: "Location: #{params[:location]}", param: :location } if params[:location].present? %>
+<% active_filters << { label: "Requested By: #{params[:requested_by]}", param: :requested_by } if params[:requested_by].present? %>
+<% active_filters << { label: "Resource: #{params[:parent_name]}", param: :parent_name } if params[:parent_name].present? %>
+
+<% if active_filters.any? %>
+  <div class="mb-3">
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <span class="text-muted small fw-bold">Active Filters:</span>
+      <% active_filters.each do |filter| %>
+        <% 
+          filter_params = params.to_unsafe_h.except(filter[:param], :controller, :action)
+          clear_url = experiments_qnc_checks_path(filter_params)
+        %>
+        <a href="<%= clear_url %>" class="badge bg-secondary text-decoration-none d-flex align-items-center gap-1" style="font-size: 0.875rem;">
+          <%= filter[:label] %>
+          <i class="bi bi-x-circle" style="font-size: 0.75rem;"></i>
+        </a>
+      <% end %>
+      <% if active_filters.length > 1 %>
+        <% 
+          clear_all_params = {}
+          clear_all_url = experiments_qnc_checks_path(clear_all_params)
+        %>
+        <a href="<%= clear_all_url %>" class="badge bg-danger text-decoration-none" style="font-size: 0.875rem;">
+          Clear All
+        </a>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<%= render "shared/tables/default_table",
+    collection: @qnc_checks,
+    pagy: @pagy,
+    headers: ->(_) do %>
+      <th>Name</th>
+      <th>Resource</th>
+      <th>Location</th>
+      <th>Requested By</th>
+      <th>Requested From</th>
+      <th>Expected Completion</th>
+      <th>Created At</th>
+      <th>Print QR</th>
+    <% end,
+    row: ->(qnc_check) do %>
+      <td><%= link_to qnc_check.name.presence || "Unnamed", experiments_qnc_check_path(qnc_check), class: "text-decoration-underline fw-semibold" %></td>
+      <td>
+        <% parent = qnc_check.qnc_checkable %>
+        <% if parent.present? && parent.respond_to?(:name) && parent.name.present? %>
+          <%= link_to parent.name, polymorphic_path(parent), class: "text-decoration-underline" %>
+        <% else %>
+          —
+        <% end %>
+      </td>
+      <td><%= qnc_check.location.presence || "—" %></td>
+      <td><%= qnc_check.requested_by.presence || "—" %></td>
+      <td><%= qnc_check.requested_from.presence || "—" %></td>
+      <td><%= qnc_check.expected_completion_date.present? ? format_date(qnc_check.expected_completion_date) : "—" %></td>
+      <td><%= format_date(qnc_check.created_at) %></td>
+      <td><%= render "shared/print_qr_button", 
+                      qr_code_path: qr_code_experiments_qnc_check_path(qnc_check),
+                      label: "Print QR" %>
+      </td>
+    <% end %>
+
+

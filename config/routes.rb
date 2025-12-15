@@ -42,6 +42,15 @@ Rails.application.routes.draw do
       resources :comments, only: [:create, :update], controller: "/comments"
       resources :data_files, only: [:create, :show], controller: "/data_files"
     end
+
+    resources :qnc_checks, only: [:index, :new, :create, :show, :edit, :update] do
+      member do
+        get :qr_code
+      end
+
+      resources :comments, only: [:create, :update], controller: "/comments"
+      resources :data_files, only: [:create, :show], controller: "/data_files"
+    end 
   end
 
   # Inventory routes (proper namespace)

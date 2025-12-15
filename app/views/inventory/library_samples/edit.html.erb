@@ -31,7 +31,7 @@
     </div>
   </div>
 
-  <%= default_form_field(f, :location, label_text: "Location", required: false) do |req| %>
+  <%= default_form_field(f, :location, label_text: "Location", required: true) do |req| %>
     <%= f.text_field :location,
                     { class: "form-control",
                       placeholder: "Enter location",

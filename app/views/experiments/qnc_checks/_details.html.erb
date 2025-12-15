@@ -1,0 +1,22 @@
+<%
+  parent = qnc_check.qnc_checkable
+  resource_display = if parent.present? && parent.respond_to?(:name) && parent.name.present?
+    name_link = link_to(parent.name, polymorphic_path(parent), class: "text-decoration-underline")
+    "#{name_link}"
+  else
+    "—"
+  end
+%>
+
+<%= render "shared/sidebar_layout/details_list_main_area", details: {
+  "Name" => qnc_check.name,
+  "Location" => qnc_check.location.present? ? qnc_check.location : "N/A",
+  "Resource" => resource_display.html_safe,
+  "Requested By" => qnc_check.requested_by.present? ? qnc_check.requested_by : "N/A",
+  "Requested From" => qnc_check.requested_from.present? ? qnc_check.requested_from : "N/A",
+  "Expected Completion Date" => (qnc_check.expected_completion_date.present? ? qnc_check.expected_completion_date.strftime("%B %d, %Y") : "N/A"),
+  "Created At" => qnc_check.created_at.strftime("%B %d, %Y %I:%M %p")
+}
+%>
+
+
