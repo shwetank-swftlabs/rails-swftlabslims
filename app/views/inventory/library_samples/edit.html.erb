@@ -38,6 +38,12 @@
                       value: @library_sample.location }.merge(req) %>
   <% end %>
 
+  <%= default_form_field(f, :created_at, label_text: "Date Added", required: false) do |req| %>
+    <%= f.date_field :created_at,
+                    { class: "form-control",
+                      value: @library_sample.created_at&.to_date }.merge(req) %>
+  <% end %>
+
   <%= default_form_field(f, :is_active, label_text: "Status") do |req| %>
     <div class="d-flex align-items-center gap-3">
       <div class="form-check form-switch">

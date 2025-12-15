@@ -5,52 +5,12 @@ module Experiments
 
     def index
       scope = Experiments::QncCheck.all
-
-      # Search by name
-      scope = scope.where("name ILIKE ?", "%#{params[:q]}%") if params[:q].present?
-
-      # Filter by location
-      scope = scope.where("location ILIKE ?", "%#{params[:location]}%") if params[:location].present?
-
-      # Filter by requested_by
-      scope = scope.where("requested_by ILIKE ?", "%#{params[:requested_by]}%") if params[:requested_by].present?
-
-      # Filter by parent name (polymorphic association)
-      if params[:parent_name].present?
-        parent_name_filter = params[:parent_name]
-
-        cake_ids = Products::Cake.where("name ILIKE ?", "%#{parent_name_filter}%").pluck(:id)
-
-        conditions = []
-        args = []
-
-        if cake_ids.any?
-          placeholders = cake_ids.map { "?" }.join(",")
-          conditions << "(qnc_checkable_type = ? AND qnc_checkable_id IN (#{placeholders}))"
-          args << "Products::Cake"
-          args.concat(cake_ids)
-        end
-
-        if conditions.any?
-          scope = scope.where(conditions.join(" OR "), *args)
-        else
-          scope = scope.none
-        end
-      end
-
       @pagy, @qnc_checks = pagy(scope.order(created_at: :desc))
     end
 
     def new
-      @qnc_checkable = load_qnc_checkable
-      @parent = @qnc_checkable
+      @parent = load_qnc_checkable
       @qnc_check = build_qnc_check
-
-      if @qnc_checkable
-        add_breadcrumb parent_breadcrumb_name(@qnc_checkable),
-                       polymorphic_path(@qnc_checkable)
-      end
-
       add_breadcrumb "Add QNC Check"
     end
 
@@ -60,22 +20,15 @@ module Experiments
     end
 
     def create
-      @qnc_checkable = load_qnc_checkable
+      @parent = load_qnc_checkable
       @qnc_check = build_qnc_check_from_create
       @qnc_check.assign_attributes(qnc_check_params)
-      @qnc_check.created_by = current_user.email if @qnc_check.respond_to?(:created_by=)
 
       if @qnc_check.save
-        redirect_to redirect_path_for(@qnc_checkable),
+        redirect_to redirect_path_for(@parent),
                     notice: "QNC check created successfully",
                     status: :see_other
       else
-        @parent = @qnc_checkable
-        if @qnc_checkable
-          add_breadcrumb parent_breadcrumb_name(@qnc_checkable),
-                         polymorphic_path(@qnc_checkable)
-        end
-
         add_breadcrumb "Add QNC Check"
         render :new, status: :unprocessable_entity
       end
@@ -125,16 +78,16 @@ module Experiments
     end
 
     def build_qnc_check
-      if @qnc_checkable
-        @qnc_checkable.qnc_checks.build
+      if @parent
+        @parent.qnc_checks.build
       else
         Experiments::QncCheck.new
       end
     end
 
     def build_qnc_check_from_create
-      if @qnc_checkable
-        @qnc_checkable.qnc_checks.new
+      if @parent
+        @parent.qnc_checks.new
       else
         Experiments::QncCheck.new
       end
@@ -145,15 +98,6 @@ module Experiments
         polymorphic_path(parent, tab: :qnc_checks)
       else
         experiments_qnc_checks_path
-      end
-    end
-
-    def parent_breadcrumb_name(parent)
-      case parent.class.name
-      when "Products::Cake"
-        "Cake #{parent.name}"
-      else
-        "#{parent.class.name.humanize} #{parent.respond_to?(:name) ? parent.name : parent.id}"
       end
     end
 

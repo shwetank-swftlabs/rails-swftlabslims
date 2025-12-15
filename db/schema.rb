@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_15_143845) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_15_165119) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -237,6 +237,15 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_15_143845) do
     t.string "requested_from"
     t.datetime "updated_at", null: false
     t.index ["qnc_checkable_type", "qnc_checkable_id"], name: "index_qnc_checks_on_qnc_checkable"
+  end
+
+  create_table "qnc_checks_configs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "created_by"
+    t.boolean "is_active", default: true
+    t.string "name"
+    t.string "resource_class"
+    t.datetime "updated_at", null: false
   end
 
   create_table "usages", force: :cascade do |t|

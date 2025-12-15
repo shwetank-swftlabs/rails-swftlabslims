@@ -1,0 +1,27 @@
+<% content_for :sidebar_layout_main_area do %>
+  <%= render "shared/tables/default_table",
+      collection: @qnc_checks || @cake.qnc_checks.order(created_at: :desc),
+      pagy: defined?(@pagy) ? @pagy : nil,
+      headers: ->(_) do %>
+        <th>Name</th>
+        <th>Location</th>
+        <th>Requested By</th>
+        <th>Requested From</th>
+        <th>Expected Completion</th>
+        <th>Created At</th>
+      <% end,
+      row: ->(qnc_check) do %>
+        <td>
+          <%= link_to qnc_check.name.presence || "Unnamed",
+                      experiments_qnc_check_path(qnc_check),
+                      class: "text-decoration-underline fw-semibold" %>
+        </td>
+        <td><%= qnc_check.location.presence || "—" %></td>
+        <td><%= qnc_check.requested_by.presence || "—" %></td>
+        <td><%= qnc_check.requested_from.presence || "—" %></td>
+        <td><%= qnc_check.expected_completion_date.present? ? format_date(qnc_check.expected_completion_date) : "—" %></td>
+        <td><%= format_date(qnc_check.created_at) %></td>
+      <% end %>
+<% end %>
+
+

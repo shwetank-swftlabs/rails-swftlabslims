@@ -68,7 +68,11 @@
                     { class: "form-control" }.merge(req) %>
   <% end %>
 
-  <%= render "shared/forms/creator_fields", f: f %>
+  <%= default_form_field(f, :created_at, label_text: "Date Added", required: false) do %>
+    <%= f.date_field :created_at,
+                    { class: "form-control",
+                      value: Date.today } %>
+  <% end %>
 
   <div class="mt-4">
     <div class="d-flex gap-2">

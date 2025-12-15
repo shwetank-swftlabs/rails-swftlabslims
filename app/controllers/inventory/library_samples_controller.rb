@@ -113,12 +113,12 @@ module Inventory
     end
 
     def library_sample_params
-      params.require(:library_sample).permit(:name, :amount, :unit, :location)
+      params.require(:library_sample).permit(:name, :amount, :unit, :location, :created_at)
     end
 
     def update_library_sample_params
       params.require(:library_sample)
-            .permit(:name, :amount, :unit, :location, :is_active)
+            .permit(:name, :amount, :unit, :location, :created_at, :is_active)
     end
   end
 end

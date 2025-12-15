@@ -4,7 +4,7 @@
 ) %>
 
 <%= render "shared/sidebar_layout/layout",
-    tabs: ["details", "library_samples", "data_files", "comments", "use_records"],
+    tabs: ["details", "library_samples", "qnc_checks", "data_files", "comments", "use_records"],
     tab_path: :products_cake_path,
     path_args: [@cake],
     bottom_action: render("shared/edit_button", label: "Edit Cake", path: edit_products_cake_path(@cake)) do %>
@@ -14,6 +14,15 @@
     tab_name = params[:tab] || "details"
     tab_name = "library_samples" if tab_name == "sample_library"
   %>
+
+  <% if tab_name == "qnc_checks" %>
+    <div class="d-flex justify-content-end mb-3">
+      <%= link_to "Add QNC Check",
+                  new_experiments_qnc_check_path(parent_type: "Products::Cake", parent_id: @cake.id),
+                  class: "btn btn-primary" %>
+    </div>
+  <% end %>
+
   <%= render tab_name, cake: @cake %>
 
 <% end %>
