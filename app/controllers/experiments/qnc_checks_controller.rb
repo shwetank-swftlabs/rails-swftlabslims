@@ -1,7 +1,7 @@
 module Experiments
   class QncChecksController < ApplicationController
     before_action :set_qnc_checks_breadcrumbs_root, only: [:index, :new, :show, :edit]
-    before_action :set_qnc_check, only: [:show, :edit, :update, :qr_code]
+    before_action :set_qnc_check, only: [:show, :edit, :update, :qr_code, :mark_completed]
 
     def index
       scope = Experiments::QncChecks::Query.new(params).call
@@ -51,12 +51,30 @@ module Experiments
     end
 
     def update
-      if @qnc_check.update(update_qnc_check_params)
+      update_params = update_qnc_check_params
+
+      if update_params[:is_active] == "true"
+        update_params[:completed_at] = nil
+      end
+      
+      if @qnc_check.update(update_params)
         redirect_to experiments_qnc_check_path(@qnc_check),
                     notice: "QNC check updated successfully"
       else
         @users = User.order(:email)
         render :edit, status: :unprocessable_entity
+      end
+    end
+
+    def mark_completed
+      if @qnc_check.update(completed_at: Time.current, is_active: false)
+        redirect_to experiments_qnc_check_path(@qnc_check),
+                    notice: "QNC check marked as completed successfully",
+                    status: :see_other
+      else
+        redirect_to experiments_qnc_check_path(@qnc_check),
+                    alert: "Failed to mark QNC check as completed",
+                    status: :see_other
       end
     end
 
@@ -120,7 +138,7 @@ module Experiments
 
     def update_qnc_check_params
       params.require(:experiments_qnc_check)
-            .permit(:name, :location, :requested_by, :requested_from, :expected_completion_date)
+            .permit(:name, :location, :requested_from, :expected_completion_date, :is_active)
     end
 
     def load_qnc_checks_configs

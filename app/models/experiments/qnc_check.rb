@@ -9,6 +9,8 @@ module Experiments
 
     belongs_to :qnc_checkable, polymorphic: true, optional: true
 
+    DATA_FILE_TYPES = %w[other].freeze
+
     validates :name, presence: true
     validates :requested_by, presence: true
     validates :requested_from, 

@@ -47,6 +47,7 @@ Rails.application.routes.draw do
     resources :qnc_checks, only: [:index, :new, :create, :show, :edit, :update] do
       member do
         get :qr_code
+        patch :mark_completed
       end
 
       resources :comments, only: [:create, :update], controller: "/comments"

@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
-  INACTIVITY_TIMEOUT = 30.seconds
-  allow_browser versions: :modern
+  INACTIVITY_TIMEOUT = 30.minutes
+  # allow_browser verions: :modern
   stale_when_importmap_changes
 
   include Pagy::Method

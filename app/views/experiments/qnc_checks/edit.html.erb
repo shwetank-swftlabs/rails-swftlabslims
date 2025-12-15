@@ -18,13 +18,6 @@
                       value: @qnc_check.location } %>
   <% end %>
 
-  <%= default_form_field(f, :requested_by, label_text: "Requested By", required: true) do |req| %>
-    <%= f.text_field :requested_by,
-                    { class: "form-control",
-                      placeholder: "Enter requester name",
-                      value: @qnc_check.requested_by }.merge(req) %>
-  <% end %>
-
   <%= default_form_field(f, :requested_from, label_text: "Assigned To", required: true) do |req| %>
     <div class="position-relative">
       <%= f.text_field :requested_from,
@@ -57,6 +50,20 @@
     <%= f.date_field :expected_completion_date,
                     { class: "form-control",
                       value: @qnc_check.expected_completion_date }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :is_active, label_text: "Status") do |req| %>
+    <div class="d-flex align-items-center gap-3">
+      <div class="form-check form-switch">
+        <%= f.check_box :is_active, { class: "form-check-input" } %>
+        <label class="form-check-label" for="experiments_qnc_check_is_active">
+          <%= @qnc_check.is_active? ? "Active" : "Inactive" %>
+        </label>
+      </div>
+      <small class="text-muted">
+        (<%= @qnc_check.is_active? ? "Uncheck to mark as inactive" : "Check to mark as active" %>)
+      </small>
+    </div>
   <% end %>
 
   <div class="mt-4">

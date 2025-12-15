@@ -39,8 +39,10 @@ class DataFilesController < ApplicationController
       return redirect_to_polymorphic_parent(@attachable, tab: :data_files, flash_hash: { notice: "Data file uploaded successfully." })
 
     rescue => e
-      Rails.logger.error("Data file upload failed: #{e.message}")
-      return redirect_to_polymorphic_parent(@attachable, tab: :data_files, flash_hash: { alert: "Data file upload failed. Please try again." })
+      Rails.logger.error("Data file upload/parsing failed: #{e.message}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      error_message = e.message.include?("parse") ? "File uploaded but parsing failed: #{e.message}" : "Data file upload failed: #{e.message}"
+      return redirect_to_polymorphic_parent(@attachable, tab: :data_files, flash_hash: { alert: error_message })
     end
   end
 
@@ -57,7 +59,8 @@ class DataFilesController < ApplicationController
   private
 
   def parse_and_store_data(data_file)
-    return if data_file.mime_type == 'application/pdf' # PDFs are not parsed
+    # PDFs are not parsed - check both MIME type and file extension
+    return if data_file.mime_type == 'application/pdf' || data_file.file_name.downcase.end_with?('.pdf')
 
     # 1. Download file from Google Drive into a Tempfile with correct extension
     # Roo needs the correct extension to properly detect Excel file types
@@ -68,10 +71,19 @@ class DataFilesController < ApplicationController
     extension_symbol = file_extension.delete('.').downcase.to_sym
     # Only pass extension if it's a valid type, otherwise let Roo auto-detect
     extension_symbol = nil unless [:xls, :xlsx, :xlsm, :csv].include?(extension_symbol)
+    
+    Rails.logger.info("Parsing file: #{data_file.file_name}, extension: #{extension_symbol}")
     parsed = DataFileParser.parse(tempfile, extension_symbol)
+    Rails.logger.info("Parsed data keys: #{parsed.keys.inspect}")
 
     # 3. Store parsed data (simple JSON storage)
-    data_file.update!(parsed_data: parsed)
+    if parsed.present? && parsed.is_a?(Hash)
+      data_file.update!(parsed_data: parsed)
+      Rails.logger.info("Successfully stored parsed data for file: #{data_file.file_name}")
+    else
+      Rails.logger.warn("Parsed data is empty or invalid for file: #{data_file.file_name}")
+      raise "No data found in file or parsing returned invalid format"
+    end
 
   rescue => e
     Rails.logger.error("Data file parsing failed: #{e.message}")

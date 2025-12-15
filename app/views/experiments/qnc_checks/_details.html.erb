@@ -6,17 +6,39 @@
   else
     "—"
   end
+  
+  details_hash = {
+    "Name" => qnc_check.name,
+    "Location" => qnc_check.location.present? ? qnc_check.location : "N/A",
+    "Requested By" => qnc_check.requested_by.present? ? qnc_check.requested_by : "N/A",
+    "Requested From" => qnc_check.requested_from.present? ? qnc_check.requested_from : "N/A",
+    "Expected Completion Date" => (qnc_check.expected_completion_date.present? ? qnc_check.expected_completion_date.strftime("%B %d, %Y") : "N/A"),
+    "Created At" => qnc_check.created_at.strftime("%B %d, %Y %I:%M %p")
+  }
+  
+  # Add Resource if parent exists
+  if parent.present?
+    details_hash["Resource"] = resource_display.html_safe
+  end
+  
+  # Add Completed At if present
+  if qnc_check.completed_at.present?
+    details_hash["Completed At"] = qnc_check.completed_at.strftime("%B %d, %Y %I:%M %p")
+  end
 %>
 
-<%= render "shared/sidebar_layout/details_list_main_area", details: {
-  "Name" => qnc_check.name,
-  "Location" => qnc_check.location.present? ? qnc_check.location : "N/A",
-  "Resource" => resource_display.html_safe,
-  "Requested By" => qnc_check.requested_by.present? ? qnc_check.requested_by : "N/A",
-  "Requested From" => qnc_check.requested_from.present? ? qnc_check.requested_from : "N/A",
-  "Expected Completion Date" => (qnc_check.expected_completion_date.present? ? qnc_check.expected_completion_date.strftime("%B %d, %Y") : "N/A"),
-  "Created At" => qnc_check.created_at.strftime("%B %d, %Y %I:%M %p")
-}
-%>
+<%= render "shared/sidebar_layout/details_list_main_area", details: details_hash %>
+
+<% if qnc_check.is_active? %>
+  <div class="mt-4 pt-3 border-top">
+    <%= button_to mark_completed_experiments_qnc_check_path(qnc_check),
+                  method: :patch,
+                  class: "btn btn-success d-flex align-items-center gap-2",
+                  data: { turbo_confirm: "Are you sure you want to mark this QNC check as completed?" } do %>
+      <i class="bi bi-check-circle"></i>
+      <span>Mark as Completed</span>
+    <% end %>
+  </div>
+<% end %>
 
 
