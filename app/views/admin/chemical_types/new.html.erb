@@ -16,6 +16,19 @@
                       
   <% end %>
 
+  <%= default_form_field(f, :cas_number, label_text: "CAS Number (optional)") do |req| %>
+    <%= f.text_field :cas_number,
+                    { class: "form-control",
+                      placeholder: "Please enter CAS number (e.g. 7697-37-2)" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :hazards, label_text: "Hazards (optional)") do |req| %>
+    <%= f.text_area :hazards,
+                    { class: "form-control",
+                      placeholder: "Please enter hazards information",
+                      rows: 3 }.merge(req) %>
+  <% end %>
+
   <%= default_form_field(f, :is_active, label_text: "Status") do |req| %>
     <div class="d-flex align-items-center gap-3">
       <div class="form-check form-switch">

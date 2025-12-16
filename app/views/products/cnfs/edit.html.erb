@@ -29,6 +29,20 @@
           value: @cnf.cake_id %>
   <% end %>
 
+  <%= default_form_field(f, :is_active, label_text: "Status") do |req| %>
+    <div class="d-flex align-items-center gap-3">
+      <div class="form-check form-switch">
+        <%= f.check_box :is_active, { class: "form-check-input" } %>
+        <label class="form-check-label" for="products_cnf_is_active">
+          <%= @cnf.is_active? ? "Active" : "Inactive" %>
+        </label>
+      </div>
+      <small class="text-muted">
+        (<%= @cnf.is_active? ? "Uncheck to mark as inactive" : "Check to mark as active" %>)
+      </small>
+    </div>
+  <% end %>
+
   <!-- Larger space before buttons -->
   <div class="mt-4 d-flex justify-content-between">
     <!-- CONFIRM SUBMIT -->

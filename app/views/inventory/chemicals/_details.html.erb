@@ -2,6 +2,8 @@
   "Amount Remaining" => "#{chemical.remaining_amount} #{chemical.unit.upcase}",
   "Name" => chemical.name,
   "Type" => chemical.chemical_type.name.humanize,
+  "CAS Number" => chemical.chemical_type.cas_number.present? ? chemical.chemical_type.cas_number : "N/A",
+  "Hazards" => chemical.chemical_type.hazards.present? ? chemical.chemical_type.hazards : "N/A",
   "Quantity Added" => "#{chemical.quantity} #{chemical.unit.upcase}",
   "Expiry Date" => chemical.expiry_date.present? ? format_date(chemical.expiry_date) : "N/A",
   "Location" => chemical.location.present? ? chemical.location.humanize : "N/A",

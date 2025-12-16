@@ -40,6 +40,11 @@ module Products
       if params[:tab] == 'qnc_checks'
         @pagy, @qnc_checks = pagy(@cake.qnc_checks.order(created_at: :desc))
       end
+
+      # Paginate CNFs if on cnfs tab
+      if params[:tab] == 'cnfs'
+        @pagy, @cnfs = pagy(@cake.cnfs.order(created_at: :desc))
+      end
     end
 
     def create

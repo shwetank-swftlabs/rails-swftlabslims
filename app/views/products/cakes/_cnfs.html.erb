@@ -1,0 +1,48 @@
+<!-- CNFs Header + Add CNF Button -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h3 class="text-muted fw-bold mb-0">CNFs</h3>
+    <p class="text-muted mb-0" style="font-size: 0.85rem;">
+      CNFs for <strong><%= cake.name %></strong>
+    </p>
+  </div>
+
+  <%= link_to new_products_cnf_path(cake_id: cake.id), 
+      class: "btn btn-secondary d-flex align-items-center",
+      style: "font-size: 0.9rem;" do %>
+    <i class="bi bi-plus-circle me-2"></i>
+    Add CNF
+  <% end %>
+</div>
+
+<%= render "shared/tables/default_table",
+    collection: @cnfs || cake.cnfs,
+    pagy: @pagy,
+    headers: ->(_) do %>
+      <th>Name</th>
+      <th>Amount Remaining</th>
+      <th>Location</th>
+      <th>Status</th>
+      <th>Created By</th>
+      <th>Created At</th>
+      <th>Print QR</th>
+    <% end,
+    row: ->(cnf) do %>
+      <td><%= link_to cnf.name, products_cnf_path(cnf), class: "text-decoration-underline fw-semibold" %></td>
+      <td><%= "#{number_with_precision(cnf.remaining_amount, precision: 2, strip_insignificant_zeros: true)} #{cnf.unit.upcase}" %></td>
+      <td><%= cnf.location %></td>
+      <td>
+        <% if cnf.is_active? %>
+          <span class="badge bg-success">Active</span>
+        <% else %>
+          <span class="badge bg-secondary">Inactive</span>
+        <% end %>
+      </td>
+      <td><%= email_to_name(cnf.created_by) %></td>
+      <td><%= format_date(cnf.created_at) %></td>
+      <td><%= render "shared/print_qr_button", 
+                      qr_code_path: qr_code_products_cnf_path(cnf),
+                      label: "Print QR" %>
+      </td>
+    <% end %>
+

@@ -42,7 +42,7 @@ module Admin
     end
 
     def chemical_type_params
-      params.require(:admin_chemical_type).permit(:name, :is_active)
+      params.require(:admin_chemical_type).permit(:name, :is_active, :cas_number, :hazards)
     end
 
     def set_chemical_types_breadcrumbs_root

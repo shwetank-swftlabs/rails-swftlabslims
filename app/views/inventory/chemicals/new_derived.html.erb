@@ -1,23 +1,24 @@
-<% content_for :page_title, render("shared/page_title", subtitle: "Add a new chemical to the inventory.") %>
+<% content_for :page_title, render("shared/page_title", subtitle: "Add a derived chemical from #{@chemical.name}.") %>
 
-<%= render "shared/form_errors", object: @chemical %>
+<%= render "shared/form_errors", object: @derived_chemical %>
 
-<%= form_with(model: @chemical, local: false, url: inventory_chemicals_path, html: { class: "chemical-form" }) do |f| %>
+<%= form_with(model: @derived_chemical, local: false, url: inventory_chemicals_path, html: { class: "chemical-form" }) do |f| %>
   
-  <%= f.hidden_field :parent_chemical_id, value: nil %>
+  <%= f.hidden_field :parent_chemical_id, value: @chemical.id %>
 
   <%= default_form_field(f, :chemical_type, label_text: "Chemical Type", required: true) do |req| %>
     <%= f.select :chemical_type_id,
                 Admin::ChemicalType.all.filter { |ct| ct.is_active? }.map { |ct| [ct.name.humanize, ct.id] },
-                { prompt: "Please select a chemical type" },
-                { class: "form-control" }.merge(req) %>
+                { selected: @derived_chemical.chemical_type_id },
+                { class: "form-control", disabled: true }.merge(req) %>
+    <%= f.hidden_field :chemical_type_id, value: @derived_chemical.chemical_type_id %>
     <% end %>
 
 
     <%= default_form_field(f, :name, label_text: "Chemical Name", required: true) do |req| %>
       <%= f.text_field :name,
                       { class: "form-control",
-                        placeholder: "Please enter a unique chemical name" }.merge(req) %>
+                        placeholder: "Please enter a chemical name" }.merge(req) %>
     <% end %>
 
     <%= inline_quantity_field(f, :quantity, "Quantity", unit_field: :unit, required: true) %>
@@ -25,7 +26,8 @@
     <%= default_form_field(f, :supplier, label_text: "Chemical Supplier (optional)") do |req| %>
       <%= f.text_field :supplier,
                       { class: "form-control",
-                        placeholder: "Please enter a chemical supplier (optional)" }.merge(req) %>
+                        placeholder: "Please enter a chemical supplier (optional)",
+                        value: @derived_chemical.supplier }.merge(req) %>
     <% end %>
 
   <%= default_form_field(f, :location, label_text: "Chemical Location (optional)") do |req| %>
@@ -41,10 +43,11 @@
 
 
     <!-- CONFIRM SUBMIT -->
-    <%= f.submit "Save Chemical", 
+    <%= f.submit "Save Derived Chemical", 
           class: "btn btn-primary px-4 mt-3",
-          data: { turbo_confirm: "Are you sure you want to save this chemical?" } %>
+          data: { turbo_confirm: "Are you sure you want to save this derived chemical?" } %>
 
   </div>
 
 <% end %>
+

@@ -33,6 +33,71 @@
         onchange: "this.form.submit();" %>
   </div>
 
+  <!-- Original/Derived Filter -->
+  <div class="col-md-3">
+    <%= f.select :derived,
+        [["Original", "false"], ["Derived", "true"], ["All", ""]],
+        {
+          include_blank: false,
+          selected: params.key?(:derived) ? params[:derived] : ""
+        },
+        class: "form-select",
+        onchange: "this.form.submit();" %>
+  </div>
+
+<% end %>
+
+<!-- ACTIVE FILTERS -->
+<% active_filters = [] %>
+<% active_filters << { label: "Name: #{params[:q]}", param: :q } if params[:q].present? %>
+<% 
+  if params[:chemical_type_id].present?
+    begin
+      chemical_type = Admin::ChemicalType.find(params[:chemical_type_id])
+      active_filters << { label: "Type: #{chemical_type.name.humanize}", param: :chemical_type_id }
+    rescue ActiveRecord::RecordNotFound
+      # Skip if chemical type not found
+    end
+  end
+%>
+<% active_filters << { label: "Status: #{params[:is_active] == 'true' ? 'Active' : 'Inactive'}", param: :is_active } if params[:is_active].present? %>
+<% 
+  if params[:derived].present?
+    derived_label = case params[:derived]
+                   when "true" then "Derived"
+                   when "false" then "Original"
+                   else "All"
+                   end
+    active_filters << { label: "Category: #{derived_label}", param: :derived }
+  end
+%>
+
+<% if active_filters.any? %>
+  <div class="mb-3">
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <span class="text-muted small fw-bold">Active Filters:</span>
+      <% active_filters.each do |filter| %>
+        <% 
+          # Build URL without this filter, preserving other params
+          filter_params = params.to_unsafe_h.except(filter[:param], :controller, :action)
+          clear_url = inventory_chemicals_path(filter_params)
+        %>
+        <a href="<%= clear_url %>" class="badge bg-secondary text-decoration-none d-flex align-items-center gap-1" style="font-size: 0.875rem;">
+          <%= filter[:label] %>
+          <i class="bi bi-x-circle" style="font-size: 0.75rem;"></i>
+        </a>
+      <% end %>
+      <% if active_filters.length > 1 %>
+        <% 
+          # Clear all filters
+          clear_all_url = inventory_chemicals_path
+        %>
+        <a href="<%= clear_all_url %>" class="badge bg-danger text-decoration-none" style="font-size: 0.875rem;">
+          Clear All
+        </a>
+      <% end %>
+    </div>
+  </div>
 <% end %>
 
 <!-- EQUIPMENT TABLE -->

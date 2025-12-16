@@ -1,7 +1,7 @@
 module Inventory
   class ChemicalsController < BaseController
     before_action :set_chemicals_breadcrumbs_root
-    before_action :set_chemical, only: [:show, :qr_code, :edit, :update]
+    before_action :set_chemical, only: [:show, :qr_code, :edit, :update, :new_derived]
 
     def index
       scope = Inventory::Chemical.all
@@ -17,6 +17,15 @@ module Inventory
         is_active_value = params[:is_active] == "true"
         scope = scope.where(is_active: is_active_value)
       end
+
+      # Filter by original/derived
+      if params[:derived].present?
+        if params[:derived] == "true"
+          scope = scope.where.not(parent_chemical_id: nil)
+        elsif params[:derived] == "false"
+          scope = scope.where(parent_chemical_id: nil)
+        end
+      end
     
       @pagy, @chemicals = pagy(scope.order(:name))
     end
@@ -24,6 +33,16 @@ module Inventory
     def new
       add_breadcrumb "Add New Chemical", new_inventory_chemical_path
       @chemical = Inventory::Chemical.new
+    end
+
+    def new_derived
+      add_breadcrumb "#{@chemical.chemical_type.name.humanize} #{@chemical.name} Details", inventory_chemical_path(@chemical)
+      add_breadcrumb "Add Derived Chemical", new_derived_inventory_chemical_path(@chemical)
+      @derived_chemical = Inventory::Chemical.new(
+        parent_chemical_id: @chemical.id,
+        chemical_type_id: @chemical.chemical_type_id,
+        supplier: @chemical.supplier
+      )
     end
 
     def show
@@ -41,7 +60,14 @@ module Inventory
       if @chemical.save
         redirect_to inventory_chemicals_path, notice: "Chemical created successfully"
       else
-        render :new, status: :unprocessable_entity
+        # Determine which view to render based on whether it's a derived chemical
+        if @chemical.parent_chemical_id.present?
+          @derived_chemical = @chemical
+          @chemical = Inventory::Chemical.find(@derived_chemical.parent_chemical_id)
+          render :new_derived, status: :unprocessable_entity
+        else
+          render :new, status: :unprocessable_entity
+        end
       end
     end
 
@@ -77,7 +103,7 @@ module Inventory
     end
 
     def chemical_params
-      params.require(:inventory_chemical).permit(:name, :chemical_type_id, :quantity, :unit, :supplier, :location, :expiry_date)
+      params.require(:inventory_chemical).permit(:name, :chemical_type_id, :quantity, :unit, :supplier, :location, :expiry_date, :parent_chemical_id)
     end
 
     def update_chemical_params

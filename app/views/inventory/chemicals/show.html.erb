@@ -1,6 +1,15 @@
+<% 
+  actions_content = [
+    link_to(new_derived_inventory_chemical_path(@chemical), class: "btn btn-sm btn-outline-secondary") do
+      raw('<i class="bi bi-plus-circle"></i> Add Derived Chemical')
+    end,
+    render("shared/print_qr_button", qr_code_path: qr_code_inventory_chemical_path(@chemical))
+  ]
+  actions_html = safe_join(actions_content)
+%>
 <% content_for :page_title, render("shared/page_title", 
   subtitle: "View chemical details.",
-  actions: render("shared/print_qr_button", qr_code_path: qr_code_inventory_chemical_path(@chemical))
+  actions: actions_html
 ) %>
 
 <%= render "shared/sidebar_layout/layout",

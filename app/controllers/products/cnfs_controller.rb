@@ -21,6 +21,7 @@ module Products
     def new
       add_breadcrumb "Add New CNF", new_products_cnf_path
       @cnf = Products::Cnf.new
+      @cnf.cake_id = params[:cake_id] if params[:cake_id].present?
     end
 
     def show
@@ -96,7 +97,7 @@ module Products
     end
 
     def update_cnf_params
-      params.require(:products_cnf).permit(:name, :quantity, :unit, :location, :cake_id)
+      params.require(:products_cnf).permit(:name, :quantity, :unit, :location, :cake_id, :is_active)
     end
   end
 end
