@@ -108,5 +108,15 @@ Rails.application.routes.draw do
       resources :data_files, only: [:create, :show], controller: "/data_files"
       resources :usages, only: [:create, :index, :update], controller: "/usages"
     end
+
+    resources :cnfs, only: [:index, :new, :create, :show, :edit, :update] do
+      member do
+        get :qr_code
+      end
+
+      resources :comments, only: [:create, :update], controller: "/comments"
+      resources :data_files, only: [:create, :show], controller: "/data_files"
+      resources :usages, only: [:create, :index, :update], controller: "/usages"
+    end
   end
 end

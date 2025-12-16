@@ -1,0 +1,193 @@
+<%
+  # Extract parameters with defaults
+  form = local_assigns[:form]
+  field = local_assigns[:field]
+  options = local_assigns[:options] || []
+  placeholder = local_assigns[:placeholder] || "Search or type..."
+  help_text = local_assigns[:help_text]
+  value = local_assigns[:value]
+  required = local_assigns.fetch(:required, false)
+  
+  # Generate unique IDs based on form object name and field
+  form_object_name = form.object_name.to_s.gsub(/[\[\]]/, '_').gsub(/__+/, '_')
+  input_id = local_assigns[:input_id] || "#{form_object_name}_#{field}_input"
+  dropdown_id = local_assigns[:dropdown_id] || "#{form_object_name}_#{field}_dropdown"
+  
+  # Build input attributes
+  input_attrs = {
+    class: "form-control",
+    id: input_id,
+    placeholder: placeholder,
+    autocomplete: "off",
+    type: "text"
+  }
+  input_attrs[:required] = true if required
+  input_attrs[:value] = value if value.present?
+  
+  # Merge any additional attributes passed in
+  if local_assigns[:input_attrs].present?
+    input_attrs.merge!(local_assigns[:input_attrs])
+  end
+%>
+
+<div class="position-relative">
+  <%= form.text_field field, input_attrs %>
+  
+  <div class="dropdown-menu w-100" id="<%= dropdown_id %>" style="max-height: 300px; overflow-y: auto; display: none;">
+    <% options.each do |option| %>
+      <% 
+        # Handle both hash and array formats
+        if option.is_a?(Hash)
+          option_key = option[:key] || option['key']
+          option_val = option[:val] || option[:value] || option['val'] || option['value']
+        else
+          option_key = option
+          option_val = option
+        end
+      %>
+      <button type="button" class="dropdown-item searchable-option" data-value="<%= option_key %>">
+        <%= option_val %>
+      </button>
+    <% end %>
+  </div>
+</div>
+
+<% if help_text.present? %>
+  <small class="text-muted">
+    <%= help_text %>
+  </small>
+<% end %>
+
+<script>
+  (function() {
+    const inputId = '<%= input_id %>';
+    const dropdownId = '<%= dropdown_id %>';
+    
+    function initSearchableDropdown() {
+      const input = document.getElementById(inputId);
+      const dropdown = document.getElementById(dropdownId);
+      
+      if (!input || !dropdown) return;
+      
+      const options = dropdown.querySelectorAll('.searchable-option');
+      let isOpen = false;
+      let mouseInDropdown = false;
+      
+      function showDropdown() {
+        if (!isOpen) {
+          dropdown.style.display = 'block';
+          isOpen = true;
+          filterOptions();
+        }
+      }
+      
+      function hideDropdown() {
+        if (isOpen && !mouseInDropdown) {
+          dropdown.style.display = 'none';
+          isOpen = false;
+        }
+      }
+      
+      function filterOptions() {
+        const searchTerm = input.value.toLowerCase().trim();
+        
+        options.forEach(option => {
+          const optionText = option.textContent.toLowerCase();
+          const optionValue = option.getAttribute('data-value').toLowerCase();
+          
+          if (optionText.includes(searchTerm) || optionValue.includes(searchTerm)) {
+            option.style.display = '';
+          } else {
+            option.style.display = 'none';
+          }
+        });
+      }
+      
+      // Show dropdown on focus
+      input.addEventListener('focus', function() {
+        showDropdown();
+      });
+      
+      // Filter as user types
+      input.addEventListener('input', function() {
+        filterOptions();
+        if (!isOpen) {
+          showDropdown();
+        }
+      });
+      
+      // Handle option selection
+      options.forEach(option => {
+        option.addEventListener('click', function(e) {
+          e.preventDefault();
+          input.value = this.getAttribute('data-value');
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          hideDropdown();
+          input.focus();
+        });
+        
+        option.addEventListener('mouseenter', function() {
+          mouseInDropdown = true;
+        });
+        
+        option.addEventListener('mouseleave', function() {
+          mouseInDropdown = false;
+        });
+      });
+      
+      // Track mouse in dropdown
+      dropdown.addEventListener('mouseenter', function() {
+        mouseInDropdown = true;
+      });
+      
+      dropdown.addEventListener('mouseleave', function() {
+        mouseInDropdown = false;
+      });
+      
+      // Hide on blur (but delay to allow clicks)
+      input.addEventListener('blur', function() {
+        setTimeout(() => {
+          if (!mouseInDropdown) {
+            hideDropdown();
+          }
+        }, 200);
+      });
+      
+      // Close when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+          hideDropdown();
+        }
+      });
+      
+      // Keyboard navigation
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          hideDropdown();
+          input.blur();
+        } else if (e.key === 'ArrowDown' && isOpen) {
+          e.preventDefault();
+          const visibleOptions = Array.from(options).filter(opt => opt.style.display !== 'none');
+          if (visibleOptions.length > 0) {
+            visibleOptions[0].focus();
+          }
+        }
+      });
+      
+      // Initial filter if there's a value
+      if (input.value) {
+        filterOptions();
+      }
+    }
+    
+    // Initialize on DOM ready or Turbo load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initSearchableDropdown);
+    } else {
+      initSearchableDropdown();
+    }
+    
+    // Re-initialize on Turbo navigation
+    document.addEventListener('turbo:load', initSearchableDropdown);
+  })();
+</script>

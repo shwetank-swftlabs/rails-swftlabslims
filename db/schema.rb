@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_15_165119) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_16_143550) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -86,6 +86,19 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_15_165119) do
     t.string "unit", null: false
     t.datetime "updated_at", null: false
     t.index ["chemical_type_id"], name: "index_chemicals_on_chemical_type_id"
+  end
+
+  create_table "cnfs", force: :cascade do |t|
+    t.bigint "cake_id"
+    t.datetime "created_at", null: false
+    t.string "created_by"
+    t.boolean "is_active", default: true
+    t.string "location"
+    t.string "name"
+    t.decimal "quantity"
+    t.string "unit"
+    t.datetime "updated_at", null: false
+    t.index ["cake_id"], name: "index_cnfs_on_cake_id"
   end
 
   create_table "comments", force: :cascade do |t|
@@ -273,6 +286,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_15_165119) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cakes", "nop_processes"
   add_foreign_key "chemicals", "chemical_types"
+  add_foreign_key "cnfs", "cakes"
   add_foreign_key "equipments", "equipment_types"
   add_foreign_key "feedstocks", "feedstock_types"
   add_foreign_key "nop_processes", "equipments", column: "reactor_id"

@@ -1,0 +1,248 @@
+<% qnc_checks = local_assigns[:qnc_checks] || @qnc_checks || [] %>
+
+<div class="table-responsive">
+  <table class="table table-striped table-hover align-middle table-compact">
+    <thead class="table-light border-bottom">
+      <tr>
+        <th>Name</th>
+        <th>Resource</th>
+        <th>Location</th>
+        <th>Assigned To</th>
+        <th>Expected Completion</th>
+        <th>Requested By</th>
+        <th>Status</th>
+        <th>Created At</th>
+        <th>Print QR</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% if qnc_checks.any? %>
+        <% qnc_checks.each do |qnc_check| %>
+          <!-- QNC Check Row -->
+          <% data_files = qnc_check.data_files.order(created_at: :desc) %>
+          <% has_files = data_files.any? %>
+          <% details_id = "details-#{qnc_check.id}" %>
+          <tr>
+            <td>
+              <% if has_files %>
+                <button 
+                  type="button"
+                  class="btn btn-link p-0 me-2 text-decoration-none"
+                  style="border: none; background: none; cursor: pointer;"
+                  onclick="toggleDetailsRow('<%= details_id %>', '<%= qnc_check.id %>')">
+                  <i class="bi bi-chevron-right" id="chevron-<%= qnc_check.id %>"></i>
+                </button>
+              <% else %>
+                <span class="me-2" style="width: 1rem; display: inline-block;"></span>
+              <% end %>
+              <%= link_to qnc_check.name.presence || "Unnamed",
+                          experiments_qnc_check_path(qnc_check),
+                          class: "text-decoration-underline fw-semibold" %>
+            </td>
+            <td>
+              <% parent = qnc_check.qnc_checkable %>
+              <% if parent.present? && parent.respond_to?(:name) && parent.name.present? %>
+                <%= link_to parent.name, polymorphic_path(parent), class: "text-decoration-underline" %>
+              <% else %>
+                —
+              <% end %>
+            </td>
+            <td><%= qnc_check.location.presence || "—" %></td>
+            <td><%= qnc_check.requested_from.present? ? email_to_name(qnc_check.requested_from) : "—" %></td>
+            <td><%= qnc_check.expected_completion_date.present? ? format_date(qnc_check.expected_completion_date) : "—" %></td>
+            <td><%= qnc_check.requested_by.present? ? email_to_name(qnc_check.requested_by) : "—" %></td>
+            <td>
+              <% if qnc_check.is_active? %>
+                <span class="badge bg-warning text-dark">
+                  <i class="bi bi-clock me-1"></i>Pending
+                </span>
+              <% else %>
+                <span class="badge bg-success">
+                  <i class="bi bi-check-circle me-1"></i>Completed
+                </span>
+              <% end %>
+            </td>
+            <td><%= format_date(qnc_check.created_at) %></td>
+            <td>
+              <%= render "shared/print_qr_button", 
+                          qr_code_path: qr_code_experiments_qnc_check_path(qnc_check),
+                          label: "Print QR" %>
+            </td>
+          </tr>
+
+          <!-- Data Files Details Row -->
+          <% if has_files %>
+            <tr id="details-row-<%= qnc_check.id %>" style="display: none;">
+              <td colspan="9" class="p-0">
+                <details id="<%= details_id %>" style="background-color: #f8f9fa;">
+                  <summary class="cursor-pointer" style="list-style: none; user-select: none; display: none;">
+                    <span class="text-muted small">
+                      Data files (<%= data_files.count %>)
+                    </span>
+                  </summary>
+                  <div class="px-3 py-2 mt-2 ms-4">
+                    <table class="table table-sm table-borderless mb-0" style="font-size: 0.875rem;">
+                      <thead>
+                        <tr>
+                          <th class="text-muted fw-semibold pb-2" style="font-size: 0.8rem;">File Name</th>
+                          <th class="text-muted fw-semibold pb-2" style="font-size: 0.8rem;">Data Type</th>
+                          <th class="text-muted fw-semibold pb-2" style="font-size: 0.8rem;">Label</th>
+                          <th class="text-muted fw-semibold pb-2" style="font-size: 0.8rem;">View Data</th>
+                          <th class="text-muted fw-semibold pb-2" style="font-size: 0.8rem;">Open File</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% data_files.each do |data_file| %>
+                          <tr>
+                            <td class="py-1">
+                              <a href="<%= data_file.drive_file_url %>" target="_blank" class="text-decoration-none">
+                                <%= data_file.file_name %>
+                              </a>
+                            </td>
+                            <td class="py-1 text-muted"><%= data_file.data_type.humanize %></td>
+                            <td class="py-1 text-muted"><%= data_file.label.presence || "—" %></td>
+                            <td class="py-1">
+                              <% if data_file.parsed_data.present? %>
+                                <button 
+                                  class="btn btn-sm btn-link p-0 text-decoration-none" 
+                                  style="font-size: 0.8rem;"
+                                  data-bs-toggle="modal" 
+                                  data-bs-target="#viewQncCheckFileDataModal"
+                                  data-data-file-id="<%= data_file.id %>"
+                                  data-data-file-url="<%= polymorphic_path([qnc_check, data_file]) %>"
+                                  data-data-file-name="<%= data_file.file_name %>"
+                                  onclick="loadQncCheckFileData(this)">
+                                  View
+                                </button>
+                              <% else %>
+                                <span class="text-muted" style="font-size: 0.8rem;">—</span>
+                              <% end %>
+                            </td>
+                            <td class="py-1">
+                              <a href="<%= data_file.drive_file_url %>" target="_blank" class="text-decoration-none text-muted" style="font-size: 0.8rem;">
+                                Open
+                              </a>
+                            </td>
+                          </tr>
+                        <% end %>
+                      </tbody>
+                    </table>
+                  </div>
+                </details>
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
+      <% else %>
+        <tr>
+          <td colspan="9" class="text-muted text-center py-3">No QNC checks found.</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<% if defined?(@pagy) && @pagy.present? %>
+  <div class="mt-3">
+    <%== @pagy.series_nav(:bootstrap) %>
+  </div>
+<% end %>
+
+<script>
+  // Use window namespace to avoid redeclaration errors with Turbo
+  if (typeof window.loadQncCheckFileData === 'undefined') {
+    window.loadQncCheckFileData = function(button) {
+      const dataFileUrl = button.getAttribute('data-data-file-url');
+      const dataFileName = button.getAttribute('data-data-file-name');
+      const modalBody = document.getElementById('viewQncCheckFileDataModalBody');
+      const modalTitle = document.getElementById('viewQncCheckFileDataModalLabel');
+      
+      if (!modalBody || !modalTitle) {
+        console.error('Modal elements not found');
+        return;
+      }
+      
+      if (!dataFileUrl) {
+        console.error('Data file URL not found');
+        modalBody.innerHTML = '<div class="alert alert-danger">Error: Data file URL not found.</div>';
+        return;
+      }
+      
+      // Update modal title with file name
+      if (dataFileName) {
+        modalTitle.textContent = 'View File Data: ' + dataFileName;
+      }
+      
+      // Show loading state
+      modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+      
+      // Fetch the data
+      fetch(dataFileUrl, {
+        headers: {
+          'Accept': 'text/html',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.text();
+      })
+      .then(html => {
+        modalBody.innerHTML = html;
+      })
+      .catch(error => {
+        console.error('Error loading file data:', error);
+        modalBody.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>Error loading file data. Please try again.</div>';
+      });
+    };
+  }
+
+  // Toggle details row visibility and chevron
+  if (typeof window.toggleDetailsRow === 'undefined') {
+    window.toggleDetailsRow = function(detailsId, qncCheckId) {
+      const details = document.getElementById(detailsId);
+      const detailsRow = document.getElementById('details-row-' + qncCheckId);
+      const chevron = document.getElementById('chevron-' + qncCheckId);
+      
+      if (details && detailsRow && chevron) {
+        const isOpen = details.hasAttribute('open');
+        
+        if (isOpen) {
+          details.removeAttribute('open');
+          detailsRow.style.display = 'none';
+          chevron.classList.remove('bi-chevron-down');
+          chevron.classList.add('bi-chevron-right');
+        } else {
+          details.setAttribute('open', 'open');
+          detailsRow.style.display = '';
+          chevron.classList.remove('bi-chevron-right');
+          chevron.classList.add('bi-chevron-down');
+        }
+      }
+    };
+  }
+</script>
+
+<style>
+  details summary {
+    cursor: pointer;
+  }
+  
+  details summary::-webkit-details-marker {
+    display: none;
+  }
+  
+  /* Ensure table striping works correctly - details rows don't count */
+  .table tbody tr[id^="details-row-"] {
+    background-color: transparent !important;
+  }
+  
+  .table tbody tr:not([id^="details-row-"]) {
+    /* Ensure proper striping for visible rows */
+  }
+</style>
+
+

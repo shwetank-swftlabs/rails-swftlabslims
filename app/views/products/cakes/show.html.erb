@@ -27,3 +27,8 @@
 
 <% end %>
 
+<!-- View File Data Modal (for QNC checks) -->
+<% if params[:tab] == "qnc_checks" %>
+  <%= render "shared/qnc_check_file_data_modal" %>
+<% end %>
+

@@ -11,6 +11,7 @@ module Products
     include Datafileable
     include LibrarySampleable
     include QncCheckable
+    has_many :cnfs, class_name: "Products::Cnf", dependent: :destroy
 
     
     CAKE_UNITS = {

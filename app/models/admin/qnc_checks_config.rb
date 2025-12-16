@@ -1,7 +1,8 @@
 module Admin
   class QncChecksConfig < ApplicationRecord
     QNC_CHECK_RESOURCE_CLASSES = [
-      "Products::Cake"
+      "Products::Cake",
+      "Products::Cnf"
     ].freeze
 
     validates :name, presence: true

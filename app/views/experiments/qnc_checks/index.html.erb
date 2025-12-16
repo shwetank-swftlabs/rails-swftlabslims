@@ -118,49 +118,9 @@
 <% end %>
 
 <!-- QNC CHECKS TABLE -->
-<%= render "shared/tables/default_table",
-    collection: @qnc_checks,
-    pagy: @pagy,
-    headers: ->(_) do %>
-      <th>Name</th>
-      <th>Resource</th>
-      <th>Location</th>
-      <th>Assigned To</th>
-      <th>Expected Completion</th>
-      <th>Requested By</th>
-      <th>Status</th>
-      <th>Created At</th>
-      <th>Print QR</th>
-    <% end,
-    row: ->(qnc_check) do %>
-      <td><%= link_to qnc_check.name.presence || "Unnamed", experiments_qnc_check_path(qnc_check), class: "text-decoration-underline fw-semibold" %></td>
-      <td>
-        <% parent = qnc_check.qnc_checkable %>
-        <% if parent.present? && parent.respond_to?(:name) && parent.name.present? %>
-          <%= link_to parent.name, polymorphic_path(parent), class: "text-decoration-underline" %>
-        <% else %>
-          —
-        <% end %>
-      </td>
-      <td><%= qnc_check.location.presence || "—" %></td>
-      <td><%= qnc_check.requested_from.present? ? email_to_name(qnc_check.requested_from) : "—" %></td>
-      <td><%= qnc_check.expected_completion_date.present? ? format_date(qnc_check.expected_completion_date) : "—" %></td>
-      <td><%= qnc_check.requested_by.present? ? email_to_name(qnc_check.requested_by) : "—" %></td>
-      <td>
-        <% if qnc_check.is_active? %>
-          <span class="badge bg-warning text-dark">
-            <i class="bi bi-clock me-1"></i>Pending
-          </span>
-        <% else %>
-          <span class="badge bg-success">
-            <i class="bi bi-check-circle me-1"></i>Completed
-          </span>
-        <% end %>
-      </td>
-      <td><%= format_date(qnc_check.created_at) %></td>
-      <td><%= render "shared/print_qr_button", 
-                      qr_code_path: qr_code_experiments_qnc_check_path(qnc_check),
-                      label: "Print QR" %>
-      </td>
-    <% end %>
+<%= render "experiments/qnc_checks/qnc_checks_table",
+           qnc_checks: @qnc_checks %>
+
+<!-- View File Data Modal -->
+<%= render "shared/qnc_check_file_data_modal" %>
 

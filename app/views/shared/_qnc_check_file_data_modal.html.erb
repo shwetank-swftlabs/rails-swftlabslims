@@ -1,0 +1,51 @@
+<!-- View File Data Modal (for QNC checks, rendered once to avoid Turbo conflicts) -->
+<div class="modal fade" id="viewQncCheckFileDataModal" tabindex="-1" aria-labelledby="viewQncCheckFileDataModalLabel" aria-hidden="true" data-turbo-permanent>
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewQncCheckFileDataModalLabel">View File Data</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="viewQncCheckFileDataModalBody">
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Initialize modal cleanup listener only once
+  (function() {
+    function initModalListener() {
+      const viewQncCheckFileDataModal = document.getElementById('viewQncCheckFileDataModal');
+      if (viewQncCheckFileDataModal && !viewQncCheckFileDataModal.dataset.listenerAttached) {
+        viewQncCheckFileDataModal.dataset.listenerAttached = 'true';
+        viewQncCheckFileDataModal.addEventListener('hidden.bs.modal', function () {
+          const modalBody = document.getElementById('viewQncCheckFileDataModalBody');
+          const modalTitle = document.getElementById('viewQncCheckFileDataModalLabel');
+          if (modalBody) {
+            modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+          }
+          if (modalTitle) {
+            modalTitle.textContent = 'View File Data';
+          }
+        });
+      }
+    }
+
+    // Initialize on DOM ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initModalListener);
+    } else {
+      initModalListener();
+    }
+
+    // Also handle Turbo loads
+    document.addEventListener('turbo:load', initModalListener);
+  })();
+</script>
+
