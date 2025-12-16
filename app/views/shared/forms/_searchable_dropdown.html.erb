@@ -11,9 +11,31 @@
   # Generate unique IDs based on form object name and field
   form_object_name = form.object_name.to_s.gsub(/[\[\]]/, '_').gsub(/__+/, '_')
   input_id = local_assigns[:input_id] || "#{form_object_name}_#{field}_input"
+  hidden_input_id = "#{form_object_name}_#{field}_hidden"
   dropdown_id = local_assigns[:dropdown_id] || "#{form_object_name}_#{field}_dropdown"
   
-  # Build input attributes
+  # Check if options have different keys and values (e.g., ID vs name)
+  # If so, we need a hidden field for the actual value and display field for the text
+  has_key_val_pairs = options.any? { |opt| opt.is_a?(Hash) && (opt[:key] || opt['key']) != (opt[:val] || opt[:value] || opt['val'] || opt['value']) }
+  
+  # Find the display value if we have an initial value
+  display_value = nil
+  if value.present? && has_key_val_pairs
+    matching_option = options.find do |opt|
+      if opt.is_a?(Hash)
+        (opt[:key] || opt['key']).to_s == value.to_s
+      else
+        opt.to_s == value.to_s
+      end
+    end
+    if matching_option.is_a?(Hash)
+      display_value = matching_option[:val] || matching_option[:value] || matching_option['val'] || matching_option['value']
+    else
+      display_value = matching_option
+    end
+  end
+  
+  # Build input attributes for display field
   input_attrs = {
     class: "form-control",
     id: input_id,
@@ -22,7 +44,7 @@
     type: "text"
   }
   input_attrs[:required] = true if required
-  input_attrs[:value] = value if value.present?
+  input_attrs[:value] = display_value || value if (display_value || value).present?
   
   # Merge any additional attributes passed in
   if local_assigns[:input_attrs].present?
@@ -31,7 +53,12 @@
 %>
 
 <div class="position-relative">
-  <%= form.text_field field, input_attrs %>
+  <% if has_key_val_pairs %>
+    <%= form.hidden_field field, id: hidden_input_id, value: value %>
+    <%= text_field_tag nil, input_attrs[:value], input_attrs.except(:value).merge(id: input_id, name: nil, data: { hidden_field: hidden_input_id }) %>
+  <% else %>
+    <%= form.text_field field, input_attrs %>
+  <% end %>
   
   <div class="dropdown-menu w-100" id="<%= dropdown_id %>" style="max-height: 300px; overflow-y: auto; display: none;">
     <% options.each do |option| %>
@@ -45,7 +72,7 @@
           option_val = option
         end
       %>
-      <button type="button" class="dropdown-item searchable-option" data-value="<%= option_key %>">
+      <button type="button" class="dropdown-item searchable-option" data-value="<%= option_key %>" data-text="<%= option_val %>">
         <%= option_val %>
       </button>
     <% end %>
@@ -94,8 +121,9 @@
         options.forEach(option => {
           const optionText = option.textContent.toLowerCase();
           const optionValue = option.getAttribute('data-value').toLowerCase();
+          const optionDisplayText = (option.getAttribute('data-text') || '').toLowerCase();
           
-          if (optionText.includes(searchTerm) || optionValue.includes(searchTerm)) {
+          if (optionText.includes(searchTerm) || optionValue.includes(searchTerm) || optionDisplayText.includes(searchTerm)) {
             option.style.display = '';
           } else {
             option.style.display = 'none';
@@ -114,15 +142,42 @@
         if (!isOpen) {
           showDropdown();
         }
+        
+        // If there's a hidden field and user clears the input, clear the hidden field too
+        const hiddenFieldId = input.getAttribute('data-hidden-field');
+        if (hiddenFieldId && input.value.trim() === '') {
+          const hiddenField = document.getElementById(hiddenFieldId);
+          if (hiddenField) {
+            hiddenField.value = '';
+          }
+        }
       });
       
       // Handle option selection
       options.forEach(option => {
         option.addEventListener('click', function(e) {
           e.preventDefault();
-          input.value = this.getAttribute('data-value');
+          const optionValue = this.getAttribute('data-value');
+          const optionText = this.getAttribute('data-text') || optionValue;
+          
+          // Check if there's a hidden field (for key/val pairs)
+          const hiddenFieldId = input.getAttribute('data-hidden-field');
+          if (hiddenFieldId) {
+            const hiddenField = document.getElementById(hiddenFieldId);
+            if (hiddenField) {
+              hiddenField.value = optionValue;
+              input.value = optionText;
+            }
+          } else {
+            input.value = optionValue;
+          }
+          
           input.dispatchEvent(new Event('input', { bubbles: true }));
-          hideDropdown();
+          
+          // Force close dropdown when option is selected
+          mouseInDropdown = false;
+          dropdown.style.display = 'none';
+          isOpen = false;
           input.focus();
         });
         

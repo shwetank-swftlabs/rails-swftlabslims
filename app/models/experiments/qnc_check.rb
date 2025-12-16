@@ -21,6 +21,17 @@ module Experiments
       }
     validates :expected_completion_date, presence: true
 
+    def self.qnc_check_names(parent_type = nil)
+      if parent_type.present?
+        Admin::QncChecksConfig
+          .where(resource_class: parent_type, is_active: true)
+          .order(:name)
+          .pluck(:name)
+      else
+        []
+      end
+    end
+
     def default_label_title
       "QNC CHECK SAMPLE"
     end

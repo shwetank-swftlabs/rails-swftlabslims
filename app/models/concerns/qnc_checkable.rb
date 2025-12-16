@@ -17,4 +17,10 @@ module QncCheckable
     # Return config names that don't have corresponding checks created
     active_qnc_check_names - created_check_names
   end
+
+  def self.qnc_check_names
+    Admin::QncChecksConfig
+      .where(resource_class: self.name, is_active: true)
+      .pluck(:name)
+  end
 end

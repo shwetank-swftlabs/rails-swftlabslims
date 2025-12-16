@@ -1,0 +1,34 @@
+<% content_for :page_title, render("shared/page_title", 
+  subtitle: "View CNF details.",
+  actions: render("shared/print_qr_button", qr_code_path: qr_code_products_cnf_path(@cnf))
+) %>
+
+<%= render "shared/sidebar_layout/layout",
+    tabs: ["details", "library_samples", "qnc_checks", "data_files", "comments", "use_records"],
+    tab_path: :products_cnf_path,
+    path_args: [@cnf],
+    bottom_action: render("shared/edit_button", label: "Edit CNF", path: edit_products_cnf_path(@cnf)) do %>
+
+  <% 
+    # Map old tab name to new one for backward compatibility
+    tab_name = params[:tab] || "details"
+    tab_name = "library_samples" if tab_name == "sample_library"
+  %>
+
+  <% if tab_name == "qnc_checks" %>
+    <div class="d-flex justify-content-end mb-3">
+      <%= link_to "Add QNC Check",
+                  new_experiments_qnc_check_path(parent_type: "Products::Cnf", parent_id: @cnf.id),
+                  class: "btn btn-primary" %>
+    </div>
+  <% end %>
+
+  <%= render tab_name, cnf: @cnf %>
+
+<% end %>
+
+<!-- View File Data Modal (for QNC checks) -->
+<% if params[:tab] == "qnc_checks" %>
+  <%= render "shared/qnc_check_file_data_modal" %>
+<% end %>
+

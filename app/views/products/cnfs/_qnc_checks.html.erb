@@ -1,0 +1,3 @@
+<%= render "experiments/qnc_checks/qnc_checks_table",
+           qnc_checks: (@qnc_checks || cnf.qnc_checks.order(created_at: :desc)) %>
+

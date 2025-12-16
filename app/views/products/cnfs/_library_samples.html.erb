@@ -1,0 +1,8 @@
+<%= render "shared/sidebar_layout/sample_library_main_area",
+    parent_name: cnf.name,
+    parent_type: "Products::Cnf",
+    parent_id: cnf.id,
+    library_samples: @library_samples || cnf.library_samples,
+    pagy: @pagy
+%>
+

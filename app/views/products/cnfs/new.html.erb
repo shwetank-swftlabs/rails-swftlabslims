@@ -1,0 +1,45 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Add a new CNF to the products.") %>
+
+<%= render "shared/form_errors", object: @cnf %>
+
+<%= form_with(model: @cnf, local: false, url: products_cnfs_path, html: { class: "cnf-form" }) do |f| %>
+  
+  <%= default_form_field(f, :name, label_text: "CNF Name", required: true) do |req| %>
+    <%= f.text_field :name,
+                    { class: "form-control",
+                      placeholder: "Please enter a CNF name" }.merge(req) %>
+  <% end %>
+
+  <%= inline_quantity_field(f, :quantity, "Quantity", unit_field: :unit, unit_options: Products::Cnf::CNF_UNITS, required: true) %>
+
+  <%= default_form_field(f, :location, label_text: "Location", required: true) do |req| %>
+    <%= f.text_field :location,
+                    { class: "form-control",
+                      placeholder: "Enter location" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :cake_id, label_text: "Cake (optional)", required: false) do |req| %>
+    <%= render "shared/forms/searchable_dropdown",
+          form: f,
+          field: :cake_id,
+          options: Products::Cake.all.order(:name).map { |cake| { key: cake.id, val: cake.name } },
+          placeholder: "Search or select a cake...",
+          value: @cnf.cake_id %>
+  <% end %>
+
+  <%= default_form_field(f, :created_at, label_text: "Date Added", required: false) do %>
+    <%= f.date_field :created_at,
+                    { class: "form-control",
+                      value: Date.today } %>
+  <% end %>
+
+  <!-- Larger space before buttons -->
+  <div class="mt-4">
+    <!-- CONFIRM SUBMIT -->
+    <%= f.submit "Save CNF", 
+          class: "btn btn-primary px-4 mt-5",
+          data: { turbo_confirm: "Are you sure you want to save this CNF?" } %>
+  </div>
+
+<% end %>
+

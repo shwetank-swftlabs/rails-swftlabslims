@@ -1,0 +1,50 @@
+<% content_for :page_title, render("shared/page_title",
+  subtitle: "Manage CNFs and their data.",
+  actions: render("shared/add_button", label: "Add New CNF", path: new_products_cnf_path)
+) %>
+
+<!-- UNIFIED FILTER BAR -->
+<%= render "shared/tables/default_filter_bar",
+      url: products_cnfs_path,
+      search_placeholder: "Search by name…",
+      filter_fields: ->(f) do %>
+
+  <!-- Cake Name Search -->
+  <div class="col-md-4">
+    <div class="input-group">
+      <%= f.text_field :cake_name,
+            value: params[:cake_name],
+            placeholder: "Search by cake name…",
+            class: "form-control" %>
+      <%= f.submit "Search", class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+<% end %>
+
+<!-- CNF TABLE -->
+<%= render "shared/tables/default_table",
+      collection: @cnfs,
+      pagy: @pagy,
+      headers: ->(_) do %>
+        <th>Name</th>
+        <th>Cake</th>
+        <th>Amount Remaining</th>
+        <th>Location</th>
+        <th>Created By</th>
+        <th>Created At</th>
+        <th>Print QR</th>
+      <% end,
+      row: ->(cnf) do %>
+        <td><%= link_to cnf.name, products_cnf_path(cnf), class: "text-decoration-underline fw-semibold" %></td>
+        <td><%= cnf.cake.present? ? link_to(cnf.cake.name, products_cake_path(cnf.cake), class: "text-decoration-underline") : "N/A" %></td>
+        <td><%= "#{number_with_precision(cnf.remaining_amount, precision: 2, strip_insignificant_zeros: true)} #{cnf.unit.upcase}" %></td>
+        <td><%= cnf.location %></td>
+        <td><%= email_to_name(cnf.created_by) %></td>
+        <td><%= format_date(cnf.created_at) %></td>
+        <td><%= render "shared/print_qr_button", 
+                        qr_code_path: qr_code_products_cnf_path(cnf),
+                        label: "Print QR" %>
+        </td>
+      <% end %>
+

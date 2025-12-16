@@ -53,18 +53,22 @@
   <% end %>
   
   <%= default_form_field(f, :name, label_text: "Name", required: true) do |req| %>
-    <% if has_parent && @qnc_checks_configs.present? %>
-      <select id="qncCheckNameSelect" class="form-select mb-2" onchange="handleQncCheckNameSelect(this)">
-        <option value="">Select a check name...</option>
-        <% @qnc_checks_configs.each do |config| %>
-          <option value="<%= config.name %>"><%= config.name %></option>
-        <% end %>
-      </select>
-    <% end %>
-    <%= f.text_field :name,
-                    { class: "form-control",
-                      id: "qncCheckNameInput",
-                      placeholder: "Enter QNC check name" }.merge(req) %>
+    <% 
+      # Get QNC check names dynamically based on parent type
+      qnc_check_options = if has_parent
+        Experiments::QncCheck.qnc_check_names(@parent.class.name).map { |name| { key: name, val: name } }
+      else
+        []
+      end
+    %>
+    <%= render "shared/forms/searchable_dropdown",
+        form: f,
+        field: :name,
+        options: qnc_check_options,
+        placeholder: "Search or type QNC check name...",
+        help_text: has_parent && qnc_check_options.present? ? "You can search and select from the list or type a custom name." : "Enter QNC check name",
+        required: true,
+        input_attrs: req %>
   <% end %>
 
   <%= default_form_field(f, :location, label_text: "Sample Location", required: false) do |req| %>
@@ -104,22 +108,5 @@
     </div>
   </div>
 
-<% end %>
-
-<% if has_parent && @qnc_checks_configs.present? %>
-<script>
-  function handleQncCheckNameSelect(select) {
-    const nameInput = document.getElementById('qncCheckNameInput');
-    const selectedValue = select.value;
-    
-    if (selectedValue) {
-      // Auto-fill the input with the selected option value
-      nameInput.value = selectedValue;
-    } else {
-      // Clear the input when no selection
-      nameInput.value = '';
-    }
-  }
-</script>
 <% end %>
 

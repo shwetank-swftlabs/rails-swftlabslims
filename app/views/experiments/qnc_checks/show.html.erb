@@ -3,10 +3,11 @@
   actions_content = []
   
   if parent.present?
-    actions_content << link_to(polymorphic_path(parent), 
-                              class: "btn btn-sm btn-outline-secondary",
-                              title: "Go to #{parent.name}") do
-      content_tag(:i, "", class: "bi bi-arrow-left") + " #{parent.name}"
+    parent_type = parent.class.name.split("::").last.humanize
+    actions_content << link_to(polymorphic_path(parent, tab: :qnc_checks), 
+                              class: "btn btn-sm btn-primary d-flex align-items-center gap-2") do
+      content_tag(:i, "", class: "bi bi-arrow-left") + 
+      content_tag(:span, "Back to #{parent_type}")
     end
   end
   

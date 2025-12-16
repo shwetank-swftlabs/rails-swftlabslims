@@ -1,0 +1,9 @@
+<%= render "shared/sidebar_layout/use_records_main_area",
+      url: products_cnf_usages_path(@cnf),
+      usages: @usages || @cnf.usages,
+      pagy: @pagy,
+      usage_unit: @cnf.unit,
+      usage_purposes: Products::Cnf::USAGE_PURPOSES,
+      resource: @cnf
+%>
+

@@ -1,6 +1,24 @@
+<%
+  parent = @library_sample.library_sampleable
+  actions_content = []
+  
+  if parent.present?
+    parent_type = parent.class.name.split("::").last.humanize
+    actions_content << link_to(polymorphic_path(parent, tab: :library_samples), 
+                              class: "btn btn-sm btn-primary d-flex align-items-center gap-2") do
+      content_tag(:i, "", class: "bi bi-arrow-left") + 
+      content_tag(:span, "Back to #{parent_type}")
+    end
+  end
+  
+  actions_content << render("shared/print_qr_button", qr_code_path: qr_code_inventory_library_sample_path(@library_sample))
+  
+  actions_html = actions_content.join.html_safe
+%>
+
 <% content_for :page_title, render("shared/page_title", 
   subtitle: "View library sample details.",
-  actions: render("shared/print_qr_button", qr_code_path: qr_code_inventory_library_sample_path(@library_sample))
+  actions: actions_html
 ) %>
 
 <%= render "shared/sidebar_layout/layout",

@@ -1,0 +1,6 @@
+<%= render "shared/sidebar_layout/data_files_main_area",
+      url: products_cnf_data_files_path(@cnf),
+      data_files: @cnf.data_files,
+      data_types: Products::Cnf::CNF_DATA_FILE_TYPES
+%>
+

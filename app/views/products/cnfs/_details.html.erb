@@ -1,0 +1,10 @@
+<%= render "shared/sidebar_layout/details_list_main_area", details: {
+  "Name" => cnf.name,
+  "Quantity" => "#{cnf.quantity} #{cnf.unit.upcase}",
+  "Location" => cnf.location,
+  "Cake" => cnf.cake.present? ? link_to(cnf.cake.name, products_cake_path(cnf.cake), class: "text-decoration-underline") : "N/A",
+  "Created By" => cnf.created_by,
+  "Created At" => cnf.created_at.strftime("%B %d, %Y %I:%M %p")
+}
+%>
+

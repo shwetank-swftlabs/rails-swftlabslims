@@ -4,6 +4,7 @@ module Products
     default_desc :created_at
 
     include QrLabelable
+    include Usageable
     include Commentable
     include Datafileable
     include LibrarySampleable

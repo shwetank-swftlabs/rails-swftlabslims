@@ -17,7 +17,6 @@ module Experiments
       @qnc_check = build_qnc_check
       @qnc_check.requested_by = current_user.email
       @users = User.order(:email)
-      load_qnc_checks_configs if @parent
       add_breadcrumb "Add QNC Check"
     end
 
@@ -31,7 +30,6 @@ module Experiments
       @qnc_check = build_qnc_check_from_create
       @qnc_check.assign_attributes(qnc_check_params)
       @qnc_check.requested_by = current_user.email
-      load_qnc_checks_configs if @parent
 
       if @qnc_check.save
         redirect_to redirect_path_for(@parent),
@@ -139,12 +137,6 @@ module Experiments
     def update_qnc_check_params
       params.require(:experiments_qnc_check)
             .permit(:name, :location, :requested_from, :expected_completion_date, :is_active)
-    end
-
-    def load_qnc_checks_configs
-      @qnc_checks_configs = Admin::QncChecksConfig
-        .where(resource_class: @parent.class.name, is_active: true)
-        .order(:name)
     end
   end
 end
