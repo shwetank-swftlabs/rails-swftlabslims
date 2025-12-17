@@ -20,7 +20,7 @@ class Admin::QncChecksConfigsController < Admin::BaseAdminController
                          alert: "Please select a resource class before creating a QNC checks config."
     end
 
-    add_breadcrumb "Add QNC Check", new_admin_qnc_checks_config_path(resource_class: selected_resource_class)
+      add_breadcrumb "Add QNC Check Request Config", new_admin_qnc_checks_config_path(resource_class: selected_resource_class)
 
     @qnc_checks_config = Admin::QncChecksConfig.new(
       resource_class: selected_resource_class,
@@ -35,23 +35,23 @@ class Admin::QncChecksConfigsController < Admin::BaseAdminController
 
     if @qnc_checks_config.save
       redirect_to admin_qnc_checks_configs_path(resource_class: @qnc_checks_config.resource_class),
-                  notice: "QNC check created successfully"
+                  notice: "QNC check request config created successfully"
     else
-      add_breadcrumb "Add QNC Check", new_admin_qnc_checks_config_path(resource_class: @qnc_checks_config.resource_class)
+      add_breadcrumb "Add QNC Check Request Config", new_admin_qnc_checks_config_path(resource_class: @qnc_checks_config.resource_class)
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
-    add_breadcrumb "Edit QNC Checks Config", edit_admin_qnc_checks_config_path(@qnc_checks_config, resource_class: @qnc_checks_config.resource_class)
+      add_breadcrumb "Edit QNC Check Request Config", edit_admin_qnc_checks_config_path(@qnc_checks_config, resource_class: @qnc_checks_config.resource_class)
   end
 
   def update
     if @qnc_checks_config.update(update_qnc_checks_config_params)
       redirect_to admin_qnc_checks_configs_path(resource_class: @qnc_checks_config.resource_class),
-                  notice: "QNC check updated successfully"
+                  notice: "QNC check request config updated successfully"
     else
-      add_breadcrumb "Edit QNC Check", edit_admin_qnc_checks_config_path(@qnc_checks_config, resource_class: @qnc_checks_config.resource_class)
+      add_breadcrumb "Edit QNC Check Request Config", edit_admin_qnc_checks_config_path(@qnc_checks_config, resource_class: @qnc_checks_config.resource_class)
       render :edit, status: :unprocessable_entity
     end
   end

@@ -1,4 +1,4 @@
-<% content_for :page_title, render("shared/page_title", subtitle: "Edit QNC check config.") %>
+<% content_for :page_title, render("shared/page_title", subtitle: "Edit QNC check request config.") %>
 
 <%= render "shared/form_errors", object: @qnc_checks_config %>
 
@@ -38,9 +38,9 @@
   <% end %>
 
   <!-- CONFIRM SUBMIT -->
-  <%= f.submit "Update QNC Check Config",
+  <%= f.submit "Update QNC Check Request Config",
         class: "btn btn-primary px-4 mt-5",
-        data: { turbo_confirm: "Are you sure you want to update this QNC check config?" } %>
+        data: { turbo_confirm: "Are you sure you want to update this QNC check request config?" } %>
 
 <% end %>
 

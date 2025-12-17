@@ -1,4 +1,4 @@
-<% content_for :page_title, render("shared/page_title", subtitle: "Edit QNC check details.") %>
+<% content_for :page_title, render("shared/page_title", subtitle: "Edit QNC check request details.") %>
 
 <%= render "shared/form_errors", object: @qnc_check %>
 
@@ -7,7 +7,7 @@
   <%= default_form_field(f, :name, label_text: "Name", required: true) do |req| %>
     <%= f.text_field :name,
                     { class: "form-control",
-                      placeholder: "Enter QNC check name",
+                      placeholder: "Enter QNC check request name",
                       value: @qnc_check.name }.merge(req) %>
   <% end %>
 
@@ -53,9 +53,9 @@
   <div class="mt-4">
     <div class="d-flex gap-2">
       <%= link_to "Cancel", experiments_qnc_check_path(@qnc_check), class: "btn btn-outline-secondary px-4" %>
-      <%= f.submit "Update QNC Check", 
+      <%= f.submit "Update QNC Check Request", 
             class: "btn btn-primary px-4",
-            data: { turbo_confirm: "Are you sure you want to update this QNC check?" } %>
+            data: { turbo_confirm: "Are you sure you want to update this QNC check request?" } %>
     </div>
   </div>
 

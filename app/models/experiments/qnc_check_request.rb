@@ -1,5 +1,6 @@
 module Experiments
-  class QncCheck < ApplicationRecord
+  class QncCheckRequest < ApplicationRecord
+    self.table_name = "qnc_checks"
     include DefaultDescOrder
     default_desc :created_at
 
@@ -7,7 +8,7 @@ module Experiments
     include Commentable
     include Datafileable
 
-    belongs_to :qnc_checkable, polymorphic: true, optional: true
+    belongs_to :qnc_check_requestable, polymorphic: true, optional: true
 
     DATA_FILE_TYPES = %w[other].freeze
 

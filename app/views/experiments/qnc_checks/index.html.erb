@@ -3,9 +3,9 @@
     content_tag(:div, class: "d-flex flex-column align-items-end gap-2") do
       content_tag(:div, class: "badge bg-warning text-dark d-flex align-items-center gap-1", style: "font-size: 0.875rem; padding: 0.5rem 0.75rem; white-space: nowrap;") do
         content_tag(:i, "", class: "bi bi-exclamation-circle") +
-        "You have #{@pending_qnc_checks_count} pending QNC check#{@pending_qnc_checks_count == 1 ? '' : 's'}"
+        "You have #{@pending_qnc_checks_count} pending QNC check request#{@pending_qnc_checks_count == 1 ? '' : 's'}"
       end +
-      render("shared/add_button", label: "Add New QNC Check", path: new_experiments_qnc_check_path)
+      render("shared/add_button", label: "Add New QNC Check Request", path: new_experiments_qnc_check_path)
     end
   else
     render("shared/add_button", label: "Add New QNC Check", path: new_experiments_qnc_check_path)
@@ -13,7 +13,7 @@
 %>
 
 <% content_for :page_title, render("shared/page_title",
-  subtitle: "Manage QNC checks and their data.",
+  subtitle: "Manage QNC check requests and their data.",
   actions: pending_notification
 ) %>
 
@@ -62,7 +62,7 @@
         [["Pending", "true"], ["Completed", "false"], ["All", ""]],
         {
           include_blank: false,
-          selected: params.key?(:is_active) ? params[:is_active] : "true"
+          selected: params.key?(:is_active) ? params[:is_active] : ""
         },
         class: "form-select",
         onchange: "this.form.submit();" %>
@@ -77,15 +77,17 @@
 <% active_filters << { label: "Assigned To: #{params[:assigned_to]}", param: :assigned_to } if params[:assigned_to].present? %>
 <% active_filters << { label: "Requested By: #{params[:requested_by]}", param: :requested_by } if params[:requested_by].present? %>
 <% 
-  # Always show status filter badge
-  is_active_value = params.key?(:is_active) ? params[:is_active] : "true"
-  status_label = case is_active_value
-                 when "true" then "Pending"
-                 when "false" then "Completed"
-                 when "" then "All"
-                 else "Pending"
-                 end
-  active_filters << { label: "Status: #{status_label}", param: :is_active }
+  # Show status filter badge only if filter is applied
+  if params[:is_active].present?
+    is_active_value = params[:is_active]
+    status_label = case is_active_value
+                   when "true" then "Pending"
+                   when "false" then "Completed"
+                   when "" then "All"
+                   else "All"
+                   end
+    active_filters << { label: "Status: #{status_label}", param: :is_active }
+  end
 %>
 
 <% if active_filters.any? %>
@@ -105,9 +107,8 @@
       <% end %>
       <% if active_filters.length > 1 %>
         <% 
-          # Clear all but preserve default status (Pending)
-          clear_all_params = { is_active: "true" }
-          clear_all_url = experiments_qnc_checks_path(clear_all_params)
+          # Clear all filters
+          clear_all_url = experiments_qnc_checks_path
         %>
         <a href="<%= clear_all_url %>" class="badge bg-danger text-decoration-none" style="font-size: 0.875rem;">
           Clear All

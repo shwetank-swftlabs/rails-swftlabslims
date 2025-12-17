@@ -1,6 +1,6 @@
 <% content_for :page_title, render("shared/page_title",
-  subtitle: "Manage QNC checks.",
-  actions: render("shared/add_button", label: "Add QNC Check", path: new_admin_qnc_checks_config_path(resource_class: @selected_resource_class))
+  subtitle: "Manage QNC check request configurations.",
+  actions: render("shared/add_button", label: "Add QNC Check Request Config", path: new_admin_qnc_checks_config_path(resource_class: @selected_resource_class))
 ) %>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -10,7 +10,7 @@
     </label>
     <%= form_with url: admin_qnc_checks_configs_path, method: :get, local: true, html: { class: "d-flex align-items-center gap-2" } do |f| %>
       <%= f.select :resource_class,
-                   options_for_select(@resource_classes.map { |resource_class| [resource_class_to_name(resource_class), resource_class] }, resource_class_to_name(@selected_resource_class)),
+                   options_for_select(@resource_classes.map { |resource_class| [resource_class_to_name(resource_class), resource_class] }, @selected_resource_class),
                    {},
                    { id: "qnc-config-resource-class", class: "form-select form-select-sm", onchange: "this.form.submit();" } %>
       <%# keep any other query params if needed in the future %>

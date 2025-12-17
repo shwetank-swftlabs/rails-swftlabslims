@@ -10,7 +10,7 @@ module Products
     include Commentable
     include Datafileable
     include LibrarySampleable
-    include QncCheckable
+    include QncCheckRequestable
     has_many :cnfs, class_name: "Products::Cnf", dependent: :destroy
 
     

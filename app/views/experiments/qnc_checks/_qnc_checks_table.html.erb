@@ -1,10 +1,38 @@
 <% qnc_checks = local_assigns[:qnc_checks] || @qnc_checks || [] %>
 
+<style>
+  .check-name-column {
+    background-color: rgba(92, 126, 165, 0.08);
+  }
+  .check-name-column:hover {
+    background-color: rgba(92, 126, 165, 0.12);
+  }
+  table .check-name-column a.check-name-link,
+  table .check-name-column .check-name-link,
+  .table .check-name-column a.check-name-link {
+    color: #5c7ea5 !important;
+  }
+  table .check-name-column a.check-name-link:hover,
+  table .check-name-column .check-name-link:hover,
+  .table .check-name-column a.check-name-link:hover,
+  table .check-name-column a.check-name-link:focus,
+  table .check-name-column .check-name-link:focus,
+  .table .check-name-column a.check-name-link:focus {
+    color: #4d6a8a !important;
+  }
+  table .check-name-column a.check-name-link:visited,
+  .table .check-name-column a.check-name-link:visited {
+    color: #5c7ea5 !important;
+  }
+</style>
+
 <div class="table-responsive">
   <table class="table table-striped table-hover align-middle table-compact">
     <thead class="table-light border-bottom">
       <tr>
-        <th>Name</th>
+        <th class="check-name-column">
+          <i class="bi bi-pencil-square me-2"></i>Check Name
+        </th>
         <th>Resource</th>
         <th>Location</th>
         <th>Assigned To</th>
@@ -21,13 +49,15 @@
         <% qnc_checks.each do |qnc_check| %>
           <!-- QNC Check Row -->
           <tr>
-            <td>
-              <%= link_to qnc_check.name.presence || "Unnamed",
-                          experiments_qnc_check_path(qnc_check),
-                          class: "text-decoration-underline fw-semibold" %>
+            <td class="check-name-column">
+              <%= link_to experiments_qnc_check_path(qnc_check),
+                          class: "check-name-link text-decoration-underline fw-semibold d-inline-flex align-items-center gap-1" do %>
+                <i class="bi bi-pencil"></i>
+                <%= qnc_check.name.presence || "Unnamed" %>
+              <% end %>
             </td>
             <td>
-              <% parent = qnc_check.qnc_checkable %>
+              <% parent = qnc_check.qnc_check_requestable %>
               <% if parent.present? && parent.respond_to?(:name) && parent.name.present? %>
                 <%= link_to parent.name, polymorphic_path(parent), class: "text-decoration-underline" %>
               <% else %>
@@ -59,7 +89,7 @@
         <% end %>
       <% else %>
         <tr>
-          <td colspan="9" class="text-muted text-center py-3">No QNC checks found.</td>
+          <td colspan="9" class="text-muted text-center py-3">No QNC check requests found.</td>
         </tr>
       <% end %>
     </tbody>

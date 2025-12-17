@@ -6,45 +6,45 @@ module Experiments
     def index
       scope = Experiments::QncChecks::Query.new(params).call
       @pagy, @qnc_checks = pagy(scope.order(created_at: :desc))
-      @pending_qnc_checks_count = Experiments::QncCheck.where(
+      @pending_qnc_checks_count = Experiments::QncCheckRequest.where(
         requested_from: current_user.email,
         is_active: true
       ).count
     end
 
     def new
-      @parent = load_qnc_checkable
+      @parent = load_qnc_check_requestable
       @qnc_check = build_qnc_check
       @qnc_check.requested_by = current_user.email
       @users = User.order(:email)
-      add_breadcrumb "Add QNC Check"
+      add_breadcrumb "Add QNC Check Request"
     end
 
     def show
-      add_breadcrumb "QNC Check #{@qnc_check.name} Details",
+      add_breadcrumb "QNC Check Request #{@qnc_check.name} Details",
                      experiments_qnc_check_path(@qnc_check)
     end
 
     def create
-      @parent = load_qnc_checkable
+      @parent = load_qnc_check_requestable
       @qnc_check = build_qnc_check_from_create
       @qnc_check.assign_attributes(qnc_check_params)
       @qnc_check.requested_by = current_user.email
 
       if @qnc_check.save
         redirect_to redirect_path_for(@parent),
-                    notice: "QNC check created successfully",
+                    notice: "QNC check request created successfully",
                     status: :see_other
       else
         @users = User.order(:email)
-        add_breadcrumb "Add QNC Check"
+        add_breadcrumb "Add QNC Check Request"
         render :new, status: :unprocessable_entity
       end
     end
 
     def edit
       @users = User.order(:email)
-      add_breadcrumb "Edit QNC Check #{@qnc_check.name}",
+      add_breadcrumb "Edit QNC Check Request #{@qnc_check.name}",
                      edit_experiments_qnc_check_path(@qnc_check)
     end
 
@@ -57,7 +57,7 @@ module Experiments
       
       if @qnc_check.update(update_params)
         redirect_to experiments_qnc_check_path(@qnc_check),
-                    notice: "QNC check updated successfully"
+                    notice: "QNC check request updated successfully"
       else
         @users = User.order(:email)
         render :edit, status: :unprocessable_entity
@@ -67,11 +67,11 @@ module Experiments
     def mark_completed
       if @qnc_check.update(completed_at: Time.current, is_active: false)
         redirect_to experiments_qnc_check_path(@qnc_check),
-                    notice: "QNC check marked as completed successfully",
+                    notice: "QNC check request marked as completed successfully",
                     status: :see_other
       else
         redirect_to experiments_qnc_check_path(@qnc_check),
-                    alert: "Failed to mark QNC check as completed",
+                    alert: "Failed to mark QNC check request as completed",
                     status: :see_other
       end
     end
@@ -90,14 +90,14 @@ module Experiments
     private
 
     def set_qnc_checks_breadcrumbs_root
-      add_breadcrumb "QNC Checks", experiments_qnc_checks_path
+      add_breadcrumb "QNC Check Requests", experiments_qnc_checks_path
     end
 
     def set_qnc_check
-      @qnc_check = Experiments::QncCheck.find(params[:id])
+      @qnc_check = Experiments::QncCheckRequest.find(params[:id])
     end
 
-    def load_qnc_checkable
+    def load_qnc_check_requestable
       return unless params[:parent_type].present? && params[:parent_id].present?
 
       params[:parent_type].constantize.find(params[:parent_id])
@@ -107,17 +107,17 @@ module Experiments
 
     def build_qnc_check
       if @parent
-        @parent.qnc_checks.build
+        @parent.qnc_check_requests.build
       else
-        Experiments::QncCheck.new
+        Experiments::QncCheckRequest.new
       end
     end
 
     def build_qnc_check_from_create
       if @parent
-        @parent.qnc_checks.new
+        @parent.qnc_check_requests.new
       else
-        Experiments::QncCheck.new
+        Experiments::QncCheckRequest.new
       end
     end
 

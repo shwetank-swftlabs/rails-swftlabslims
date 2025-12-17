@@ -8,7 +8,7 @@ module Products
     include Commentable
     include Datafileable
     include LibrarySampleable
-    include QncCheckable
+    include QncCheckRequestable
 
     belongs_to :cake, class_name: "Products::Cake", optional: true
 

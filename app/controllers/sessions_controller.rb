@@ -30,7 +30,7 @@ class SessionsController < ApplicationController
     session[:user_id] = user.id
     
     # Count pending QNC checks assigned to this user
-    pending_qnc_checks_count = Experiments::QncCheck.where(
+    pending_qnc_checks_count = Experiments::QncCheckRequest.where(
       requested_from: user.email,
       is_active: true
     ).count

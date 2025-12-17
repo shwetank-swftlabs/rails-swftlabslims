@@ -38,7 +38,7 @@ module Products
 
       # Paginate QNC checks if on qnc_checks tab
       if params[:tab] == 'qnc_checks'
-        @pagy, @qnc_checks = pagy(@cake.qnc_checks.order(created_at: :desc))
+        @pagy, @qnc_checks = pagy(@cake.qnc_check_requests.order(created_at: :desc))
       end
 
       # Paginate CNFs if on cnfs tab

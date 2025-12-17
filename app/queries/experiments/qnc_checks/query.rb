@@ -6,7 +6,7 @@ module Experiments
       end
 
       def call
-        scope = Experiments::QncCheck.all
+        scope = Experiments::QncCheckRequest.all
         scope = by_name(scope)
         scope = by_resource_name(scope)
         scope = by_assigned_to(scope)
@@ -34,8 +34,8 @@ module Experiments
           .select(:id)
 
         scope.where(
-          qnc_checkable_type: "Products::Cake",
-          qnc_checkable_id: cake_ids
+          qnc_check_requestable_type: "Products::Cake",
+          qnc_check_requestable_id: cake_ids
         )
       end
 
@@ -58,7 +58,7 @@ module Experiments
         when ""
           scope # "All"
         else
-          scope.where(is_active: true) # Default to active
+          scope # Default to all (no filter)
         end
       end
     end

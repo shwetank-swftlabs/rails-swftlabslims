@@ -1,5 +1,5 @@
 <%
-  parent = @qnc_check.qnc_checkable
+  parent = @qnc_check.qnc_check_requestable
   actions_content = []
   
   if parent.present?
@@ -17,7 +17,7 @@
 %>
 
 <% content_for :page_title, render("shared/page_title", 
-  subtitle: "View QNC check details.",
+  subtitle: "View QNC check request details.",
   actions: actions_html
 ) %>
 
@@ -25,7 +25,7 @@
     tabs: ["details", "data_files", "comments"],
     tab_path: :experiments_qnc_check_path,
     path_args: [@qnc_check],
-    bottom_action: render("shared/edit_button", label: "Edit QNC Check", path: edit_experiments_qnc_check_path(@qnc_check)) do %>
+    bottom_action: render("shared/edit_button", label: "Edit QNC Check Request", path: edit_experiments_qnc_check_path(@qnc_check)) do %>
 
   <%= render (params[:tab] || "details"), qnc_check: @qnc_check %>
 

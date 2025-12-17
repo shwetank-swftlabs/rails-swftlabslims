@@ -10,7 +10,7 @@ module Admin
     validates :created_by, presence: true
   
     def self.resource_class_qnc_checks(resource_class)
-      Experiments::QncCheck.where(qnc_checkable_type: resource_class)
+      Experiments::QncCheckRequest.where(qnc_check_requestable_type: resource_class)
     end
   end
 end
