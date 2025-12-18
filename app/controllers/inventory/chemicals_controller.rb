@@ -51,6 +51,10 @@ module Inventory
       if params[:tab] == 'use_records'
         @pagy_usages, @usages = pagy(@chemical.usages.order(updated_at: :desc))
       end
+      # Paginate derived chemicals if on derived_chemicals tab
+      if params[:tab] == 'derived_chemicals'
+        @pagy_derived, @derived_chemicals = pagy(@chemical.derived_chemicals.order(:name))
+      end
     end 
 
     def create

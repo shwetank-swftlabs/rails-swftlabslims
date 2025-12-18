@@ -1,8 +1,5 @@
 <% 
   actions_content = [
-    link_to(new_derived_inventory_chemical_path(@chemical), class: "btn btn-sm btn-outline-secondary") do
-      raw('<i class="bi bi-plus-circle"></i> Add Derived Chemical')
-    end,
     render("shared/print_qr_button", qr_code_path: qr_code_inventory_chemical_path(@chemical))
   ]
   actions_html = safe_join(actions_content)
@@ -13,7 +10,7 @@
 ) %>
 
 <%= render "shared/sidebar_layout/layout",
-    tabs: ["details", "use_records", "comments"],
+    tabs: ["details", "derived_chemicals", "use_records", "comments"],
     tab_path: :inventory_chemical_path,
     path_args: [@chemical],
     bottom_action: render("shared/edit_button", label: "Edit Chemical", path: edit_inventory_chemical_path(@chemical)) do %>
