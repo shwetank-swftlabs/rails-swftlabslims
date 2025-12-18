@@ -16,14 +16,61 @@
     style="font-size: 0.9rem;"
   >
     <i class="bi bi-journal-text me-2"></i>
-    Add Use Record
+    Add Record
   </button>
 </div>
+
+<style>
+  .table tbody tr.usage-row-addition {
+    background-color: rgba(92, 126, 165, 0.12) !important;
+    border-left: 4px solid #5c7ea5 !important;
+  }
+  .table tbody tr.usage-row-addition:hover {
+    background-color: rgba(92, 126, 165, 0.18) !important;
+  }
+  .table tbody tr.usage-row-addition:nth-child(even) {
+    background-color: rgba(92, 126, 165, 0.12) !important;
+  }
+  .table tbody tr.usage-row-addition:nth-child(odd) {
+    background-color: rgba(92, 126, 165, 0.12) !important;
+  }
+  .table tbody tr.usage-row-use {
+    background-color: rgba(185, 123, 123, 0.1) !important;
+    border-left: 4px solid #b97b7b !important;
+  }
+  .table tbody tr.usage-row-use:hover {
+    background-color: rgba(185, 123, 123, 0.15) !important;
+  }
+  .table tbody tr.usage-row-use:nth-child(even) {
+    background-color: rgba(185, 123, 123, 0.1) !important;
+  }
+  .table tbody tr.usage-row-use:nth-child(odd) {
+    background-color: rgba(185, 123, 123, 0.1) !important;
+  }
+  .badge-addition {
+    background-color: #5c7ea5 !important;
+    color: white !important;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    border-radius: 4px;
+  }
+  .badge-use {
+    background-color: #b97b7b !important;
+    color: white !important;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    border-radius: 4px;
+  }
+</style>
 
 <%= render "shared/tables/default_table",
     collection: usages || [],
     pagy: pagy,
+    row_class: ->(usage) { usage.is_for_addition? ? 'usage-row-addition' : 'usage-row-use' },
     headers: ->(_) do %>
+      <th>Type</th>
       <th>Amount</th>
       <th>Purpose</th>
       <th>Date</th>
@@ -31,6 +78,17 @@
       <th>Actions</th>
     <% end,
     row: ->(usage) do %>
+      <td>
+        <% if usage.is_for_addition? %>
+          <span class="badge badge-addition">
+            <i class="bi bi-plus-circle-fill me-1"></i>Addition
+          </span>
+        <% else %>
+          <span class="badge badge-use">
+            <i class="bi bi-dash-circle-fill me-1"></i>Use
+          </span>
+        <% end %>
+      </td>
       <td><%= usage.amount %> <%= usage_unit.upcase %></td>
       <td><%= usage.purpose %></td>
       <td><%= format_date(usage.created_at) %></td>
@@ -45,6 +103,7 @@
           data-usage-purpose="<%= usage.purpose %>"
           data-usage-created-at="<%= usage.created_at&.strftime('%Y-%m-%d') %>"
           data-usage-is-active="<%= usage.is_active? %>"
+          data-usage-is-for-addition="<%= usage.is_for_addition? %>"
           data-update-url="<%= polymorphic_path([resource, usage]) %>"
           style="font-size: 0.85rem;"
         >
@@ -60,7 +119,7 @@
     <div class="modal-content p-4">
 
       <div class="modal-header">
-        <h5 class="modal-title" id="addUsageModalLabel">Add Use Record for <%= resource.name %></h5>
+        <h5 class="modal-title" id="addUsageModalLabel">Add Record for <%= resource.name %></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
@@ -77,7 +136,21 @@
             </div>
           <% end %>
 
-          <%= inline_quantity_field(form, :amount, "Amount Used", required: true, unit_field: nil, default_units: usage_unit.upcase) %>
+          <%= default_form_field(form, :is_for_addition, label_text: "Type") do |req| %>
+            <div class="d-flex align-items-center gap-3">
+              <div class="form-check form-switch">
+                <%= form.check_box :is_for_addition, { class: "form-check-input", id: "addUsageIsForAddition", onchange: "updateAddUsageLabels()" } %>
+                <label class="form-check-label" for="addUsageIsForAddition">
+                  <span id="addUsageTypeLabel">Use Amount</span>
+                </label>
+              </div>
+              <small class="text-muted">
+                (<span id="addUsageTypeHint">Toggle to add amount instead of using</span>)
+              </small>
+            </div>
+          <% end %>
+
+          <%= inline_quantity_field(form, :amount, "Amount", required: true, unit_field: nil, default_units: usage_unit.upcase) %>
 
           <div class="mb-3">
             <%= form.label :purpose, "Purpose", class: "form-label" %>
@@ -99,9 +172,9 @@
 
         <div class="modal-footer d-flex justify-content-between">
           <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
-          <%= form.button type: "submit", class: "btn btn-primary d-flex align-items-center", onclick: "return handleUseRecordSubmit(event)" do %>
+          <%= form.button type: "submit", class: "btn btn-primary d-flex align-items-center", onclick: "return handleUseRecordSubmit(event)", id: "addUsageSubmitBtn" do %>
             <i class="bi bi-journal-text me-2"></i>
-            Add Use Record
+            <span id="addUsageSubmitText">Add Use Record</span>
           <% end %>
         </div>
       <% end %>
@@ -111,6 +184,43 @@
 </div>
 
 <script>
+  function updateAddUsageLabels() {
+    const checkbox = document.getElementById('addUsageIsForAddition');
+    const typeLabel = document.getElementById('addUsageTypeLabel');
+    const typeHint = document.getElementById('addUsageTypeHint');
+    const submitText = document.getElementById('addUsageSubmitText');
+    
+    if (checkbox && checkbox.checked) {
+      if (typeLabel) typeLabel.textContent = 'Add Amount';
+      if (typeHint) typeHint.textContent = 'Toggle to use amount instead of adding';
+      if (submitText) submitText.textContent = 'Add Record';
+    } else {
+      if (typeLabel) typeLabel.textContent = 'Use Amount';
+      if (typeHint) typeHint.textContent = 'Toggle to add amount instead of using';
+      if (submitText) submitText.textContent = 'Add Use Record';
+    }
+  }
+
+  function updateEditUsageLabels() {
+    const checkbox = document.getElementById('editUsageIsForAddition');
+    const typeLabel = document.getElementById('editUsageTypeLabel');
+    const typeHint = document.getElementById('editUsageTypeHint');
+    const amountLabel = document.getElementById('editUsageAmountLabel');
+    const submitText = document.getElementById('editUsageSubmitText');
+    
+    if (checkbox && checkbox.checked) {
+      if (typeLabel) typeLabel.textContent = 'Add Amount';
+      if (typeHint) typeHint.textContent = 'Toggle to use amount instead of adding';
+      if (amountLabel) amountLabel.textContent = 'Amount Added';
+      if (submitText) submitText.textContent = 'Update Record';
+    } else {
+      if (typeLabel) typeLabel.textContent = 'Use Amount';
+      if (typeHint) typeHint.textContent = 'Toggle to add amount instead of using';
+      if (amountLabel) amountLabel.textContent = 'Amount Used';
+      if (submitText) submitText.textContent = 'Update Record';
+    }
+  }
+
   function handlePurposeSelect(select) {
     const purposeInput = document.getElementById('purposeInput');
     const selectedOption = select.options[select.selectedIndex];
@@ -166,7 +276,7 @@
     <div class="modal-content p-4">
 
       <div class="modal-header">
-        <h5 class="modal-title" id="editUsageModalLabel">Edit Use Record for <%= resource.name %></h5>
+        <h5 class="modal-title" id="editUsageModalLabel">Edit Record for <%= resource.name %></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
@@ -193,9 +303,23 @@
             </div>
           <% end %>
 
+          <%= default_form_field(form, :is_for_addition, label_text: "Type") do |req| %>
+            <div class="d-flex align-items-center gap-3">
+              <div class="form-check form-switch">
+                <%= form.check_box :is_for_addition, { class: "form-check-input", id: "editUsageIsForAddition", onchange: "updateEditUsageLabels()" } %>
+                <label class="form-check-label" for="editUsageIsForAddition">
+                  <span id="editUsageTypeLabel">Use Amount</span>
+                </label>
+              </div>
+              <small class="text-muted">
+                (<span id="editUsageTypeHint">Toggle to add amount instead of using</span>)
+              </small>
+            </div>
+          <% end %>
+
           <div class="mb-3">
             <label class="form-label fw-bold mb-1 d-block">
-              Amount Used <span class="text-danger">*</span>
+              <span id="editUsageAmountLabel">Amount</span> <span class="text-danger">*</span>
             </label>
             <div class="d-flex gap-2 align-items-center">
               <%= form.number_field :amount, 
@@ -229,9 +353,9 @@
 
         <div class="modal-footer d-flex justify-content-between">
           <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
-          <%= form.button type: "submit", class: "btn btn-primary d-flex align-items-center", onclick: "return handleEditUseRecordSubmit(event)" do %>
+          <%= form.button type: "submit", class: "btn btn-primary d-flex align-items-center", onclick: "return handleEditUseRecordSubmit(event)", id: "editUsageSubmitBtn" do %>
             <i class="bi bi-pencil me-2"></i>
-            Update Use Record
+            <span id="editUsageSubmitText">Update Record</span>
           <% end %>
         </div>
       <% end %>
@@ -255,6 +379,7 @@
           const usagePurpose = button.getAttribute('data-usage-purpose');
           const usageCreatedAt = button.getAttribute('data-usage-created-at');
           const usageIsActive = button.getAttribute('data-usage-is-active') === 'true';
+          const usageIsForAddition = button.getAttribute('data-usage-is-for-addition') === 'true';
           const updateUrl = button.getAttribute('data-update-url');
 
           // Set form action URL and ensure all hidden fields are correct
@@ -318,6 +443,17 @@
               const currentStatusLabel = document.getElementById('editUsageStatusLabel');
               const currentStatusHint = document.getElementById('editUsageStatusHint');
               updateStatusLabels(this.checked, currentStatusLabel, currentStatusHint);
+            };
+          }
+
+          const isForAdditionCheckbox = document.getElementById('editUsageIsForAddition');
+          if (isForAdditionCheckbox) {
+            isForAdditionCheckbox.checked = usageIsForAddition;
+            updateEditUsageLabels();
+            
+            // Update labels when checkbox changes
+            isForAdditionCheckbox.onchange = function() {
+              updateEditUsageLabels();
             };
           }
         }

@@ -27,10 +27,10 @@ class UsagesController < ApplicationController
 
   private
   def usage_params
-    params.require(:use_record).permit(:amount, :purpose, :created_by, :created_at)
+    params.require(:use_record).permit(:amount, :purpose, :created_by, :created_at, :is_for_addition)
   end
 
   def update_usage_params
-    params.require(:usage).permit(:is_active, :amount, :purpose, :created_at)
+    params.require(:usage).permit(:is_active, :amount, :purpose, :created_at, :is_for_addition)
   end
 end
