@@ -64,6 +64,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def is_admin?
+    current_user&.is_admin?
+  end
+
   def init_breadcrumbs
     @breadcrumbs = [{ name: "Home", path: root_path }]
   end

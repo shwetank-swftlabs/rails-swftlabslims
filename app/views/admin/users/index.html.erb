@@ -1,0 +1,73 @@
+<% content_for :page_title, render("shared/page_title",
+  subtitle: "Manage users and their admin status."
+) %>
+
+<!-- UNIFIED FILTER BAR -->
+<%= render "shared/tables/default_filter_bar",
+    url: admin_users_path,
+    search_placeholder: "Search by email…",
+    filter_fields: ->(f) do %>
+<% end %>
+
+<!-- ACTIVE FILTERS -->
+<% active_filters = [] %>
+<% active_filters << { label: "Email: #{params[:q]}", param: :q } if params[:q].present? %>
+
+<% if active_filters.any? %>
+  <div class="mb-3">
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <span class="text-muted small fw-bold">Active Filters:</span>
+      <% active_filters.each do |filter| %>
+        <% 
+          # Build URL without this filter, preserving other params
+          filter_params = params.to_unsafe_h.except(filter[:param], :controller, :action)
+          clear_url = admin_users_path(filter_params)
+        %>
+        <a href="<%= clear_url %>" class="badge bg-secondary text-decoration-none d-flex align-items-center gap-1" style="font-size: 0.875rem;">
+          <%= filter[:label] %>
+          <i class="bi bi-x-circle" style="font-size: 0.75rem;"></i>
+        </a>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<!-- USERS TABLE -->
+<%= render "shared/tables/default_table",
+    collection: @users,
+    pagy: @pagy,
+    headers: ->(_) do %>
+      <th>Email</th>
+      <th>Admin Status</th>
+      <th>Actions</th>
+    <% end,
+    row: ->(user) do %>
+      <td>
+        <%= user.email %>
+        <% if user.is_same_user?(current_user) %>
+          <span class="badge bg-info ms-2" style="font-size: 0.75rem;">(You)</span>
+        <% end %>
+      </td>
+      <td>
+        <% if user.is_admin? %>
+          <span class="badge bg-success">
+            <i class="bi bi-check-circle me-1"></i>Admin
+          </span>
+        <% else %>
+          <span class="badge bg-secondary">
+            <i class="bi bi-x-circle me-1"></i>Regular User
+          </span>
+        <% end %>
+      </td>
+      <td>
+        <% if user.is_same_user?(current_user) %>
+          <span class="text-muted" style="font-size: 0.85rem;">Cannot edit yourself</span>
+        <% else %>
+          <%= render "shared/edit_button",
+                     label: "Edit",
+                     path: edit_admin_user_path(user),
+                     size: "sm" %>
+        <% end %>
+      </td>
+    <% end %>
+

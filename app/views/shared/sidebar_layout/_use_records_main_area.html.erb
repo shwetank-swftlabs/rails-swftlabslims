@@ -22,46 +22,37 @@
 
 <style>
   .table tbody tr.usage-row-addition {
-    background-color: rgba(92, 126, 165, 0.12) !important;
-    border-left: 4px solid #5c7ea5 !important;
+    background-color: rgba(108, 117, 125, 0.08) !important;
+    border-left: 4px solid #6c757d !important;
   }
   .table tbody tr.usage-row-addition:hover {
-    background-color: rgba(92, 126, 165, 0.18) !important;
+    background-color: rgba(108, 117, 125, 0.12) !important;
   }
   .table tbody tr.usage-row-addition:nth-child(even) {
-    background-color: rgba(92, 126, 165, 0.12) !important;
+    background-color: rgba(108, 117, 125, 0.08) !important;
   }
   .table tbody tr.usage-row-addition:nth-child(odd) {
-    background-color: rgba(92, 126, 165, 0.12) !important;
+    background-color: rgba(108, 117, 125, 0.08) !important;
   }
   .table tbody tr.usage-row-use {
-    background-color: rgba(185, 123, 123, 0.1) !important;
-    border-left: 4px solid #b97b7b !important;
+    background-color: rgba(108, 117, 125, 0.08) !important;
+    border-left: 4px solid #6c757d !important;
   }
   .table tbody tr.usage-row-use:hover {
-    background-color: rgba(185, 123, 123, 0.15) !important;
+    background-color: rgba(108, 117, 125, 0.12) !important;
   }
   .table tbody tr.usage-row-use:nth-child(even) {
-    background-color: rgba(185, 123, 123, 0.1) !important;
+    background-color: rgba(108, 117, 125, 0.08) !important;
   }
   .table tbody tr.usage-row-use:nth-child(odd) {
-    background-color: rgba(185, 123, 123, 0.1) !important;
+    background-color: rgba(108, 117, 125, 0.08) !important;
   }
-  .badge-addition {
-    background-color: #5c7ea5 !important;
-    color: white !important;
+  .amount-display {
+    color: #495057 !important;
     font-weight: 600;
-    padding: 0.35rem 0.75rem;
-    font-size: 0.85rem;
-    border-radius: 4px;
-  }
-  .badge-use {
-    background-color: #b97b7b !important;
-    color: white !important;
-    font-weight: 600;
-    padding: 0.35rem 0.75rem;
-    font-size: 0.85rem;
-    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
   }
 </style>
 
@@ -70,7 +61,6 @@
     pagy: pagy,
     row_class: ->(usage) { usage.is_for_addition? ? 'usage-row-addition' : 'usage-row-use' },
     headers: ->(_) do %>
-      <th>Type</th>
       <th>Amount</th>
       <th>Purpose</th>
       <th>Date</th>
@@ -79,17 +69,16 @@
     <% end,
     row: ->(usage) do %>
       <td>
-        <% if usage.is_for_addition? %>
-          <span class="badge badge-addition">
-            <i class="bi bi-plus-circle-fill me-1"></i>Addition
-          </span>
-        <% else %>
-          <span class="badge badge-use">
-            <i class="bi bi-dash-circle-fill me-1"></i>Use
-          </span>
-        <% end %>
+        <span class="amount-display">
+          <% if usage.is_for_addition? %>
+            <i class="bi bi-plus-circle"></i>
+            +<%= number_with_precision(usage.amount, precision: 2, strip_insignificant_zeros: true) %> <%= usage_unit.upcase %>
+          <% else %>
+            <i class="bi bi-dash-circle"></i>
+            -<%= number_with_precision(usage.amount, precision: 2, strip_insignificant_zeros: true) %> <%= usage_unit.upcase %>
+          <% end %>
+        </span>
       </td>
-      <td><%= usage.amount %> <%= usage_unit.upcase %></td>
       <td><%= usage.purpose %></td>
       <td><%= format_date(usage.created_at) %></td>
       <td><%= email_to_name(usage.created_by) %></td>

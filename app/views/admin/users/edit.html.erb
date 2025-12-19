@@ -1,0 +1,99 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Edit user: #{@user.email}") %>
+
+<%= render "shared/form_errors", object: @user %>
+
+<% if @user.is_same_user?(current_user) %>
+  <div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle me-2"></i>You cannot edit your own admin status.
+  </div>
+<% end %>
+
+<%= form_with(model: @user, url: admin_user_path(@user), method: :patch, local: true, html: { class: "user-form" }) do |f| %>
+
+  <%= default_form_field(f, :email, label_text: "Email", required: true) do |_req| %>
+    <p class="form-control-plaintext mb-0"><%= @user.email %></p>
+    <small class="text-muted">Email cannot be changed.</small>
+  <% end %>
+
+  <%= default_form_field(f, :is_admin, label_text: "Admin Status") do |req| %>
+    <div class="d-flex align-items-center gap-3">
+      <div class="form-check form-switch">
+        <%= f.check_box :is_admin, 
+            { class: "form-check-input", 
+              id: "admin_user_is_admin",
+              disabled: @user.is_same_user?(current_user) } %>
+        <label class="form-check-label" for="admin_user_is_admin" id="adminStatusLabel">
+          <%= @user.is_admin? ? "Admin" : "Regular User" %>
+        </label>
+      </div>
+      <small class="text-muted" id="adminStatusHint">
+        <% if @user.is_same_user?(current_user) %>
+          (You cannot change your own admin status)
+        <% else %>
+          (<span id="adminStatusHintText"><%= @user.is_admin? ? "Toggle to make Regular User" : "Toggle to make Admin" %></span>)
+        <% end %>
+      </small>
+    </div>
+  <% end %>
+
+  <script>
+    function updateAdminStatusLabels() {
+      const checkbox = document.getElementById('admin_user_is_admin');
+      const label = document.getElementById('adminStatusLabel');
+      const hintText = document.getElementById('adminStatusHintText');
+      
+      if (checkbox && label) {
+        if (checkbox.checked) {
+          label.textContent = 'Admin';
+          if (hintText) {
+            hintText.textContent = 'Toggle to make Regular User';
+          }
+        } else {
+          label.textContent = 'Regular User';
+          if (hintText) {
+            hintText.textContent = 'Toggle to make Admin';
+          }
+        }
+      }
+    }
+
+    // Initialize on page load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        updateAdminStatusLabels();
+        const checkbox = document.getElementById('admin_user_is_admin');
+        if (checkbox) {
+          checkbox.addEventListener('change', updateAdminStatusLabels);
+        }
+      });
+    } else {
+      updateAdminStatusLabels();
+      const checkbox = document.getElementById('admin_user_is_admin');
+      if (checkbox) {
+        checkbox.addEventListener('change', updateAdminStatusLabels);
+      }
+    }
+
+    // Re-initialize on Turbo navigation
+    document.addEventListener('turbo:load', () => {
+      updateAdminStatusLabels();
+      const checkbox = document.getElementById('admin_user_is_admin');
+      if (checkbox) {
+        checkbox.addEventListener('change', updateAdminStatusLabels);
+      }
+    });
+  </script>
+
+  <!-- CONFIRM SUBMIT -->
+  <div class="mt-4">
+    <div class="d-flex gap-2">
+      <%= link_to "Cancel", admin_users_path, class: "btn btn-outline-secondary px-4" %>
+      <%= f.submit "Update User", 
+            class: "btn btn-primary px-4",
+            disabled: @user.is_same_user?(current_user),
+            data: { turbo_confirm: "Are you sure you want to update this user's admin status?" } %>
+    </div>
+  </div>
+
+<% end %>
+
