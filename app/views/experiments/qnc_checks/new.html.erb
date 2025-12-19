@@ -3,7 +3,7 @@
   if has_parent
     parent_name = @parent.respond_to?(:name) ? @parent.name : @parent.class.name.humanize
     page_subtitle = "Add a new QNC check request for #{parent_name}."
-    cancel_path = polymorphic_path(@parent)
+    cancel_path = polymorphic_path(@parent, tab: :qnc_check_requests)
   else
     page_subtitle = "Add a new QNC check request."
     cancel_path = experiments_qnc_checks_path
@@ -17,7 +17,7 @@
     <strong>Resource Name:</strong> 
     <%= @parent.class.name.split("::").last.humanize %> - 
     <% if @parent.respond_to?(:name) %>
-      <%= link_to @parent.name.humanize, polymorphic_path(@parent), class: "text-decoration-underline" %>
+      <%= link_to @parent.name.humanize, polymorphic_path(@parent, tab: :qnc_check_requests), class: "text-decoration-underline" %>
     <% else %>
       ID: <%= @parent.id %>
     <% end %>
@@ -52,7 +52,7 @@
     <%= hidden_field_tag :parent_id, @parent.id %>
   <% end %>
   
-  <%= default_form_field(f, :name, label_text: "Name", required: true) do |req| %>
+  <%= default_form_field(f, :name, label_text: "Qnc Check Name", required: true) do |req| %>
     <% 
       # Get QNC check names dynamically based on parent type
       qnc_check_options = if has_parent

@@ -36,8 +36,8 @@ module Products
         @pagy, @library_samples = pagy(@cake.library_samples.order(created_at: :desc))
       end
 
-      # Paginate QNC checks if on qnc_checks tab
-      if params[:tab] == 'qnc_checks'
+      # Paginate QNC checks if on qnc_check_requests tab
+      if params[:tab] == 'qnc_check_requests'
         @pagy, @qnc_checks = pagy(@cake.qnc_check_requests.order(created_at: :desc))
       end
 

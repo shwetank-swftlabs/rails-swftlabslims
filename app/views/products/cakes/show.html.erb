@@ -10,10 +10,8 @@
     bottom_action: render("shared/edit_button", label: "Edit Cake", path: edit_products_cake_path(@cake)) do %>
 
   <% 
-    # Map old tab name to new one for backward compatibility
     tab_name = params[:tab] || "details"
     tab_name = "library_samples" if tab_name == "sample_library"
-    tab_name = "qnc_check_requests" if tab_name == "qnc_checks"
   %>
 
   <% if tab_name == "qnc_check_requests" %>
@@ -29,7 +27,7 @@
 <% end %>
 
 <!-- View File Data Modal (for QNC check requests) -->
-<% if params[:tab] == "qnc_check_requests" || params[:tab] == "qnc_checks" %>
+<% if params[:tab] == "qnc_check_requests" %>
   <%= render "shared/qnc_check_file_data_modal" %>
 <% end %>
 

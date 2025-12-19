@@ -123,7 +123,7 @@ module Experiments
 
     def redirect_path_for(parent)
       if parent
-        polymorphic_path(parent, tab: :qnc_checks)
+        polymorphic_path(parent, tab: :qnc_check_requests)
       else
         experiments_qnc_checks_path
       end

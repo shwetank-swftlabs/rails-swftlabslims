@@ -4,7 +4,7 @@
   
   if parent.present?
     parent_type = parent.class.name.split("::").last.humanize
-    actions_content << link_to(polymorphic_path(parent, tab: :qnc_checks), 
+    actions_content << link_to(polymorphic_path(parent, tab: :qnc_check_requests), 
                               class: "btn btn-sm btn-primary d-flex align-items-center gap-2") do
       content_tag(:i, "", class: "bi bi-arrow-left") + 
       content_tag(:span, "Back to #{parent_type}")
