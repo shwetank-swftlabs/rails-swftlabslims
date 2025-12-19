@@ -21,14 +21,14 @@ module Admin
       if @user.update(edit_user_params)
         redirect_to admin_users_path, notice: "User updated successfully"
       else
-        render :edit, status: :unprocessable_entity
+        render :edit, status: :unprocessable_entity, flash.now: { alert: "Failed to update user: #{@user.errors.full_messages.join(", ")}" }
       end
     end
 
     private
 
     def edit_user_params
-      params.require(:user).permit(:is_admin)
+      params.require(:admin_user).permit(:is_admin)
     end
     
     def set_users_breadcrumbs_root
