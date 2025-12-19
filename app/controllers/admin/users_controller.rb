@@ -21,7 +21,8 @@ module Admin
       if @user.update(edit_user_params)
         redirect_to admin_users_path, notice: "User updated successfully"
       else
-        render :edit, status: :unprocessable_entity, flash.now: { alert: "Failed to update user: #{@user.errors.full_messages.join(", ")}" }
+        flash.now[:alert] = "Failed to update user: #{@user.errors.full_messages.join(", ")}"
+        render :edit, status: :unprocessable_entity
       end
     end
 
