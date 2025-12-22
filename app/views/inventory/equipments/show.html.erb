@@ -12,16 +12,19 @@
     bottom_action: render("shared/edit_button", label: "Edit Equipment", path: edit_inventory_equipment_path(@equipment)) do %>
 
   <% 
-    tab_name = params[:tab] || "details"
+    # Parse tab name - remove any query string that might be appended
+    tab_name = (params[:tab] || "details").to_s.split('?').first
     # Map maintenance_schedules tab to maintenance_records partial
     # Use full path to ensure it works when rendered from different controller
     if tab_name == "maintenance_schedules"
       tab_name = "inventory/equipments/maintenance_records"
     end
     
-    # Pass maintenance_schedule if it exists (from failed create)
+    # Pass maintenance_schedule if it exists (from failed create/edit)
     render_options = { equipment: @equipment }
-    render_options[:maintenance_schedule] = @maintenance_schedule if defined?(@maintenance_schedule) && @maintenance_schedule.present?
+    if defined?(@maintenance_schedule) && @maintenance_schedule.present?
+      render_options[:maintenance_schedule] = @maintenance_schedule
+    end
   %>
   <%= render tab_name, render_options %>
 
