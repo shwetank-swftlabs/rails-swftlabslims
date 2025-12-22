@@ -1,0 +1,89 @@
+<% 
+  # Get the schedule for which we're showing records
+  schedule_id = params[:schedule_id]&.to_i
+  @schedule = schedule_id ? @equipment.maintenance_schedules.find_by(id: schedule_id) : nil
+  
+  # If no schedule specified, show all records for all schedules
+  if @schedule
+    @maintenance_records = @schedule.maintenance_records.active.recent
+    page_title = "Maintenance History: #{@schedule.name}"
+  else
+    # Get all maintenance records for this equipment
+    all_schedules = @equipment.maintenance_schedules.active
+    @maintenance_records = Inventory::MaintenanceRecord
+      .where(maintenance_schedule_id: all_schedules.pluck(:id))
+      .active
+      .recent
+      .includes(:maintenance_schedule)
+    page_title = "All Maintenance Records"
+  end
+%>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0"><%= page_title %></h5>
+  <% if @schedule %>
+    <%= link_to inventory_equipment_path(@equipment, tab: :maintenance_schedules),
+        class: "btn btn-outline-secondary btn-sm" do %>
+      <i class="bi bi-arrow-left me-1"></i>Back to Schedules
+    <% end %>
+  <% end %>
+</div>
+
+<% if @maintenance_records.any? %>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+      <thead class="table-light border-bottom">
+        <tr>
+          <th style="width: 20%;">Schedule Name</th>
+          <th style="width: 15%;">Completed Date</th>
+          <th style="width: 15%;">Completed By</th>
+          <th style="width: 30%;">Notes</th>
+          <th style="width: 20%;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @maintenance_records.each do |record| %>
+          <tr>
+            <td class="fw-semibold">
+              <%= record.maintenance_schedule.name %>
+            </td>
+            <td>
+              <%= format_date(record.completed_at) %>
+            </td>
+            <td>
+              <%= record.created_by %>
+            </td>
+            <td>
+              <%= record.notes.present? ? truncate(record.notes, length: 100) : "—" %>
+            </td>
+            <td>
+              <%= form_with url: inventory_equipment_maintenance_schedule_path(@equipment, record.maintenance_schedule),
+                  method: :delete,
+                  local: true,
+                  data: { 
+                    turbo_confirm: "Are you sure you want to delete this maintenance record? This action cannot be undone."
+                  },
+                  class: "d-inline" do |f| %>
+                <%= hidden_field_tag :record_id, record.id %>
+                <%= f.button type: "submit", class: "btn btn-sm btn-outline-danger" do %>
+                  <i class="bi bi-trash me-1"></i>Delete
+                <% end %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="alert alert-info">
+    <p class="mb-0">
+      <% if @schedule %>
+        No maintenance records found for "<%= @schedule.name %>".
+      <% else %>
+        No maintenance records found for this equipment.
+      <% end %>
+    </p>
+  </div>
+<% end %>
+

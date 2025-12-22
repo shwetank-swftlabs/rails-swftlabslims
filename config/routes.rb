@@ -62,15 +62,16 @@ Rails.application.routes.draw do
       member do
         get :qr_code
       end 
-      resources :maintenance_schedules, only: [:new, :create, :show, :edit, :update] do
+      resources :maintenance_schedules, only: [:new, :create, :show, :edit, :update, :destroy] do
         member do
-          patch :complete
+          post :complete
           get :history
         end
       end
 
       resources :images, only: [:create, :show], controller: "/images"
       resources :comments, only: [:create, :update], controller: "/comments"
+      resources :data_files, only: [:create, :show], controller: "/data_files"
     end
 
     resources :chemicals, only: [:index, :new, :create, :show, :edit, :update] do

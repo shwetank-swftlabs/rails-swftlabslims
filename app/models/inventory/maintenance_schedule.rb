@@ -2,6 +2,7 @@ module Inventory
   class MaintenanceSchedule < ApplicationRecord
     self.table_name = "maintenance_schedules"
     belongs_to :equipment, class_name: "Inventory::Equipment"
+    has_many :maintenance_records, class_name: "Inventory::MaintenanceRecord", dependent: :destroy
 
     # Validations
     validates :name, presence: true
@@ -15,7 +16,11 @@ module Inventory
     scope :inactive, -> { where(is_active: false) }
     scope :overdue, -> { where('next_due_date < ?', Date.today) }
     scope :due_soon, -> { where('next_due_date >= ? AND next_due_date <= ?', Date.today, Date.today + 7.days) }
-    scope :completed, -> { where('next_due_date > ?', Date.today + 7.days) }
+    scope :up_to_date, -> { where('next_due_date > ?', Date.today + 7.days) }
+
+    def last_completed_at
+      maintenance_records.active.order(completed_at: :desc).first&.completed_at
+    end
 
     # Status methods
     def overdue?
@@ -27,7 +32,7 @@ module Inventory
       next_due_date >= Date.today && next_due_date <= Date.today + 7.days
     end
 
-    def completed?
+    def up_to_date?
       return false unless next_due_date.present?
       next_due_date > Date.today + 7.days
     end
@@ -35,7 +40,7 @@ module Inventory
     def status
       return :overdue if overdue?
       return :due_soon if due_soon?
-      :completed
+      :up_to_date
     end
 
     def status_badge_class
@@ -44,7 +49,7 @@ module Inventory
         "bg-danger"
       when :due_soon
         "bg-warning text-dark"
-      when :completed
+      when :up_to_date
         "bg-success"
       end
     end
@@ -55,8 +60,8 @@ module Inventory
         "Overdue"
       when :due_soon
         "Due Soon"
-      when :completed
-        "Completed"
+      when :up_to_date
+        "Up to Date"
       end
     end
 
@@ -66,7 +71,7 @@ module Inventory
         "bi-exclamation-triangle"
       when :due_soon
         "bi-clock"
-      when :completed
+      when :up_to_date
         "bi-check-circle"
       end
     end

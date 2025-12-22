@@ -7,6 +7,7 @@ module Inventory
     include QrLabelable
     include Imageable
     include Commentable
+    include Datafileable
 
     belongs_to :equipment_type, class_name: "Admin::EquipmentType", optional: false
 
@@ -37,6 +38,51 @@ module Inventory
     
     def self.last_nop_process(reactor_id)
       Experiments::NopProcess.where(reactor_id: reactor_id).order(created_at: :desc).first
+    end
+
+    def maintenance_status
+      active_schedules = maintenance_schedules.active
+      return :up_to_date if active_schedules.empty?
+      
+      statuses = active_schedules.map(&:status)
+      
+      # Priority: overdue > due_soon > up_to_date
+      return :overdue if statuses.include?(:overdue)
+      return :due_soon if statuses.include?(:due_soon)
+      :up_to_date
+    end
+    
+    def maintenance_status_badge_class
+      case maintenance_status
+      when :overdue
+        "bg-danger"
+      when :due_soon
+        "bg-warning text-dark"
+      when :up_to_date
+        "bg-success"
+      end
+    end
+    
+    def maintenance_status_badge_text
+      case maintenance_status
+      when :overdue
+        "Overdue"
+      when :due_soon
+        "Due Soon"
+      when :up_to_date
+        "Up to Date"
+      end
+    end
+    
+    def maintenance_status_icon
+      case maintenance_status
+      when :overdue
+        "bi-exclamation-triangle"
+      when :due_soon
+        "bi-clock"
+      when :up_to_date
+        "bi-check-circle"
+      end
     end
   end
 end

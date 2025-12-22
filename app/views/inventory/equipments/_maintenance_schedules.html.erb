@@ -1,8 +1,11 @@
 <% 
   # Check if we have a maintenance_schedule with errors (from failed create/edit)
   schedule_with_errors = local_assigns[:maintenance_schedule] if local_assigns.key?(:maintenance_schedule)
+  # Check if we have a maintenance_record with errors (from failed complete)
+  record_with_errors = defined?(@maintenance_record) && @maintenance_record.present? ? @maintenance_record : nil
   show_create_form = schedule_with_errors&.errors&.any? && !params[:edit_schedule_id]
   edit_schedule_id = params[:edit_schedule_id]&.to_i
+  schedule_id_with_complete_error = record_with_errors&.maintenance_schedule_id
   
   # Get active and inactive schedules separately
   active_schedules = equipment.maintenance_schedules.active.order(next_due_date: :asc)
@@ -106,10 +109,9 @@
                     <i class="bi bi-pencil me-1"></i>Edit
                   <% end %>
                   <% if schedule.is_active? %>
-                    <%= link_to "Complete", complete_inventory_equipment_maintenance_schedule_path(equipment, schedule),
-                        method: :patch,
-                        class: "btn btn-sm btn-success",
-                        data: { turbo_confirm: "Mark this maintenance as complete? This will update the next due date." } %>
+                    <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#completeMaintenanceModal-<%= schedule.id %>">
+                      <i class="bi bi-check-circle me-1"></i>Complete
+                    </button>
                   <% end %>
                 </div>
               </td>
@@ -241,3 +243,63 @@
     }
   });
 </script>
+
+<!-- Complete Maintenance Modals -->
+<% active_schedules.each do |schedule| %>
+  <% 
+    # Check if this schedule has a record with errors
+    has_errors = schedule_id_with_complete_error == schedule.id && record_with_errors&.errors&.any?
+    modal_id = "completeMaintenanceModal-#{schedule.id}"
+  %>
+  <div class="modal fade <%= 'show' if has_errors %>" id="<%= modal_id %>" tabindex="-1" aria-labelledby="completeMaintenanceModalLabel-<%= schedule.id %>" aria-hidden="<%= has_errors ? 'false' : 'true' %>" style="<%= 'display: block;' if has_errors %>">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="completeMaintenanceModalLabel-<%= schedule.id %>">Complete Maintenance: <%= schedule.name %></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <% 
+          form_record = has_errors ? record_with_errors : schedule.maintenance_records.build
+        %>
+        <%= form_with url: complete_inventory_equipment_maintenance_schedule_path(equipment, schedule),
+            method: :post,
+            local: true,
+            scope: :inventory_maintenance_record,
+            html: { class: "maintenance-complete-form" } do |f| %>
+          <div class="modal-body">
+            <%= render "shared/form_errors", object: form_record if has_errors %>
+            
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle me-2"></i>
+              Completing this maintenance will update the next due date to <%= format_date((Date.today + schedule.interval_days.days)) %>.
+            </div>
+
+            <%= default_form_field(f, :completed_at, label_text: "Completed Date", required: true) do |req| %>
+              <%= f.date_field :completed_at,
+                  { class: "form-control",
+                    value: form_record.completed_at || Date.today }.merge(req) %>
+              <small class="form-text text-muted">
+                The date when this maintenance was completed
+              </small>
+            <% end %>
+
+            <%= default_form_field(f, :notes, label_text: "Notes (optional)") do |req| %>
+              <%= f.text_area :notes,
+                  { class: "form-control",
+                    rows: 3,
+                    placeholder: "Add any notes about this maintenance completion...",
+                    value: form_record.notes } %>
+            <% end %>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <%= f.submit "Complete Maintenance", class: "btn btn-success" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <% if has_errors %>
+    <div class="modal-backdrop fade show"></div>
+  <% end %>
+<% end %>

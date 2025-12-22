@@ -6,7 +6,7 @@
 %>
 
 <%= render "shared/sidebar_layout/layout",
-    tabs: ["details", "maintenance_schedules", "operation_manual", "images", "comments"],
+    tabs: ["details", "maintenance_schedules", "maintenance_records", "operation_manual", "images", "data_files", "comments"],
     tab_path: :inventory_equipment_path,
     path_args: [@equipment],
     bottom_action: render("shared/edit_button", label: "Edit Equipment", path: edit_inventory_equipment_path(@equipment)) do %>
@@ -14,16 +14,24 @@
   <% 
     # Parse tab name - remove any query string that might be appended
     tab_name = (params[:tab] || "details").to_s.split('?').first
-    # Map maintenance_schedules tab to maintenance_schedules partial
+    # Map tab names to partials
     # Use full path to ensure it works when rendered from different controller
     if tab_name == "maintenance_schedules"
       tab_name = "inventory/equipments/maintenance_schedules"
+    elsif tab_name == "maintenance_records"
+      tab_name = "inventory/equipments/maintenance_records"
+    elsif tab_name == "data_files"
+      tab_name = "inventory/equipments/data_files"
     end
     
     # Pass maintenance_schedule if it exists (from failed create/edit)
     render_options = { equipment: @equipment }
     if defined?(@maintenance_schedule) && @maintenance_schedule.present?
       render_options[:maintenance_schedule] = @maintenance_schedule
+    end
+    # Pass maintenance_record if it exists (from failed complete)
+    if defined?(@maintenance_record) && @maintenance_record.present?
+      render_options[:maintenance_record] = @maintenance_record
     end
   %>
   <%= render tab_name, render_options %>
