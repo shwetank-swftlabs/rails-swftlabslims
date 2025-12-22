@@ -22,7 +22,29 @@ class DataFilesController < ApplicationController
 
     begin
       folder_id = @attachable.default_upload_folder_id
+      root_folder_id = Rails.application.credentials.google.root_folder_id
+      
+      # Log upload details
+      Rails.logger.info "=" * 80
+      Rails.logger.info "DATA FILE UPLOAD DETAILS"
+      Rails.logger.info "=" * 80
+      Rails.logger.info "File Name: #{uploaded_file.original_filename}"
+      Rails.logger.info "Attachable Type: #{@attachable.class.name}"
+      Rails.logger.info "Attachable ID: #{@attachable.id}"
+      Rails.logger.info "Attachable Name: #{@attachable.try(:name) || @attachable.try(:code) || 'N/A'}"
+      Rails.logger.info "Folder ID from default_upload_folder_id: #{folder_id.inspect}"
+      Rails.logger.info "Root Folder ID from credentials: #{root_folder_id.inspect}"
+      Rails.logger.info "Final Folder ID being used: #{folder_id || root_folder_id}"
+      Rails.logger.info "Folder URL: https://drive.google.com/drive/folders/#{folder_id || root_folder_id}"
+      Rails.logger.info "-" * 80
+      
       upload_result = GoogleDriveService.new.upload(uploaded_file, folder_id)
+      
+      Rails.logger.info "Upload Result:"
+      Rails.logger.info "  File ID: #{upload_result.id}"
+      Rails.logger.info "  Web View Link: #{upload_result.web_view_link}"
+      Rails.logger.info "  MIME Type: #{upload_result.mime_type}"
+      Rails.logger.info "=" * 80
 
       data_file = @attachable.data_files.create!(
         file_name: uploaded_file.original_filename,
@@ -33,6 +55,9 @@ class DataFilesController < ApplicationController
         created_by: current_user.email,
         label: label
       )
+      
+      Rails.logger.info "Data File Created: ID=#{data_file.id}"
+      Rails.logger.info "=" * 80
       
       parse_and_store_data(data_file)
 

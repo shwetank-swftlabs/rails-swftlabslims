@@ -17,17 +17,29 @@ class GoogleDriveService
   end
 
   def upload(file, folder_id = root_folder_id)
+    final_folder_id = folder_id || root_folder_id
+    
+    Rails.logger.info "[GoogleDriveService] Uploading file to folder_id: #{final_folder_id}"
+    Rails.logger.info "[GoogleDriveService] Folder URL: https://drive.google.com/drive/folders/#{final_folder_id}"
+    
     metadata = {
       name: file.respond_to?(:original_filename) ? file.original_filename : File.basename(file),
-      parents: [folder_id]
+      parents: [final_folder_id]
     }
 
-    @drive.create_file(
+    result = @drive.create_file(
       metadata,
       upload_source: file.respond_to?(:tempfile) ? file.tempfile.path : file,
       content_type: file.respond_to?(:content_type) ? file.content_type : nil,
-      fields: "id, webViewLink, webContentLink, mimeType"
+      fields: "id, webViewLink, webContentLink, mimeType, parents"
     )
+    
+    Rails.logger.info "[GoogleDriveService] File uploaded successfully"
+    Rails.logger.info "[GoogleDriveService] File ID: #{result.id}"
+    Rails.logger.info "[GoogleDriveService] File Parents: #{result.parents.inspect}"
+    Rails.logger.info "[GoogleDriveService] Actual Parent Folder: https://drive.google.com/drive/folders/#{result.parents&.first}"
+    
+    result
   end
 
   def download(file_id)
