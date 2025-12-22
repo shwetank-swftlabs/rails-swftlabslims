@@ -14,6 +14,7 @@ module Inventory
     has_one :last_nop_process, -> { order(created_at: :desc) },
     class_name: "Experiments::NopProcess",
     foreign_key: :reactor_id
+    has_many :maintenance_schedules, class_name: "Inventory::MaintenanceSchedule", dependent: :destroy
 
     validates :name, presence: true, uniqueness: true
     validates :code, presence: true, uniqueness: true

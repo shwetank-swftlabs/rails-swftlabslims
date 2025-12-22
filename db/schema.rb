@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_18_155829) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_22_162752) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -201,6 +201,20 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_18_155829) do
     t.index ["library_sampleable_type", "library_sampleable_id"], name: "index_library_samples_on_library_sampleable"
   end
 
+  create_table "maintenance_schedules", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "created_by"
+    t.bigint "equipment_id", null: false
+    t.integer "interval_days"
+    t.boolean "is_active", default: true
+    t.date "last_completed_at"
+    t.string "name"
+    t.date "next_due_date"
+    t.text "notes"
+    t.datetime "updated_at", null: false
+    t.index ["equipment_id"], name: "index_maintenance_schedules_on_equipment_id"
+  end
+
   create_table "nop_processes", force: :cascade do |t|
     t.decimal "additional_nitric_acid_amount"
     t.decimal "additional_nitric_acid_molarity"
@@ -295,6 +309,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_18_155829) do
   add_foreign_key "cnfs", "cakes"
   add_foreign_key "equipments", "equipment_types"
   add_foreign_key "feedstocks", "feedstock_types"
+  add_foreign_key "maintenance_schedules", "equipments", on_delete: :cascade
   add_foreign_key "nop_processes", "equipments", column: "reactor_id"
   add_foreign_key "nop_processes", "feedstock_types"
   add_foreign_key "nop_processes", "nop_processes", column: "previous_process_id"

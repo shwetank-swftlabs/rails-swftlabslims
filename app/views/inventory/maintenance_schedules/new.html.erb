@@ -1,0 +1,52 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Add a new maintenance schedule for #{@equipment.name}.") %>
+
+<%= render "shared/form_errors", object: @maintenance_schedule %>
+
+<%= form_with(model: [@equipment, @maintenance_schedule], 
+              url: inventory_equipment_maintenance_schedules_path(@equipment),
+              local: true,
+              html: { class: "maintenance-schedule-form" }) do |f| %>
+
+  <%= default_form_field(f, :name, label_text: "Maintenance Name", required: true) do |req| %>
+    <%= f.text_field :name,
+        { class: "form-control",
+          placeholder: "e.g., Oil Change, Calibration, Safety Inspection" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :interval_days, label_text: "Interval (days)", required: true) do |req| %>
+    <%= f.number_field :interval_days,
+        { class: "form-control",
+          placeholder: "e.g., 30, 90, 180",
+          min: 1,
+          step: 1 }.merge(req) %>
+    <small class="form-text text-muted">
+      How often this maintenance should be performed (in days)
+    </small>
+  <% end %>
+
+  <%= default_form_field(f, :next_due_date, label_text: "Next Due Date", required: true) do |req| %>
+    <%= f.date_field :next_due_date,
+        { class: "form-control" }.merge(req) %>
+    <small class="form-text text-muted">
+      When is this maintenance next due?
+    </small>
+  <% end %>
+
+  <%= default_form_field(f, :notes, label_text: "Notes (optional)") do |req| %>
+    <%= f.text_area :notes,
+        { class: "form-control",
+          rows: 3,
+          placeholder: "Additional notes about this maintenance schedule..." } %>
+  <% end %>
+
+  <div class="mt-4 d-flex justify-content-between">
+    <%= f.submit "Create Maintenance Schedule", 
+        class: "btn btn-primary px-4",
+        data: { turbo_confirm: "Are you sure you want to create this maintenance schedule?" } %>
+    
+    <%= link_to "Cancel", inventory_equipment_path(@equipment, tab: :maintenance_schedules), 
+        class: "btn btn-outline-secondary px-4" %>
+  </div>
+
+<% end %>
+
