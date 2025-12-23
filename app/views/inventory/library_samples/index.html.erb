@@ -34,13 +34,13 @@
   <!-- Active Status Filter -->
   <div class="col-md-3">
     <%= f.select :is_active,
-        [["Active", "true"], ["Inactive", "false"], ["All", ""]],
+        [["All", ""], ["Active", "true"], ["Inactive", "false"]],
         {
           include_blank: false,
-          selected: params.key?(:is_active) ? params[:is_active] : "true"
+          selected: params[:is_active] || ""
         },
         class: "form-select",
-        onchange: "this.form.submit();" %>
+        onchange: "this.form.requestSubmit()" %>
   </div>
 
 <% end %>
@@ -51,15 +51,11 @@
 <% active_filters << { label: "Location: #{params[:location]}", param: :location } if params[:location].present? %>
 <% active_filters << { label: "Resource: #{params[:parent_name]}", param: :parent_name } if params[:parent_name].present? %>
 <% 
-  # Always show status filter badge
-  is_active_value = params.key?(:is_active) ? params[:is_active] : "true"
-  status_label = case is_active_value
-                 when "true" then "Active"
-                 when "false" then "Inactive"
-                 when "" then "All"
-                 else "Active"
-                 end
-  active_filters << { label: "Status: #{status_label}", param: :is_active }
+  # Only show status filter badge when actually filtering (not showing "All")
+  if params[:is_active].present?
+    status_label = params[:is_active] == "true" ? "Active" : "Inactive"
+    active_filters << { label: "Status: #{status_label}", param: :is_active }
+  end
 %>
 
 <% if active_filters.any? %>
@@ -79,9 +75,8 @@
       <% end %>
       <% if active_filters.length > 1 %>
         <% 
-          # Clear all but preserve default status
-          clear_all_params = { is_active: "true" }
-          clear_all_url = inventory_library_samples_path(clear_all_params)
+          # Clear all filters (no default status preserved)
+          clear_all_url = inventory_library_samples_path
         %>
         <a href="<%= clear_all_url %>" class="badge bg-danger text-decoration-none" style="font-size: 0.875rem;">
           Clear All

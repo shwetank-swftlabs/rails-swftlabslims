@@ -4,7 +4,7 @@
 ) %>
 
 <%= render "shared/sidebar_layout/layout",
-    tabs: ["details", "cnfs", "library_samples", "qnc_check_requests", "data_files", "comments", "use_records"],
+    tabs: ["details", "library_samples", "qnc_check_requests", "data_files", "comments", "use_records"],
     tab_path: :products_cake_path,
     path_args: [@cake],
     bottom_action: render("shared/edit_button", label: "Edit Cake", path: edit_products_cake_path(@cake)) do %>

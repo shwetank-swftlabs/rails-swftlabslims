@@ -1,0 +1,84 @@
+<% 
+  form_type = local_assigns[:form_type] || :create
+  is_edit = form_type == :edit
+  
+  # Determine parent (cake or cnf)
+  parent = local_assigns[:cake] || local_assigns[:cnf]
+  
+  form_url = if is_edit
+    inventory_library_sample_path(library_sample)
+  elsif parent.is_a?(Products::Cake)
+    products_cake_library_samples_path(parent)
+  elsif parent.is_a?(Products::Cnf)
+    products_cnf_library_samples_path(parent)
+  end
+  
+  submit_text = is_edit ? "Update Library Sample" : "Create Library Sample"
+  form_id = is_edit ? "library-sample-edit-form-#{library_sample.id}" : "library-sample-form"
+%>
+
+<%= render "shared/form_errors", object: library_sample %>
+
+<%= form_with(model: is_edit ? library_sample : [parent, library_sample], 
+              url: form_url,
+              method: is_edit ? :patch : :post,
+              html: { 
+                class: "library-sample-form",
+                id: form_id
+              }) do |f| %>
+
+  <%= default_form_field(f, :name, label_text: "Name", required: true) do |req| %>
+    <%= f.text_field :name,
+        { class: "form-control",
+          placeholder: "Enter sample name" }.merge(req) %>
+  <% end %>
+
+  <div class="mb-3">
+    <label class="form-label fw-bold mb-1 d-block">
+      Amount <span class="text-danger">*</span>
+    </label>
+    <div class="d-flex gap-2 align-items-center">
+      <%= f.text_field :amount, 
+          class: "form-control",
+          placeholder: "Enter amount",
+          required: true,
+          style: "max-width: 200px" %>
+      <%= f.text_field :unit, 
+          class: "form-control",
+          placeholder: "Enter unit",
+          required: true,
+          readonly: true,
+          style: "max-width: 150px" %>
+    </div>
+    <small class="form-text text-muted">
+      Unit is automatically set from the parent resource
+    </small>
+  </div>
+
+  <%= default_form_field(f, :location, label_text: "Location", required: true) do |req| %>
+    <%= f.text_field :location,
+        { class: "form-control",
+          placeholder: "Enter location" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :created_at, label_text: "Date Added", required: false) do |req| %>
+    <%= f.date_field :created_at,
+        { class: "form-control",
+          value: library_sample.created_at&.to_date || Date.today }.merge(req) %>
+  <% end %>
+
+  <div class="mt-3 d-flex justify-content-end gap-2">
+    <%= f.submit submit_text, class: "btn btn-primary" %>
+    <% if is_edit %>
+      <button type="button" class="btn btn-outline-secondary" onclick="hideEditForm(<%= library_sample.id %>)">
+        Cancel
+      </button>
+    <% else %>
+      <button type="button" class="btn btn-outline-secondary" onclick="hideLibrarySampleForm()">
+        Cancel
+      </button>
+    <% end %>
+  </div>
+
+<% end %>
+

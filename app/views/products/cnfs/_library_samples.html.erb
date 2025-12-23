@@ -1,8 +1,137 @@
-<%= render "shared/sidebar_layout/sample_library_main_area",
-    parent_name: cnf.name,
-    parent_type: "Products::Cnf",
-    parent_id: cnf.id,
-    library_samples: @library_samples || cnf.library_samples,
-    pagy: @pagy
+<% 
+  # Check if we have a library_sample with errors (from failed create)
+  library_sample_with_errors = defined?(@library_sample) && @library_sample.present? && @library_sample.errors.any? ? @library_sample : nil
+  show_create_form = library_sample_with_errors&.errors&.any?
+  
+  # Get library samples for display - use paginated collection if available, otherwise use all
+  # When @pagy is set, @library_samples is already paginated
+  library_samples_for_display = @pagy.present? ? @library_samples : cnf.library_samples.order(created_at: :desc)
 %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h5 class="mb-0">Library Samples</h5>
+    <p class="text-muted mb-0" style="font-size: 0.85rem;">
+      Library samples for <strong><%= cnf.name %></strong>
+    </p>
+  </div>
+  <% unless show_create_form %>
+    <button type="button" class="btn btn-primary btn-sm" onclick="showLibrarySampleForm()" id="show-form-btn">
+      <i class="bi bi-plus-circle me-1"></i>Add Library Sample
+    </button>
+  <% end %>
+</div>
+
+<!-- Inline Create Form Container -->
+<div id="library-sample-form-container" style="display: <%= show_create_form ? 'block' : 'none' %>;" class="mb-4">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h6 class="mb-0">Add New Library Sample</h6>
+      <button type="button" class="btn-close" aria-label="Close" onclick="hideLibrarySampleForm()"></button>
+    </div>
+    <div class="card-body">
+      <% 
+        form_library_sample = library_sample_with_errors || cnf.library_samples.build
+        form_library_sample.unit = cnf.unit if form_library_sample.unit.blank?
+      %>
+      <%= render "inventory/library_samples/form", 
+          cnf: cnf,
+          library_sample: form_library_sample,
+          form_type: :create %>
+    </div>
+  </div>
+</div>
+
+<!-- Library Samples Table (hidden when form is shown) -->
+<div id="library-samples-table-container" style="display: <%= show_create_form ? 'none' : 'block' %>;">
+  <% if library_samples_for_display.any? %>
+    <%= render "shared/tables/default_table",
+        collection: library_samples_for_display,
+        pagy: @pagy,
+        headers: ->(_) do %>
+          <th>Name</th>
+          <th>Amount</th>
+          <th>Location</th>
+          <th>Status</th>
+          <th>Created By</th>
+          <th>Created At</th>
+          <th>Print QR</th>
+        <% end,
+        row: ->(library_sample) do %>
+          <td><%= link_to library_sample.name.presence || "Unnamed", inventory_library_sample_path(library_sample), class: "text-decoration-underline fw-semibold" %></td>
+          <td><%= library_sample.amount.present? ? "#{library_sample.amount} #{library_sample.unit.present? ? library_sample.unit.upcase : ''}".strip : "—" %></td>
+          <td><%= library_sample.location.presence || "—" %></td>
+          <td>
+            <% if library_sample.is_active? %>
+              <span class="badge bg-success">Active</span>
+            <% else %>
+              <span class="badge bg-secondary">Inactive</span>
+            <% end %>
+          </td>
+          <td><%= email_to_name(library_sample.created_by) %></td>
+          <td><%= format_date(library_sample.created_at) %></td>
+          <td><%= render "shared/print_qr_button", 
+                          qr_code_path: qr_code_inventory_library_sample_path(library_sample),
+                          label: "Print QR" %>
+          </td>
+        <% end %>
+  <% else %>
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle me-2"></i>
+      No library samples found for this CNF.
+      <a href="#" onclick="showLibrarySampleForm(); return false;" class="alert-link">Add one now</a>.
+    </div>
+  <% end %>
+</div>
+
+<script>
+  function showLibrarySampleForm() {
+    const formContainer = document.getElementById('library-sample-form-container');
+    const tableContainer = document.getElementById('library-samples-table-container');
+    const showBtn = document.getElementById('show-form-btn');
+    
+    if (formContainer) {
+      formContainer.style.display = 'block';
+      formContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    if (tableContainer) {
+      tableContainer.style.display = 'none';
+    }
+    if (showBtn) {
+      showBtn.style.display = 'none';
+    }
+  }
+
+  function hideLibrarySampleForm() {
+    const formContainer = document.getElementById('library-sample-form-container');
+    const tableContainer = document.getElementById('library-samples-table-container');
+    const showBtn = document.getElementById('show-form-btn');
+    
+    if (formContainer) {
+      formContainer.style.display = 'none';
+      const form = document.getElementById('library-sample-form');
+      if (form) {
+        form.reset();
+        const errorAlert = formContainer.querySelector('.alert-danger');
+        if (errorAlert) {
+          errorAlert.remove();
+        }
+      }
+    }
+    if (tableContainer) {
+      tableContainer.style.display = 'block';
+    }
+    if (showBtn) {
+      showBtn.style.display = 'inline-block';
+    }
+  }
+
+  // Hide form on successful submit (handled by Turbo redirect)
+  document.addEventListener('turbo:load', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tab') === 'library_samples') {
+      hideLibrarySampleForm();
+    }
+  });
+</script>
 
