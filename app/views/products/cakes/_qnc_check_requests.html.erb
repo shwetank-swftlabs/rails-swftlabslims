@@ -1,3 +1,134 @@
-<%= render "experiments/qnc_checks/qnc_checks_table",
-           qnc_checks: (@qnc_checks || @cake.qnc_check_requests.order(created_at: :desc)) %>
+<% 
+  # Check if we have a qnc_check with errors (from failed create)
+  qnc_check_with_errors = defined?(@qnc_check) && @qnc_check.present? && @qnc_check.errors.any? ? @qnc_check : nil
+  show_create_form = qnc_check_with_errors&.errors&.any?
+  
+  # Get QNC check requests for display - use paginated collection if available, otherwise use all
+  # When @pagy is set, @qnc_checks is already paginated
+  qnc_checks_for_display = @pagy.present? ? @qnc_checks : cake.qnc_check_requests.order(created_at: :desc)
+  
+  # Get missing QNC check request names
+  missing_check_names = cake.qnc_check_request_names_without_samples
+%>
 
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h5 class="mb-0">
+      QNC Check Requests
+      <% if missing_check_names.any? %>
+        <span class="badge bg-warning text-dark ms-2" title="<%= missing_check_names.count %> check request(s) not yet created">
+          <i class="bi bi-exclamation-triangle me-1"></i><%= missing_check_names.count %>
+        </span>
+      <% end %>
+    </h5>
+    <p class="text-muted mb-0" style="font-size: 0.85rem;">
+      QNC check requests for <strong><%= cake.name %></strong>
+    </p>
+  </div>
+  <% unless show_create_form %>
+    <button type="button" class="btn btn-primary btn-sm" onclick="showQncCheckForm()" id="show-form-btn">
+      <i class="bi bi-plus-circle me-1"></i>Add QNC Check Request
+    </button>
+  <% end %>
+</div>
+
+<% if missing_check_names.any? %>
+  <div class="alert alert-warning d-flex align-items-start mb-4" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2 mt-1" style="font-size: 1.2rem;"></i>
+    <div class="flex-grow-1">
+      <strong class="d-block mb-2">Missing QNC Check Requests</strong>
+      <p class="mb-2">The following QNC check requests are configured but not yet created for this resource:</p>
+      <ul class="mb-0">
+        <% missing_check_names.each do |check_name| %>
+          <li><strong><%= check_name %></strong></li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+<% end %>
+
+<!-- Inline Create Form Container -->
+<div id="qnc-check-form-container" style="display: <%= show_create_form ? 'block' : 'none' %>;" class="mb-4">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h6 class="mb-0">Add New QNC Check Request</h6>
+      <button type="button" class="btn-close" aria-label="Close" onclick="hideQncCheckForm()"></button>
+    </div>
+    <div class="card-body">
+      <% 
+        form_qnc_check = qnc_check_with_errors || cake.qnc_check_requests.build
+        form_qnc_check.requested_by = current_user.email if form_qnc_check.requested_by.blank?
+      %>
+      <%= render "experiments/qnc_checks/form", 
+          cake: cake,
+          qnc_check: form_qnc_check,
+          form_type: :create %>
+    </div>
+  </div>
+</div>
+
+<!-- QNC Check Requests Table (hidden when form is shown) -->
+<div id="qnc-checks-table-container" style="display: <%= show_create_form ? 'none' : 'block' %>;">
+  <% if qnc_checks_for_display.any? %>
+    <%= render "experiments/qnc_checks/qnc_checks_table",
+        qnc_checks: qnc_checks_for_display,
+        pagy: @pagy %>
+  <% else %>
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle me-2"></i>
+      No QNC check requests found for this cake.
+      <a href="#" onclick="showQncCheckForm(); return false;" class="alert-link">Add one now</a>.
+    </div>
+  <% end %>
+</div>
+
+<script>
+  function showQncCheckForm() {
+    const formContainer = document.getElementById('qnc-check-form-container');
+    const tableContainer = document.getElementById('qnc-checks-table-container');
+    const showBtn = document.getElementById('show-form-btn');
+    
+    if (formContainer) {
+      formContainer.style.display = 'block';
+      formContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    if (tableContainer) {
+      tableContainer.style.display = 'none';
+    }
+    if (showBtn) {
+      showBtn.style.display = 'none';
+    }
+  }
+
+  function hideQncCheckForm() {
+    const formContainer = document.getElementById('qnc-check-form-container');
+    const tableContainer = document.getElementById('qnc-checks-table-container');
+    const showBtn = document.getElementById('show-form-btn');
+    
+    if (formContainer) {
+      formContainer.style.display = 'none';
+      const form = document.getElementById('qnc-check-form');
+      if (form) {
+        form.reset();
+        const errorAlert = formContainer.querySelector('.alert-danger');
+        if (errorAlert) {
+          errorAlert.remove();
+        }
+      }
+    }
+    if (tableContainer) {
+      tableContainer.style.display = 'block';
+    }
+    if (showBtn) {
+      showBtn.style.display = 'inline-block';
+    }
+  }
+
+  // Hide form on successful submit (handled by Turbo redirect)
+  document.addEventListener('turbo:load', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tab') === 'qnc_check_requests') {
+      hideQncCheckForm();
+    }
+  });
+</script>

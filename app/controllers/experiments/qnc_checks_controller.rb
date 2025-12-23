@@ -2,6 +2,7 @@ module Experiments
   class QncChecksController < ApplicationController
     before_action :set_qnc_checks_breadcrumbs_root, only: [:index, :new, :show, :edit]
     before_action :set_qnc_check, only: [:show, :edit, :update, :qr_code, :mark_completed]
+    before_action :set_parent, only: [:new, :create]
 
     def index
       scope = Experiments::QncChecks::Query.new(params).call
@@ -13,39 +14,48 @@ module Experiments
     end
 
     def new
-      @parent = load_qnc_check_requestable
       @qnc_check = build_qnc_check
       @qnc_check.requested_by = current_user.email
       @users = User.order(:email)
-      add_breadcrumb "Add QNC Check Request"
+
+      if @parent
+        prepare_parent_page
+        render parent_show_template, status: :ok
+      else
+        add_breadcrumb "Add QNC Check Request"
+      end
     end
 
     def show
       add_breadcrumb "QNC Check Request #{@qnc_check.name} Details",
-                     experiments_qnc_check_path(@qnc_check)
+                     experiments_qnc_check_request_path(@qnc_check)
     end
 
     def create
-      @parent = load_qnc_check_requestable
-      @qnc_check = build_qnc_check_from_create
+      @qnc_check = build_qnc_check
       @qnc_check.assign_attributes(qnc_check_params)
       @qnc_check.requested_by = current_user.email
 
       if @qnc_check.save
-        redirect_to redirect_path_for(@parent),
+        redirect_to after_create_redirect_path,
                     notice: "QNC check request created successfully",
                     status: :see_other
       else
         @users = User.order(:email)
-        add_breadcrumb "Add QNC Check Request"
-        render :new, status: :unprocessable_entity
+        if @parent
+          prepare_parent_page
+          render parent_show_template, status: :unprocessable_entity
+        else
+          add_breadcrumb "Add QNC Check Request"
+          render :new, status: :unprocessable_entity
+        end
       end
     end
 
     def edit
       @users = User.order(:email)
       add_breadcrumb "Edit QNC Check Request #{@qnc_check.name}",
-                     edit_experiments_qnc_check_path(@qnc_check)
+                     edit_experiments_qnc_check_request_path(@qnc_check)
     end
 
     def update
@@ -56,7 +66,7 @@ module Experiments
       end
       
       if @qnc_check.update(update_params)
-        redirect_to experiments_qnc_check_path(@qnc_check),
+        redirect_to experiments_qnc_check_request_path(@qnc_check),
                     notice: "QNC check request updated successfully"
       else
         @users = User.order(:email)
@@ -66,11 +76,11 @@ module Experiments
 
     def mark_completed
       if @qnc_check.update(completed_at: Time.current, is_active: false)
-        redirect_to experiments_qnc_check_path(@qnc_check),
+        redirect_to experiments_qnc_check_request_path(@qnc_check),
                     notice: "QNC check request marked as completed successfully",
                     status: :see_other
       else
-        redirect_to experiments_qnc_check_path(@qnc_check),
+        redirect_to experiments_qnc_check_request_path(@qnc_check),
                     alert: "Failed to mark QNC check request as completed",
                     status: :see_other
       end
@@ -78,7 +88,7 @@ module Experiments
 
     def qr_code
       pdf = @qnc_check.qr_label_pdf(
-        url: experiments_qnc_check_url(@qnc_check)
+        url: experiments_qnc_check_request_url(@qnc_check)
       )
 
       send_data pdf,
@@ -89,44 +99,63 @@ module Experiments
 
     private
 
+    # --------------------
+    # Setup
+    # --------------------
+
     def set_qnc_checks_breadcrumbs_root
-      add_breadcrumb "QNC Check Requests", experiments_qnc_checks_path
+      add_breadcrumb "QNC Check Requests", experiments_qnc_check_requests_path
     end
 
     def set_qnc_check
       @qnc_check = Experiments::QncCheckRequest.find(params[:id])
     end
 
-    def load_qnc_check_requestable
-      return unless params[:parent_type].present? && params[:parent_id].present?
-
-      params[:parent_type].constantize.find(params[:parent_id])
-    rescue NameError, ActiveRecord::RecordNotFound
-      nil
+    def set_parent
+      @parent = Experiments::QncCheckRequestParentResolver.new(params).parent
     end
+
+    # --------------------
+    # Builders
+    # --------------------
 
     def build_qnc_check
-      if @parent
-        @parent.qnc_check_requests.build
-      else
-        Experiments::QncCheckRequest.new
-      end
+      return Experiments::QncCheckRequest.new unless @parent
+
+      @parent.qnc_check_requests.build
     end
 
-    def build_qnc_check_from_create
-      if @parent
-        @parent.qnc_check_requests.new
-      else
-        Experiments::QncCheckRequest.new
-      end
+    # --------------------
+    # Parent helpers
+    # --------------------
+
+    def parent_show_template
+      @parent.class.name.underscore.pluralize + "/show"
     end
 
-    def redirect_path_for(parent)
-      if parent
-        polymorphic_path(parent, tab: :qnc_check_requests)
-      else
-        experiments_qnc_checks_path
-      end
+    def after_create_redirect_path
+      return experiments_qnc_check_requests_path unless @parent
+
+      polymorphic_path(@parent, tab: :qnc_check_requests)
+    end
+
+    def prepare_parent_page
+      set_parent_instance_variables
+      paginate_qnc_check_requests
+      @users = User.order(:email)
+      params[:tab] = 'qnc_check_requests'
+    end
+
+    def set_parent_instance_variables
+      # Generic assignment — views can rely on instance variable matching model name
+      instance_variable_set("@#{@parent.model_name.element}", @parent)
+    end
+
+    def paginate_qnc_check_requests
+      return unless @parent
+
+      @pagy, @qnc_checks =
+        pagy(@parent.qnc_check_requests.order(created_at: :desc))
     end
 
     def qnc_check_params

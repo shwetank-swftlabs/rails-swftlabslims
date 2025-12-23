@@ -14,14 +14,6 @@
     tab_name = "library_samples" if tab_name == "sample_library"
   %>
 
-  <% if tab_name == "qnc_check_requests" %>
-    <div class="d-flex justify-content-end mb-3">
-      <%= link_to "Add QNC Check Request",
-                  new_experiments_qnc_check_path(parent_type: "Products::Cnf", parent_id: @cnf.id),
-                  class: "btn btn-primary" %>
-    </div>
-  <% end %>
-
   <%= render tab_name, cnf: @cnf %>
 
 <% end %>

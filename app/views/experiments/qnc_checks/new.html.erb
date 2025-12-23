@@ -6,7 +6,7 @@
     cancel_path = polymorphic_path(@parent, tab: :qnc_check_requests)
   else
     page_subtitle = "Add a new QNC check request."
-    cancel_path = experiments_qnc_checks_path
+    cancel_path = experiments_qnc_check_requests_path
   end
 %>
 
@@ -41,7 +41,7 @@
 
 <%= form_with(
   model: @qnc_check,
-  url: experiments_qnc_checks_path,
+  url: experiments_qnc_check_requests_path,
   scope: :qnc_check,
   local: true,
   html: { class: "qnc-check-form" }

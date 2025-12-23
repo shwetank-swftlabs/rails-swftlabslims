@@ -1,0 +1,95 @@
+<% 
+  form_type = local_assigns[:form_type] || :create
+  is_edit = form_type == :edit
+  
+  # Determine parent (cake or cnf)
+  parent = local_assigns[:cake] || local_assigns[:cnf]
+  
+  form_url = if is_edit
+    experiments_qnc_check_request_path(qnc_check)
+  elsif parent.is_a?(Products::Cake)
+    products_cake_qnc_check_requests_path(parent)
+  elsif parent.is_a?(Products::Cnf)
+    products_cnf_qnc_check_requests_path(parent)
+  end
+  
+  submit_text = is_edit ? "Update QNC Check Request" : "Create QNC Check Request"
+  form_id = is_edit ? "qnc-check-edit-form-#{qnc_check.id}" : "qnc-check-form"
+%>
+
+<%= render "shared/form_errors", object: qnc_check %>
+
+<%= form_with(model: is_edit ? qnc_check : [parent, qnc_check], 
+              url: form_url,
+              method: is_edit ? :patch : :post,
+              scope: :qnc_check,
+              html: { 
+                class: "qnc-check-form",
+                id: form_id
+              }) do |f| %>
+
+  <%= default_form_field(f, :name, label_text: "Qnc Check Name", required: true) do |req| %>
+    <% 
+      # Get QNC check names dynamically based on parent type
+      qnc_check_options = if parent.present?
+        Experiments::QncCheckRequest.qnc_check_names(parent.class.name).map { |name| { key: name, val: name } }
+      else
+        []
+      end
+    %>
+    <%= render "shared/forms/searchable_dropdown",
+        form: f,
+        field: :name,
+        options: qnc_check_options,
+        placeholder: "Search or type QNC check request name...",
+        help_text: parent.present? && qnc_check_options.present? ? "You can search and select from the list or type a custom name." : "Enter QNC check request name",
+        required: true,
+        input_attrs: req %>
+  <% end %>
+
+  <%= default_form_field(f, :location, label_text: "Sample Location", required: false) do |req| %>
+    <%= f.text_field :location,
+        { class: "form-control",
+          placeholder: "Enter location (optional)" } %>
+  <% end %>
+
+  <%= default_form_field(f, :requested_from, label_text: "Assigned To", required: true) do |req| %>
+    <% 
+      users = defined?(@users) ? @users : User.order(:email)
+    %>
+    <%= render "shared/forms/searchable_dropdown",
+        form: f,
+        field: :requested_from,
+        options: users.map { |user| { key: user.email, val: user.email } },
+        placeholder: "Search or type @swftlabs.com email",
+        help_text: "Must be a valid @swftlabs.com email address. You can search and select from the list or type a new email.",
+        required: true,
+        input_attrs: req %>
+  <% end %>
+
+  <%= default_form_field(f, :expected_completion_date, label_text: "Expected Completion Date", required: true) do |req| %>
+    <%= f.date_field :expected_completion_date,
+        { class: "form-control" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :created_at, label_text: "Date Added", required: false) do %>
+    <%= f.date_field :created_at,
+        { class: "form-control",
+          value: qnc_check.created_at&.to_date || Date.today } %>
+  <% end %>
+
+  <div class="mt-3 d-flex justify-content-end gap-2">
+    <%= f.submit submit_text, class: "btn btn-primary" %>
+    <% if is_edit %>
+      <button type="button" class="btn btn-outline-secondary" onclick="hideEditForm(<%= qnc_check.id %>)">
+        Cancel
+      </button>
+    <% else %>
+      <button type="button" class="btn btn-outline-secondary" onclick="hideQncCheckForm()">
+        Cancel
+      </button>
+    <% end %>
+  </div>
+
+<% end %>
+

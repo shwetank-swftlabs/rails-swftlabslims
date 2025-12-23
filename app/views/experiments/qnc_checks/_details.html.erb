@@ -33,7 +33,7 @@
 
 <% if qnc_check.is_active? %>
   <div class="mt-4 pt-3 border-top">
-    <%= button_to mark_completed_experiments_qnc_check_path(qnc_check),
+    <%= button_to mark_completed_experiments_qnc_check_request_path(qnc_check),
                   method: :patch,
                   class: "btn btn-success d-flex align-items-center gap-2",
                   data: { turbo_confirm: "Are you sure you want to mark this QNC check request as completed?" } do %>

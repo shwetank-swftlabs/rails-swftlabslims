@@ -22,6 +22,12 @@ class ApplicationController < ActionController::Base
     params.each do |key, value|
       next unless key.to_s =~ /(.+)_id$/
       basename = $1.classify
+      
+      # Special handling for qnc_check_request_id -> Experiments::QncCheckRequest
+      if key.to_s == "qnc_check_request_id"
+        return Experiments::QncCheckRequest.find(value)
+      end
+      
       klass = [basename, "Inventory::#{basename}", "Experiments::#{basename}", "Products::#{basename}"].map(&:safe_constantize).compact.first
       return klass.find(value) if klass
     end

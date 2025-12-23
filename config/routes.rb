@@ -45,7 +45,7 @@ Rails.application.routes.draw do
       resources :data_files, only: [:create, :show], controller: "/data_files"
     end
 
-    resources :qnc_checks, only: [:index, :new, :create, :show, :edit, :update] do
+    resources :qnc_check_requests, only: [:index, :new, :create, :show, :edit, :update], controller: "qnc_checks" do
       member do
         get :qr_code
         patch :mark_completed
@@ -112,6 +112,7 @@ Rails.application.routes.draw do
         get :qr_code
       end
       resources :library_samples, only: [:new, :create], controller: "/inventory/library_samples"
+      resources :qnc_check_requests, only: [:new, :create], controller: "/experiments/qnc_checks"
 
       resources :images, only: [:create, :show], controller: "/images"
       resources :comments, only: [:create, :update], controller: "/comments"
@@ -124,6 +125,7 @@ Rails.application.routes.draw do
         get :qr_code
       end
       resources :library_samples, only: [:new, :create], controller: "/inventory/library_samples"
+      resources :qnc_check_requests, only: [:new, :create], controller: "/experiments/qnc_checks"
 
       resources :comments, only: [:create, :update], controller: "/comments"
       resources :data_files, only: [:create, :show], controller: "/data_files"

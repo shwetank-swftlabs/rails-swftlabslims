@@ -11,7 +11,7 @@
     end
   end
   
-  actions_content << render("shared/print_qr_button", qr_code_path: qr_code_experiments_qnc_check_path(@qnc_check))
+  actions_content << render("shared/print_qr_button", qr_code_path: qr_code_experiments_qnc_check_request_path(@qnc_check))
   
   actions_html = actions_content.join.html_safe
 %>
@@ -23,9 +23,9 @@
 
 <%= render "shared/sidebar_layout/layout",
     tabs: ["details", "data_files", "comments"],
-    tab_path: :experiments_qnc_check_path,
+    tab_path: :experiments_qnc_check_request_path,
     path_args: [@qnc_check],
-    bottom_action: render("shared/edit_button", label: "Edit QNC Check Request", path: edit_experiments_qnc_check_path(@qnc_check)) do %>
+    bottom_action: render("shared/edit_button", label: "Edit QNC Check Request", path: edit_experiments_qnc_check_request_path(@qnc_check)) do %>
 
   <%= render (params[:tab] || "details"), qnc_check: @qnc_check %>
 

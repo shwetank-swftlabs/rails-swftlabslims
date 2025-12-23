@@ -1,16 +1,24 @@
 <% 
   pending_notification = if @pending_qnc_checks_count.to_i > 0
     content_tag(:div, class: "d-flex flex-column align-items-end gap-2") do
-      content_tag(:div, class: "badge bg-warning text-dark d-flex align-items-center gap-1", style: "font-size: 0.875rem; padding: 0.5rem 0.75rem; white-space: nowrap;") do
+      content_tag(:div, class: "badge bg-assigned-to-me d-flex align-items-center gap-1", style: "font-size: 0.875rem; padding: 0.5rem 0.75rem; white-space: nowrap;") do
         content_tag(:i, "", class: "bi bi-exclamation-circle") +
         "You have #{@pending_qnc_checks_count} pending QNC check request#{@pending_qnc_checks_count == 1 ? '' : 's'}"
       end +
-      render("shared/add_button", label: "Add New QNC Check Request", path: new_experiments_qnc_check_path)
+      render("shared/add_button", label: "Add New QNC Check Request", path: new_experiments_qnc_check_request_path)
     end
   else
     render("shared/add_button", label: "Add New QNC Check Request", path: new_experiments_qnc_check_path)
   end
 %>
+
+<style>
+  /* Custom light blue badge for assigned-to-me indicators */
+  .badge.bg-assigned-to-me {
+    background-color: #87CEEB !important;
+    color: #2c3e50 !important;
+  }
+</style>
 
 <% content_for :page_title, render("shared/page_title",
   subtitle: "Manage QNC check requests and their data.",
@@ -19,7 +27,7 @@
 
 <!-- UNIFIED FILTER BAR -->
 <%= render "shared/tables/default_filter_bar",
-    url: experiments_qnc_checks_path,
+    url: experiments_qnc_check_requests_path,
     search_placeholder: "Search by name…",
     filter_fields: ->(f) do %>
 
@@ -98,7 +106,7 @@
         <% 
           # Build URL without this filter, preserving other params
           filter_params = params.to_unsafe_h.except(filter[:param], :controller, :action)
-          clear_url = experiments_qnc_checks_path(filter_params)
+          clear_url = experiments_qnc_check_requests_path(filter_params)
         %>
         <a href="<%= clear_url %>" class="badge bg-secondary text-decoration-none d-flex align-items-center gap-1" style="font-size: 0.875rem;">
           <%= filter[:label] %>
@@ -108,7 +116,7 @@
       <% if active_filters.length > 1 %>
         <% 
           # Clear all filters
-          clear_all_url = experiments_qnc_checks_path
+          clear_all_url = experiments_qnc_check_requests_path
         %>
         <a href="<%= clear_all_url %>" class="badge bg-danger text-decoration-none" style="font-size: 0.875rem;">
           Clear All
