@@ -39,7 +39,7 @@ module Products
 
       # Paginate QNC checks if on qnc_check_requests tab
       if params[:tab] == 'qnc_check_requests'
-        @pagy, @qnc_checks = pagy(@cnf.qnc_check_requests.order(created_at: :desc))
+        @pagy, @qnc_check_requests = pagy(@cnf.qnc_check_requests.order(created_at: :desc))
       end
     end
 

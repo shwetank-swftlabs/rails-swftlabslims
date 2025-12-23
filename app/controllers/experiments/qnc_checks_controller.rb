@@ -6,7 +6,7 @@ module Experiments
 
     def index
       scope = Experiments::QncChecks::Query.new(params).call
-      @pagy, @qnc_checks = pagy(scope.order(created_at: :desc))
+      @pagy, @qnc_check_requests = pagy(scope.order(created_at: :desc))
       @pending_qnc_checks_count = Experiments::QncCheckRequest.where(
         requested_from: current_user.email,
         is_active: true
@@ -154,7 +154,7 @@ module Experiments
     def paginate_qnc_check_requests
       return unless @parent
 
-      @pagy, @qnc_checks =
+      @pagy, @qnc_check_requests =
         pagy(@parent.qnc_check_requests.order(created_at: :desc))
     end
 

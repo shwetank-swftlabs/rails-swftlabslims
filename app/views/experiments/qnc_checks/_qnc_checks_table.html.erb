@@ -1,4 +1,7 @@
-<% qnc_checks = local_assigns[:qnc_checks] || @qnc_checks || [] %>
+<% 
+  qnc_checks = local_assigns[:qnc_checks] || @qnc_checks || []
+  show_expandable = local_assigns.fetch(:show_expandable, false)
+%>
 
 <style>
   .check-name-column {
@@ -84,7 +87,9 @@
   <table class="table table-striped table-hover align-middle table-compact">
     <thead class="table-light border-bottom">
       <tr>
-        <th style="width: 30px;"></th>
+        <% if show_expandable %>
+          <th style="width: 30px;"></th>
+        <% end %>
         <th class="check-name-column">
           <i class="bi bi-pencil-square me-2"></i>Check Name
         </th>
@@ -110,14 +115,16 @@
           %>
           <!-- QNC Check Row -->
           <tr class="<%= row_class %>" data-qnc-check-id="<%= qnc_check.id %>">
-            <td>
-              <% if has_files %>
-                <i class="bi bi-chevron-right toggle-arrow" 
-                   onclick="toggleDataFiles(<%= qnc_check.id %>)" 
-                   id="toggle-<%= qnc_check.id %>"
-                   title="Toggle data files"></i>
-              <% end %>
-            </td>
+            <% if show_expandable %>
+              <td>
+                <% if has_files %>
+                  <i class="bi bi-chevron-right toggle-arrow" 
+                     onclick="toggleQncCheckDataFiles(<%= qnc_check.id %>)" 
+                     id="toggle-<%= qnc_check.id %>"
+                     title="Toggle data files"></i>
+                <% end %>
+              </td>
+            <% end %>
             <td class="check-name-column">
               <%= link_to experiments_qnc_check_request_path(qnc_check),
                           class: "check-name-link text-decoration-underline fw-semibold d-inline-flex align-items-center gap-1" do %>
@@ -170,9 +177,9 @@
           </tr>
           
           <!-- Data Files Row (collapsible) -->
-          <% if has_files %>
+          <% if show_expandable && has_files %>
             <tr class="data-files-row" id="data-files-<%= qnc_check.id %>" data-qnc-check-id="<%= qnc_check.id %>">
-              <td colspan="10" class="p-0">
+              <td colspan="<%= show_expandable ? 10 : 9 %>" class="p-0">
                 <div class="data-files-content">
                   <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
                     <i class="bi bi-arrow-return-right text-muted"></i>
@@ -210,11 +217,11 @@
                               <button 
                                 class="btn btn-sm btn-outline-primary" 
                                 data-bs-toggle="modal" 
-                                data-bs-target="#viewFileDataModal"
+                                data-bs-target="#viewQncCheckFileDataModal"
                                 data-data-file-id="<%= data_file.id %>"
                                 data-data-file-url="<%= experiments_qnc_check_request_data_file_path(qnc_check, data_file) %>"
                                 data-data-file-name="<%= data_file.file_name %>"
-                                onclick="loadFileData(this)">
+                                onclick="loadQncCheckFileData(this)">
                                 <i class="bi bi-eye me-1"></i> View Data
                               </button>
                             <% else %>
@@ -238,7 +245,7 @@
         <% end %>
       <% else %>
         <tr>
-          <td colspan="10" class="text-muted text-center py-3">No QNC check requests found.</td>
+          <td colspan="<%= show_expandable ? 10 : 9 %>" class="text-muted text-center py-3">No QNC check requests found.</td>
         </tr>
       <% end %>
     </tbody>
@@ -251,111 +258,35 @@
   </div>
 <% end %>
 
-<!-- View File Data Modal -->
-<div class="modal fade" id="viewFileDataModal" tabindex="-1" aria-labelledby="viewFileDataModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="viewFileDataModalLabel">View File Data</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" id="viewFileDataModalBody">
-        <div class="text-center py-4">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
+<% if show_expandable %>
 <script>
-  function toggleDataFiles(qncCheckId) {
-    const arrow = document.getElementById('toggle-' + qncCheckId);
-    const dataFilesRow = document.getElementById('data-files-' + qncCheckId);
-    
-    if (!arrow || !dataFilesRow) return;
-    
-    const isExpanded = dataFilesRow.classList.contains('expanded');
-    
-    if (isExpanded) {
-      // Collapse
-      dataFilesRow.classList.remove('expanded');
-      arrow.classList.remove('expanded');
-      arrow.classList.remove('bi-chevron-down');
-      arrow.classList.add('bi-chevron-right');
-    } else {
-      // Expand
-      dataFilesRow.classList.add('expanded');
-      arrow.classList.add('expanded');
-      arrow.classList.remove('bi-chevron-right');
-      arrow.classList.add('bi-chevron-down');
-    }
-  }
-  
-  function loadFileData(button) {
-    const dataFileUrl = button.getAttribute('data-data-file-url');
-    const dataFileName = button.getAttribute('data-data-file-name');
-    const modalBody = document.getElementById('viewFileDataModalBody');
-    const modalTitle = document.getElementById('viewFileDataModalLabel');
-    
-    if (!modalBody || !modalTitle) {
-      console.error('Modal elements not found');
-      return;
-    }
-    
-    if (!dataFileUrl) {
-      console.error('Data file URL not found');
-      modalBody.innerHTML = '<div class="alert alert-danger">Error: Data file URL not found.</div>';
-      return;
-    }
-    
-    // Update modal title with file name
-    if (dataFileName) {
-      modalTitle.textContent = 'View File Data: ' + dataFileName;
-    }
-    
-    // Show loading state
-    modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
-    
-    // Fetch the data
-    fetch(dataFileUrl, {
-      headers: {
-        'Accept': 'text/html',
-        'X-Requested-With': 'XMLHttpRequest'
+  // Namespaced function to avoid conflicts - only define if not already defined
+  if (typeof toggleQncCheckDataFiles === 'undefined') {
+    window.toggleQncCheckDataFiles = function(qncCheckId) {
+      const arrow = document.getElementById('toggle-' + qncCheckId);
+      const dataFilesRow = document.getElementById('data-files-' + qncCheckId);
+      
+      if (!arrow || !dataFilesRow) return;
+      
+      const isExpanded = dataFilesRow.classList.contains('expanded');
+      
+      if (isExpanded) {
+        // Collapse
+        dataFilesRow.classList.remove('expanded');
+        arrow.classList.remove('expanded');
+        arrow.classList.remove('bi-chevron-down');
+        arrow.classList.add('bi-chevron-right');
+      } else {
+        // Expand
+        dataFilesRow.classList.add('expanded');
+        arrow.classList.add('expanded');
+        arrow.classList.remove('bi-chevron-right');
+        arrow.classList.add('bi-chevron-down');
       }
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.text();
-    })
-    .then(html => {
-      modalBody.innerHTML = html;
-    })
-    .catch(error => {
-      console.error('Error loading file data:', error);
-      modalBody.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>Error loading file data. Please try again.</div>';
-    });
-  }
-  
-  // Clear modal content when it's closed
-  const viewFileDataModal = document.getElementById('viewFileDataModal');
-  if (viewFileDataModal) {
-    viewFileDataModal.addEventListener('hidden.bs.modal', function () {
-      const modalBody = document.getElementById('viewFileDataModalBody');
-      const modalTitle = document.getElementById('viewFileDataModalLabel');
-      if (modalBody) {
-        modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
-      }
-      if (modalTitle) {
-        modalTitle.textContent = 'View File Data';
-      }
-    });
+    };
   }
 </script>
+<% end %>
 
 
 

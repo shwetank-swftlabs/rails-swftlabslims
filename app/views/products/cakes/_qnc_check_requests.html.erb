@@ -4,8 +4,8 @@
   show_create_form = qnc_check_with_errors&.errors&.any?
   
   # Get QNC check requests for display - use paginated collection if available, otherwise use all
-  # When @pagy is set, @qnc_checks is already paginated
-  qnc_checks_for_display = @pagy.present? ? @qnc_checks : cake.qnc_check_requests.order(created_at: :desc)
+  # When @pagy is set, @qnc_check_requests is already paginated
+  qnc_check_requests_for_display = @pagy.present? ? @qnc_check_requests : cake.qnc_check_requests.order(created_at: :desc)
   
   # Get missing QNC check request names
   missing_check_names = cake.qnc_check_request_names_without_samples
@@ -69,10 +69,11 @@
 
 <!-- QNC Check Requests Table (hidden when form is shown) -->
 <div id="qnc-checks-table-container" style="display: <%= show_create_form ? 'none' : 'block' %>;">
-  <% if qnc_checks_for_display.any? %>
+  <% if qnc_check_requests_for_display.any? %>
     <%= render "experiments/qnc_checks/qnc_checks_table",
-        qnc_checks: qnc_checks_for_display,
-        pagy: @pagy %>
+        qnc_checks: qnc_check_requests_for_display,
+        pagy: @pagy,
+        show_expandable: true %>
   <% else %>
     <div class="alert alert-info">
       <i class="bi bi-info-circle me-2"></i>

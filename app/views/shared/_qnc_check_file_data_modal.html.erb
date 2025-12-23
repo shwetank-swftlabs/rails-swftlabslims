@@ -47,5 +47,55 @@
     // Also handle Turbo loads
     document.addEventListener('turbo:load', initModalListener);
   })();
+  
+  // Function to load file data into the modal (only define if not already defined)
+  if (typeof loadQncCheckFileData === 'undefined') {
+    window.loadQncCheckFileData = function(button) {
+      const dataFileUrl = button.getAttribute('data-data-file-url');
+      const dataFileName = button.getAttribute('data-data-file-name');
+      const modalBody = document.getElementById('viewQncCheckFileDataModalBody');
+      const modalTitle = document.getElementById('viewQncCheckFileDataModalLabel');
+      
+      if (!modalBody || !modalTitle) {
+        console.error('Modal elements not found');
+        return;
+      }
+      
+      if (!dataFileUrl) {
+        console.error('Data file URL not found');
+        modalBody.innerHTML = '<div class="alert alert-danger">Error: Data file URL not found.</div>';
+        return;
+      }
+      
+      // Update modal title with file name
+      if (dataFileName) {
+        modalTitle.textContent = 'View File Data: ' + dataFileName;
+      }
+      
+      // Show loading state
+      modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+      
+      // Fetch the data
+      fetch(dataFileUrl, {
+        headers: {
+          'Accept': 'text/html',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.text();
+      })
+      .then(html => {
+        modalBody.innerHTML = html;
+      })
+      .catch(error => {
+        console.error('Error loading file data:', error);
+        modalBody.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>Error loading file data. Please try again.</div>';
+      });
+    };
+  }
 </script>
 
