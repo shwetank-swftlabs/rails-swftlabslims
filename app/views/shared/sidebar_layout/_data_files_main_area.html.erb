@@ -80,6 +80,7 @@
         <th class="py-2 ps-3">Date</th>
         <th class="py-2 ps-3">View Data</th>
         <th class="py-2 ps-3">Open File</th>
+        <th class="py-2 ps-3 text-center">Public</th>
       </tr>
     </thead>
     <tbody>
@@ -92,7 +93,7 @@
           </td>
           <td class="py-2 ps-3"><%= data_file.label.presence || "—" %></td>
           <td class="py-2 ps-3"><%= data_file.data_type.humanize %></td>
-          <td class="py-2 ps-3"><%= data_file.created_by %></td>
+          <td class="py-2 ps-3"><%= email_to_name(data_file.created_by) %></td>
           <td class="py-2 ps-3"><%= format_date(data_file.created_at) %></td>
           <td class="py-2 ps-3">
             <% if data_file.parsed_data.present? %>
@@ -115,6 +116,43 @@
               <i class="bi bi-box-arrow-up-right"></i>
               Open File
             </a>
+          </td>
+          <td class="py-2 ps-3 text-center">
+            <% if data_file.pdf? %>
+              <div class="d-flex flex-column align-items-center gap-2">
+                <div class="form-check form-switch d-inline-block">
+                  <input 
+                    class="form-check-input" 
+                    type="checkbox" 
+                    role="switch" 
+                    id="public-toggle-<%= data_file.id %>"
+                    <%= 'checked' if data_file.is_public %>
+                    data-data-file-id="<%= data_file.id %>"
+                    data-data-file-name="<%= data_file.file_name %>"
+                    onchange="togglePublicStatus(this)"
+                  >
+                  <label class="form-check-label" for="public-toggle-<%= data_file.id %>">
+                    <% if data_file.is_public %>
+                      <span class="badge bg-success">Public</span>
+                    <% else %>
+                      <span class="badge bg-secondary">Private</span>
+                    <% end %>
+                  </label>
+                </div>
+                <% if data_file.is_public && data_file.public_token.present? %>
+                  <button 
+                    class="btn btn-sm btn-outline-secondary"
+                    onclick="copyPublicUrl(this, '<%= public_data_file_url(data_file.public_token) %>')"
+                    title="Copy public URL"
+                    data-copied-text="Copied!"
+                  >
+                    <i class="bi bi-clipboard me-1"></i> Copy URL
+                  </button>
+                <% end %>
+              </div>
+            <% else %>
+              <span class="text-muted">—</span>
+            <% end %>
           </td>
         </tr>
       <% end %>
@@ -212,6 +250,74 @@
     });
   }
 
+  function copyPublicUrl(button, url) {
+    // Copy to clipboard
+    navigator.clipboard.writeText(url).then(() => {
+      // Show feedback
+      const originalHTML = button.innerHTML;
+      const originalText = button.getAttribute('data-copied-text') || 'Copied!';
+      button.innerHTML = '<i class="bi bi-check-circle me-1"></i>' + originalText;
+      button.classList.remove('btn-outline-secondary');
+      button.classList.add('btn-success');
+      button.disabled = true;
+      
+      // Reset after 2 seconds
+      setTimeout(() => {
+        button.innerHTML = originalHTML;
+        button.classList.remove('btn-success');
+        button.classList.add('btn-outline-secondary');
+        button.disabled = false;
+      }, 2000);
+    }).catch(err => {
+      console.error('Failed to copy URL:', err);
+      // Fallback: select text in a temporary input
+      const tempInput = document.createElement('input');
+      tempInput.value = url;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      
+      // Show feedback
+      const originalHTML = button.innerHTML;
+      button.innerHTML = '<i class="bi bi-check-circle me-1"></i>Copied!';
+      button.classList.remove('btn-outline-secondary');
+      button.classList.add('btn-success');
+      setTimeout(() => {
+        button.innerHTML = originalHTML;
+        button.classList.remove('btn-success');
+        button.classList.add('btn-outline-secondary');
+      }, 2000);
+    });
+  }
+
+  function showSuccessMessage(message) {
+    // Create alert element
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-success alert-dismissible fade show mb-3';
+    alertDiv.setAttribute('role', 'alert');
+    alertDiv.innerHTML = `
+      <i class="bi bi-check-circle me-2"></i>${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    // Find the data files section header (the div with "Data Files" heading)
+    const dataFilesHeader = document.querySelector('h3.fw-semibold.mb-0');
+    if (dataFilesHeader) {
+      const headerContainer = dataFilesHeader.closest('.d-flex.justify-content-between');
+      if (headerContainer && headerContainer.parentElement) {
+        // Insert alert right after the header container
+        headerContainer.parentElement.insertBefore(alertDiv, headerContainer.nextSibling);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+          const bsAlert = bootstrap.Alert.getOrCreateInstance(alertDiv);
+          bsAlert.close();
+        }, 5000);
+      }
+    }
+  }
+
   // Clear modal content when it's closed
   const viewFileDataModal = document.getElementById('viewFileDataModal');
   if (viewFileDataModal) {
@@ -224,6 +330,110 @@
       if (modalTitle) {
         modalTitle.textContent = 'View File Data';
       }
+    });
+  }
+
+  function togglePublicStatus(checkbox) {
+    const dataFileId = checkbox.getAttribute('data-data-file-id');
+    const dataFileName = checkbox.getAttribute('data-data-file-name');
+    const isChecked = checkbox.checked;
+    const action = isChecked ? 'make public' : 'make private';
+    
+    // Confirm before toggling
+    if (!confirm(`Are you sure you want to ${action} "${dataFileName}"?`)) {
+      // Revert checkbox state if user cancels
+      checkbox.checked = !isChecked;
+      return;
+    }
+
+    // Disable checkbox during request
+    checkbox.disabled = true;
+    const label = checkbox.nextElementSibling;
+    const originalLabelHTML = label.innerHTML;
+
+    // Show loading state
+    label.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Updating...';
+
+    // Get CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    if (!csrfToken) {
+      checkbox.checked = !isChecked;
+      label.innerHTML = originalLabelHTML;
+      alert('Security token not found. Please refresh the page and try again.');
+      checkbox.disabled = false;
+      return;
+    }
+
+    // Make AJAX request
+    fetch(`/data_files/${dataFileId}/toggle_public`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        return response.json().then(err => { throw err; });
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Update checkbox state
+      checkbox.checked = data.is_public;
+      
+      // Update label badge
+      if (data.is_public) {
+        label.innerHTML = '<span class="badge bg-success">Public</span>';
+      } else {
+        label.innerHTML = '<span class="badge bg-secondary">Private</span>';
+      }
+      
+      // Show/hide copy URL button
+      const formSwitch = checkbox.closest('.form-check');
+      const container = formSwitch.parentElement;
+      if (data.is_public && data.public_token) {
+        // Add copy button if it doesn't exist
+        if (!container.querySelector('.btn-outline-secondary')) {
+          const copyButton = document.createElement('button');
+          copyButton.className = 'btn btn-sm btn-outline-secondary';
+          const publicUrl = window.location.origin + '/public/data_files/' + data.public_token;
+          copyButton.setAttribute('onclick', `copyPublicUrl(this, '${publicUrl}')`);
+          copyButton.setAttribute('title', 'Copy public URL');
+          copyButton.setAttribute('data-copied-text', 'Copied!');
+          copyButton.innerHTML = '<i class="bi bi-clipboard me-1"></i> Copy URL';
+          container.appendChild(copyButton);
+        } else {
+          // Update existing button URL
+          const existingButton = container.querySelector('.btn-outline-secondary');
+          const publicUrl = window.location.origin + '/public/data_files/' + data.public_token;
+          existingButton.setAttribute('onclick', `copyPublicUrl(this, '${publicUrl}')`);
+        }
+      } else {
+        // Remove copy button if exists
+        const copyButton = container.querySelector('.btn-outline-secondary');
+        if (copyButton) {
+          copyButton.remove();
+        }
+      }
+      
+      // Show success message
+      showSuccessMessage(`File "${dataFileName}" is now ${data.is_public ? 'public' : 'private'}.`);
+    })
+    .catch(error => {
+      console.error('Error toggling public status:', error);
+      
+      // Revert checkbox state on error
+      checkbox.checked = !isChecked;
+      label.innerHTML = originalLabelHTML;
+      
+      // Show error message
+      alert(`Failed to ${action} file: ${error.error || 'Unknown error'}`);
+    })
+    .finally(() => {
+      // Re-enable checkbox
+      checkbox.disabled = false;
     });
   }
 </script>

@@ -15,6 +15,14 @@ Rails.application.routes.draw do
   get "/admin", to: "admin#index", as: :admin
   get "/inventory/cakes/:id", to: "products/cakes#redirect_to_index"
 
+  # Public data file access
+  get "/public/data_files/:token", to: "public/data_files#show", as: :public_data_file
+
+  resources :data_files, only: [] do
+    member do
+      patch :toggle_public
+    end
+  end
 
   # Admin routes
   namespace :admin do

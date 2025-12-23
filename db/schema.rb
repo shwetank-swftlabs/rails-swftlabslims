@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_22_184000) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_23_182225) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -123,11 +123,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_22_184000) do
     t.string "drive_file_id", null: false
     t.string "drive_file_url", null: false
     t.string "file_name", null: false
+    t.boolean "is_public", default: false, null: false
     t.string "label"
     t.string "mime_type", null: false
     t.jsonb "parsed_data"
+    t.string "public_token"
     t.datetime "updated_at", null: false
     t.index ["attachable_type", "attachable_id"], name: "index_data_files_on_attachable"
+    t.index ["public_token"], name: "index_data_files_on_public_token", unique: true
   end
 
   create_table "equipment_types", force: :cascade do |t|

@@ -22,29 +22,7 @@ class DataFilesController < ApplicationController
 
     begin
       folder_id = @attachable.default_upload_folder_id
-      root_folder_id = Rails.application.credentials.google.root_folder_id
-      
-      # Log upload details
-      Rails.logger.info "=" * 80
-      Rails.logger.info "DATA FILE UPLOAD DETAILS"
-      Rails.logger.info "=" * 80
-      Rails.logger.info "File Name: #{uploaded_file.original_filename}"
-      Rails.logger.info "Attachable Type: #{@attachable.class.name}"
-      Rails.logger.info "Attachable ID: #{@attachable.id}"
-      Rails.logger.info "Attachable Name: #{@attachable.try(:name) || @attachable.try(:code) || 'N/A'}"
-      Rails.logger.info "Folder ID from default_upload_folder_id: #{folder_id.inspect}"
-      Rails.logger.info "Root Folder ID from credentials: #{root_folder_id.inspect}"
-      Rails.logger.info "Final Folder ID being used: #{folder_id || root_folder_id}"
-      Rails.logger.info "Folder URL: https://drive.google.com/drive/folders/#{folder_id || root_folder_id}"
-      Rails.logger.info "-" * 80
-      
       upload_result = GoogleDriveService.new.upload(uploaded_file, folder_id)
-      
-      Rails.logger.info "Upload Result:"
-      Rails.logger.info "  File ID: #{upload_result.id}"
-      Rails.logger.info "  Web View Link: #{upload_result.web_view_link}"
-      Rails.logger.info "  MIME Type: #{upload_result.mime_type}"
-      Rails.logger.info "=" * 80
 
       data_file = @attachable.data_files.create!(
         file_name: uploaded_file.original_filename,
@@ -55,9 +33,6 @@ class DataFilesController < ApplicationController
         created_by: current_user.email,
         label: label
       )
-      
-      Rails.logger.info "Data File Created: ID=#{data_file.id}"
-      Rails.logger.info "=" * 80
       
       parse_and_store_data(data_file)
 
@@ -81,6 +56,29 @@ class DataFilesController < ApplicationController
     end
   end
 
+  def toggle_public
+    @data_file = DataFile.find(params[:id])
+    
+    unless @data_file.pdf?
+      return render json: { error: "Only PDF files can be made public." }, status: :unprocessable_entity
+    end
+
+    # Toggle the is_public flag - callback will handle token generation
+    @data_file.is_public = !@data_file.is_public
+    @data_file.save!
+    
+    respond_to do |format|
+      format.json { render json: { is_public: @data_file.is_public, public_token: @data_file.public_token } }
+      format.html { redirect_back(fallback_location: root_path, notice: @data_file.is_public? ? "File is now public." : "File is now private.") }
+    end
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Data file not found." }, status: :not_found
+  rescue => e
+    Rails.logger.error("Failed to toggle public status: #{e.message}")
+    Rails.logger.error(e.backtrace.join("\n"))
+    render json: { error: "Failed to update public status." }, status: :internal_server_error
+  end
+
   private
 
   def parse_and_store_data(data_file)
@@ -97,16 +95,12 @@ class DataFilesController < ApplicationController
     # Only pass extension if it's a valid type, otherwise let Roo auto-detect
     extension_symbol = nil unless [:xls, :xlsx, :xlsm, :csv].include?(extension_symbol)
     
-    Rails.logger.info("Parsing file: #{data_file.file_name}, extension: #{extension_symbol}")
     parsed = DataFileParser.parse(tempfile, extension_symbol)
-    Rails.logger.info("Parsed data keys: #{parsed.keys.inspect}")
 
     # 3. Store parsed data (simple JSON storage)
     if parsed.present? && parsed.is_a?(Hash)
       data_file.update!(parsed_data: parsed)
-      Rails.logger.info("Successfully stored parsed data for file: #{data_file.file_name}")
     else
-      Rails.logger.warn("Parsed data is empty or invalid for file: #{data_file.file_name}")
       raise "No data found in file or parsing returned invalid format"
     end
 
