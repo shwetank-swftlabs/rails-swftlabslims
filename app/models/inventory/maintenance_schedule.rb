@@ -24,6 +24,12 @@ module Inventory
     def status
       return :up_to_date unless next_due_date.present?
       
+      # 2-day grace period: if maintenance was completed within last 2 days, it's up to date
+      if last_completed_at.present?
+        days_since_completion = (Date.today - last_completed_at).to_i
+        return :up_to_date if days_since_completion <= 2
+      end
+      
       today = Date.today
       days_until = (next_due_date - today).to_i
       
