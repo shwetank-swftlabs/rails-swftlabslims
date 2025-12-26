@@ -48,31 +48,8 @@
               <%= schedule.last_completed_at.present? ? format_date(schedule.last_completed_at) : "—" %>
             </td>
             <td>
-              <% 
-                due_date = schedule.next_due_date
-                today = Date.today
-                days_until = (due_date - today).to_i
-                
-                if days_until < 0
-                  status_class = "bg-danger"
-                  status_text = "Overdue"
-                  status_icon = "bi-exclamation-triangle"
-                elsif days_until == 0
-                  status_class = "bg-warning text-dark"
-                  status_text = "Due Today"
-                  status_icon = "bi-clock"
-                elsif days_until <= 7
-                  status_class = "bg-warning text-dark"
-                  status_text = "Due Soon"
-                  status_icon = "bi-clock"
-                else
-                  status_class = "bg-success"
-                  status_text = "Upcoming"
-                  status_icon = "bi-check-circle"
-                end
-              %>
-              <span class="badge <%= status_class %>">
-                <i class="bi <%= status_icon %> me-1"></i><%= status_text %>
+              <span class="badge <%= schedule.status_badge_class %>">
+                <i class="bi <%= schedule.status_icon %> me-1"></i><%= schedule.status_badge_text %>
               </span>
             </td>
             <td>

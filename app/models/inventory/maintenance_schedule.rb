@@ -3,6 +3,7 @@ module Inventory
     self.table_name = "maintenance_schedules"
     belongs_to :equipment, class_name: "Inventory::Equipment"
     has_many :maintenance_records, class_name: "Inventory::MaintenanceRecord", dependent: :destroy
+    order :name, :asc
 
     # Validations
     validates :name, presence: true
@@ -14,32 +15,23 @@ module Inventory
     # Scopes
     scope :active, -> { where(is_active: true) }
     scope :inactive, -> { where(is_active: false) }
-    scope :overdue, -> { where('next_due_date < ?', Date.today) }
-    scope :due_soon, -> { where('next_due_date >= ? AND next_due_date <= ?', Date.today, Date.today + 7.days) }
-    scope :up_to_date, -> { where('next_due_date > ?', Date.today + 7.days) }
 
     def last_completed_at
       maintenance_records.active.order(completed_at: :desc).first&.completed_at
     end
 
-    # Status methods
-    def overdue?
-      next_due_date.present? && next_due_date < Date.today
-    end
-
-    def due_soon?
-      return false unless next_due_date.present?
-      next_due_date >= Date.today && next_due_date <= Date.today + 7.days
-    end
-
-    def up_to_date?
-      return false unless next_due_date.present?
-      next_due_date > Date.today + 7.days
-    end
-
+    # Status method - consolidates all status logic in one place
     def status
-      return :overdue if overdue?
-      return :due_soon if due_soon?
+      return :up_to_date unless next_due_date.present?
+      
+      today = Date.today
+      days_until = (next_due_date - today).to_i
+      
+      return :overdue if days_until < 0
+      return :due_soon if days_until <= 7
+      :up_to_date
+    rescue TypeError, NoMethodError
+      # Handle edge case where next_due_date might not be a Date (shouldn't happen, but defensive)
       :up_to_date
     end
 
