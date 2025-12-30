@@ -2,8 +2,8 @@
   form_type = local_assigns[:form_type] || :create
   is_edit = form_type == :edit
   
-  # Determine parent (cake or cnf)
-  parent = local_assigns[:cake] || local_assigns[:cnf]
+  # Determine parent (cake, cnf, or substrate)
+  parent = local_assigns[:cake] || local_assigns[:cnf] || local_assigns[:substrate]
   
   form_url = if is_edit
     inventory_library_sample_path(library_sample)
@@ -11,6 +11,8 @@
     products_cake_library_samples_path(parent)
   elsif parent.is_a?(Products::Cnf)
     products_cnf_library_samples_path(parent)
+  elsif parent.is_a?(Products::Substrate)
+    products_substrate_library_samples_path(parent)
   end
   
   submit_text = is_edit ? "Update Library Sample" : "Create Library Sample"

@@ -2,7 +2,8 @@ module Inventory
   class LibrarySampleParentResolver
     PARENTS = {
       cake_id: Products::Cake,
-      cnf_id: Products::Cnf
+      cnf_id: Products::Cnf,
+      substrate_id: Products::Substrate
       # future:
       # product_id: Products::Product
       # batch_id: Inventory::Batch

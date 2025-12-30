@@ -1,0 +1,59 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Add a new substrate to the products.") %>
+
+<%= render "shared/form_errors", object: @substrate %>
+
+<%= form_with(model: @substrate, local: false, url: products_substrates_path, html: { class: "substrate-form" }) do |f| %>
+  
+  <%= default_form_field(f, :name, label_text: "Substrate Name", required: true) do |req| %>
+    <%= f.text_field :name,
+                    { class: "form-control",
+                      placeholder: "Please enter a substrate name" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :substrate_type, label_text: "Substrate Type", required: true) do |req| %>
+    <%= f.select :substrate_type,
+          options_for_select(Products::Substrate::SUBSTRATE_TYPES.map { |t| [t.humanize, t] },
+          @substrate.substrate_type),
+          { prompt: "Select substrate type" },
+          { class: "form-select" }.merge(req) %>
+  <% end %>
+
+  <%= inline_quantity_field(f, :quantity, "Quantity", unit_field: :unit, unit_options: Products::Substrate::SUBSTRATE_UNITS, required: true) %>
+
+  <%= default_form_field(f, :tray_description, label_text: "Tray Description", required: false) do |req| %>
+    <%= f.text_field :tray_description,
+                    { class: "form-control",
+                      placeholder: "Enter tray description (optional)" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :location, label_text: "Location", required: false) do |req| %>
+    <%= f.text_field :location,
+                    { class: "form-control",
+                      placeholder: "Enter location (optional)" }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :cnf_id, label_text: "CNF (optional)", required: false) do |req| %>
+    <%= render "shared/forms/searchable_dropdown",
+          form: f,
+          field: :cnf_id,
+          options: Products::Cnf.all.order(:name).map { |cnf| { key: cnf.id, val: cnf.name } },
+          placeholder: "Search or select a CNF...",
+          value: @substrate.cnf_id %>
+  <% end %>
+
+  <%= default_form_field(f, :created_at, label_text: "Date Added", required: false) do %>
+    <%= f.date_field :created_at,
+                    { class: "form-control",
+                      value: Date.today } %>
+  <% end %>
+
+  <!-- Larger space before buttons -->
+  <div class="mt-4">
+    <!-- CONFIRM SUBMIT -->
+    <%= f.submit "Save Substrate", 
+          class: "btn btn-primary px-4 mt-5",
+          data: { turbo_confirm: "Are you sure you want to save this substrate?" } %>
+  </div>
+
+<% end %>
+

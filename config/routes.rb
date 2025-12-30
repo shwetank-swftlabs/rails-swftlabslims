@@ -132,9 +132,21 @@ Rails.application.routes.draw do
       member do
         get :qr_code
       end
+
       resources :library_samples, only: [:new, :create], controller: "/inventory/library_samples"
       resources :qnc_check_requests, only: [:new, :create], controller: "/experiments/qnc_checks"
+      resources :comments, only: [:create, :update], controller: "/comments"
+      resources :data_files, only: [:create, :show], controller: "/data_files"
+      resources :usages, only: [:create, :index, :update], controller: "/usages"
+    end
 
+    resources :substrates, only: [:index, :new, :create, :show, :edit, :update] do
+      member do
+        get :qr_code
+      end
+
+      resources :library_samples, only: [:new, :create], controller: "/inventory/library_samples"
+      resources :qnc_check_requests, only: [:new, :create], controller: "/experiments/qnc_checks"
       resources :comments, only: [:create, :update], controller: "/comments"
       resources :data_files, only: [:create, :show], controller: "/data_files"
       resources :usages, only: [:create, :index, :update], controller: "/usages"

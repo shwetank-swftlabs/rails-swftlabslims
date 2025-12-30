@@ -1,0 +1,25 @@
+<% content_for :page_title, render("shared/page_title", 
+  subtitle: "View substrate details.",
+  actions: render("shared/print_qr_button", qr_code_path: qr_code_products_substrate_path(@substrate))
+) %>
+
+<%= render "shared/sidebar_layout/layout",
+    tabs: ["details", "library_samples", "qnc_check_requests", "data_files", "comments", "use_records"],
+    tab_path: :products_substrate_path,
+    path_args: [@substrate],
+    bottom_action: render("shared/edit_button", label: "Edit Substrate", path: edit_products_substrate_path(@substrate)) do %>
+
+  <% 
+    tab_name = params[:tab] || "details"
+    tab_name = "library_samples" if tab_name == "sample_library"
+  %>
+
+  <%= render tab_name, substrate: @substrate %>
+
+<% end %>
+
+<!-- View File Data Modal (for QNC check requests) -->
+<% if params[:tab] == "qnc_check_requests" %>
+  <%= render "shared/qnc_check_file_data_modal" %>
+<% end %>
+

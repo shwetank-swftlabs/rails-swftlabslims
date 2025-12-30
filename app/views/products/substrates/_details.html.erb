@@ -1,0 +1,13 @@
+<%= render "shared/sidebar_layout/details_list_main_area", details: {
+  "Name" => substrate.name,
+  "Substrate Type" => substrate.substrate_type.humanize,
+  "Quantity" => "#{substrate.quantity} #{substrate.unit.upcase}",
+  "Amount Remaining" => "#{substrate.remaining_amount} #{substrate.unit.upcase}",
+  "Tray Description" => substrate.tray_description.presence || "N/A",
+  "Location" => substrate.location.presence || "N/A",
+  "CNF" => substrate.cnf.present? ? link_to(substrate.cnf.name, products_cnf_path(substrate.cnf), class: "text-decoration-underline") : "N/A",
+  "Created By" => substrate.created_by,
+  "Created At" => substrate.created_at.strftime("%B %d, %Y %I:%M %p")
+}
+%>
+

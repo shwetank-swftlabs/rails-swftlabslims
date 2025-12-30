@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_23_182225) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_30_155028) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -292,6 +292,21 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_23_182225) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "substrates", force: :cascade do |t|
+    t.bigint "cnf_id"
+    t.datetime "created_at", null: false
+    t.string "created_by", default: "system"
+    t.boolean "is_active", default: true
+    t.string "location"
+    t.string "name"
+    t.decimal "quantity"
+    t.string "substrate_type"
+    t.string "tray_description"
+    t.string "unit"
+    t.datetime "updated_at", null: false
+    t.index ["cnf_id"], name: "index_substrates_on_cnf_id"
+  end
+
   create_table "usages", force: :cascade do |t|
     t.decimal "amount", null: false
     t.datetime "created_at", null: false
@@ -328,4 +343,5 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_23_182225) do
   add_foreign_key "nop_processes", "feedstock_types"
   add_foreign_key "nop_processes", "nop_processes", column: "previous_process_id"
   add_foreign_key "nop_processes", "nop_reaction_types"
+  add_foreign_key "substrates", "cnfs"
 end

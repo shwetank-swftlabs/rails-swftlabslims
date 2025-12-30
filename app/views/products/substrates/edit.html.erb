@@ -1,0 +1,73 @@
+<% content_for :page_title, render("shared/page_title", subtitle: "Edit substrate details in the products.") %>
+
+<%= render "shared/form_errors", object: @substrate %>
+
+<%= form_with(model: @substrate, local: false, url: products_substrate_path(@substrate), method: :patch, html: { class: "substrate-form" }) do |f| %>
+
+  <%= default_form_field(f, :name, label_text: "Substrate Name", required: true) do |req| %>
+    <%= f.text_field :name,
+                    { class: "form-control",
+                      placeholder: "Please enter a substrate name",
+                      value: @substrate.name }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :substrate_type, label_text: "Substrate Type", required: true) do |req| %>
+    <%= f.select :substrate_type,
+          options_for_select(Products::Substrate::SUBSTRATE_TYPES.map { |t| [t.humanize, t] },
+          @substrate.substrate_type),
+          {},
+          { class: "form-select" }.merge(req) %>
+  <% end %>
+
+  <%= inline_quantity_field(f, :quantity, "Quantity", unit_field: :unit, unit_options: Products::Substrate::SUBSTRATE_UNITS, required: true) %>
+
+  <%= default_form_field(f, :tray_description, label_text: "Tray Description", required: false) do |req| %>
+    <%= f.text_field :tray_description,
+                    { class: "form-control",
+                      placeholder: "Enter tray description (optional)",
+                      value: @substrate.tray_description }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :location, label_text: "Location", required: false) do |req| %>
+    <%= f.text_field :location,
+                    { class: "form-control",
+                      placeholder: "Enter location (optional)",
+                      value: @substrate.location }.merge(req) %>
+  <% end %>
+
+  <%= default_form_field(f, :cnf_id, label_text: "CNF (optional)", required: false) do |req| %>
+    <%= render "shared/forms/searchable_dropdown",
+          form: f,
+          field: :cnf_id,
+          options: Products::Cnf.all.order(:name).map { |cnf| { key: cnf.id, val: cnf.name } },
+          placeholder: "Search or select a CNF...",
+          value: @substrate.cnf_id %>
+  <% end %>
+
+  <%= default_form_field(f, :is_active, label_text: "Status") do |req| %>
+    <div class="d-flex align-items-center gap-3">
+      <div class="form-check form-switch">
+        <%= f.check_box :is_active, { class: "form-check-input" } %>
+        <label class="form-check-label" for="products_substrate_is_active">
+          <%= @substrate.is_active? ? "Active" : "Inactive" %>
+        </label>
+      </div>
+      <small class="text-muted">
+        (<%= @substrate.is_active? ? "Uncheck to mark as inactive" : "Check to mark as active" %>)
+      </small>
+    </div>
+  <% end %>
+
+  <!-- Larger space before buttons -->
+  <div class="mt-4 d-flex justify-content-between">
+    <!-- CONFIRM SUBMIT -->
+    <%= f.submit "Update Substrate", 
+          class: "btn btn-primary px-4 mt-3",
+          data: { turbo_confirm: "Are you sure you want to update this substrate?" } %>
+    
+    <%= link_to "Cancel", products_substrate_path(@substrate), 
+          class: "btn btn-outline-danger px-4 mt-3 ms-2" %>
+  </div>
+
+<% end %>
+

@@ -1,0 +1,64 @@
+<% content_for :page_title, render("shared/page_title",
+  subtitle: "Manage substrates and their data.",
+  actions: render("shared/add_button", label: "Add New Substrate", path: new_products_substrate_path)
+) %>
+
+<!-- UNIFIED FILTER BAR -->
+<%= render "shared/tables/default_filter_bar",
+      url: products_substrates_path,
+      search_placeholder: "Search by name…",
+      filter_fields: ->(f) do %>
+
+  <!-- CNF Name Search -->
+  <div class="col-md-3">
+    <div class="input-group">
+      <%= f.text_field :cnf_name,
+            value: params[:cnf_name],
+            placeholder: "Search by CNF name…",
+            class: "form-control" %>
+      <%= f.submit "Search", class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+  <!-- Substrate Type Filter -->
+  <div class="col-md-3">
+    <div class="input-group">
+      <%= f.select :substrate_type,
+            options_for_select([["All Types", ""]] + Products::Substrate::SUBSTRATE_TYPES.map { |t| [t.humanize, t] },
+            params[:substrate_type]),
+            {},
+            { class: "form-select" } %>
+      <%= f.submit "Filter", class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+<% end %>
+
+<!-- SUBSTRATE TABLE -->
+<%= render "shared/tables/default_table",
+      collection: @substrates,
+      pagy: @pagy,
+      headers: ->(_) do %>
+        <th>Name</th>
+        <th>Type</th>
+        <th>CNF</th>
+        <th>Amount Remaining</th>
+        <th>Location</th>
+        <th>Created By</th>
+        <th>Created At</th>
+        <th>Print QR</th>
+      <% end,
+      row: ->(substrate) do %>
+        <td><%= link_to substrate.name, products_substrate_path(substrate), class: "text-decoration-underline fw-semibold" %></td>
+        <td><%= substrate.substrate_type.humanize %></td>
+        <td><%= substrate.cnf.present? ? link_to(substrate.cnf.name, products_cnf_path(substrate.cnf), class: "text-decoration-underline") : "N/A" %></td>
+        <td><%= "#{number_with_precision(substrate.remaining_amount, precision: 2, strip_insignificant_zeros: true)} #{substrate.unit.upcase}" %></td>
+        <td><%= substrate.location %></td>
+        <td><%= email_to_name(substrate.created_by) %></td>
+        <td><%= format_date(substrate.created_at) %></td>
+        <td><%= render "shared/print_qr_button", 
+                        qr_code_path: qr_code_products_substrate_path(substrate),
+                        label: "Print QR" %>
+        </td>
+      <% end %>
+

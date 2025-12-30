@@ -1,0 +1,9 @@
+<%= render "shared/sidebar_layout/use_records_main_area",
+      url: products_substrate_usages_path(@substrate),
+      usages: @usages || @substrate.usages,
+      pagy: @pagy,
+      usage_unit: @substrate.unit,
+      usage_purposes: Products::Substrate::SUBSTRATE_USAGE_PURPOSES,
+      resource: @substrate
+%>
+
